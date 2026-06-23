@@ -1,0 +1,9 @@
+version: v2_default
+source: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
+l1_field: safety_l1_dimension
+l2_field: safety_l2_harm_type
+dimension_list:
+  - id: L2-01
+    name: "伤害类型1：组织与业务敏感信息风险"
+    description: "<fill if custom taxonomy extends this registry>"
+compatibility_note: "Replace or extend only with an explicit versioned compatibility statement."

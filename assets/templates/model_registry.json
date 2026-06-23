@@ -1,0 +1,11 @@
+{
+  "models": [
+    {
+      "model_id": "doubao_seed_2_0_pro_full",
+      "provider": "example_provider",
+      "endpoint": "example_endpoint_or_alias",
+      "run_enabled": true,
+      "notes": ""
+    }
+  ]
+}

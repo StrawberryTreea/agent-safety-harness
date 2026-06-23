@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLM Safety Eval Pipeline"
+  short_description: "Route and publish this safety-eval workflow."
+  default_prompt: "Use $llm-safety-eval-research-pipeline to route a safety-eval request, run the correct phase checks, and reuse canonical assets before producing outputs."

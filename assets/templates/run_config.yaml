@@ -1,0 +1,10 @@
+input_jsonl: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
+run_root: rule_eval_mvp/output
+run_mode: api
+resume: true
+aggregate_latest_by_id: true
+rerun_api_errors: true
+num_shards: 1
+shard_index: 0
+decoded_output_policy: treat_as_failure
+store_raw_output: truncated

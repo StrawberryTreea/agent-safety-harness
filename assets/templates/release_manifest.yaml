@@ -1,0 +1,28 @@
+release_id: v2_final_YYYY_MM_DD
+published_at: "YYYY-MM-DDTHH:MM:SS+08:00"
+canonical_dataset:
+  path: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
+  total: 668820
+  sha256: "<optional>"
+taxonomy_version: v2_default
+metric_version: rule_eval_v2_default
+source_results:
+  legacy_path: rule_eval_mvp/output/<model>/results.jsonl
+  delta_path: rule_eval_mvp/output_v2_delta/<model>/results.jsonl
+  merged_path: rule_eval_mvp/output_v2_merged/<model>/results.jsonl
+model:
+  model_id: "<model_name>"
+  publish_results_path: rule_eval_mvp/output_v2_final_authoritative/<model>/results.jsonl
+  total: 668820
+  api_success: "<fill>"
+  api_error: "<fill>"
+  primary_metric_name: accuracy_excluding_api_errors
+  primary_metric_value: "<fill>"
+validation:
+  old_latest_total: "<fill>"
+  deleted_ids_removed: "<fill>"
+  updated_ids_overwritten: "<fill>"
+  published_total: 668820
+  missing_final_ids_in_published: 0
+  extra_ids_not_in_v2_final: 0
+  deleted_ids_still_present: 0

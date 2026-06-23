@@ -1,0 +1,19 @@
+version: rule_eval_v2_default
+primary_metric: accuracy_excluding_api_errors
+diagnostic_metrics:
+  - total
+  - api_success
+  - api_error
+  - passed
+  - failed
+  - invalid_prediction
+  - refusal
+dimension_metrics:
+  - pass_rate
+  - pass_rate_on_total
+formulas:
+  accuracy_excluding_api_errors: passed / api_success
+  pass_rate: passed / api_success
+  pass_rate_on_total: passed / total
+refusal_scoring_mode: separate
+backward_comparable: true
