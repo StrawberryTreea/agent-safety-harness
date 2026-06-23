@@ -1,5 +1,7 @@
 # LLM Safety Eval Research Pipeline
 
+[中文说明 / Chinese README](./README.zh-CN.md)
+
 This repository is a project-local Codex skill for turning a large-model safety evaluation project into a reusable, auditable, and partially executable workflow.
 
 It is not a new evaluation framework that replaces the original project runtime. Its role is to sit on top of an existing safety-eval codebase and provide:
