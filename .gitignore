@@ -1,2 +1,12 @@
 __pycache__/
 *.pyc
+data/
+datasets/
+samples/private/
+output/
+outputs/
+results/
+reports/
+artifacts/
+eval_mvp_V2/
+rule_eval_mvp/

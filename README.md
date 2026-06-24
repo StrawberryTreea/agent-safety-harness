@@ -4,6 +4,8 @@
 
 This repository is a project-local Codex skill for turning a large-model safety evaluation project into a reusable, auditable, and partially executable workflow.
 
+The repository does not include the project's full canonical dataset, full evaluation outputs, or publish artifacts. It tracks only protocol files, templates, scripts, and a few synthetic sample records for schema illustration.
+
 It is not a new evaluation framework that replaces the original project runtime. Its role is to sit on top of an existing safety-eval codebase and provide:
 
 - an intent router that maps user requests to protocol phases,
@@ -120,6 +122,9 @@ Derived artifacts may explain results, but they must never define them.
         ├── release_manifest.yaml
         ├── run_config.yaml
         └── taxonomy_registry.yaml
+    └── samples/
+        ├── canonical_dataset.sample.jsonl
+        └── release_manifest.sample.yaml
 ```
 
 ## Core Components
@@ -149,6 +154,10 @@ Minimal executable prototype layer.
 ### `assets/templates/`
 
 Reusable governance and release artifacts. These are meant to be copied and filled, not reinvented.
+
+### `assets/samples/`
+
+Synthetic examples only. These show expected schema shape without exposing the real benchmark, canonical dataset, or model outputs.
 
 ## Phase System
 
@@ -370,3 +379,4 @@ This repository is most useful for:
 - Prefer updating templates and references rather than bloating `SKILL.md`.
 - If new project scripts replace old executors, update both `SKILL.md` and `scripts/phase_executor.py`.
 - Do not commit runtime caches or generated result directories into this repository.
+- Do not commit the real canonical dataset or full result packages into this repository. If examples are needed, keep them synthetic and minimal.

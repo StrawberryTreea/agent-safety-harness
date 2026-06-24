@@ -1,0 +1,18 @@
+release_id: sample_v0
+canonical_dataset:
+  path: assets/samples/canonical_dataset.sample.jsonl
+  total: 3
+  sha256: synthetic-example-only
+taxonomy_version: sample_taxonomy_v0
+metric_version: sample_rule_eval_v0
+models:
+  - model_id: demo_model
+    result_path: results/demo_model/sample_results.jsonl
+    total: 3
+    api_success: 3
+    primary_metric: 1.0
+validation:
+  missing_final_ids: 0
+  extra_ids_not_in_final: 0
+  deleted_ids_still_present: 0
+note: Synthetic sample manifest for repository illustration only.
