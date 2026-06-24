@@ -18,6 +18,8 @@ The current version is bound to one concrete repository layout and one concrete 
 
 ## What This Skill Solves
 
+![Intent routing overview](assets/figures/intent-routing.png)
+
 Large-model safety evaluation projects usually accumulate:
 
 - canonical datasets,
@@ -62,6 +64,8 @@ This skill is not intended to:
 - fully automate every runtime mutation in the current version.
 
 ## Truth Model
+
+![Truth model and publish boundary](assets/figures/truth-model.png)
 
 The skill is built around a strict source-of-truth hierarchy.
 
@@ -160,6 +164,8 @@ Reusable governance and release artifacts. These are meant to be copied and fill
 Synthetic examples only. These show expected schema shape without exposing the real benchmark, canonical dataset, or model outputs.
 
 ## Phase System
+
+![Ten-phase workflow](assets/figures/phase-flow.png)
 
 The workflow is organized into ten phases.
 
