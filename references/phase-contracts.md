@@ -7,6 +7,12 @@ Use this file when you need compact operational contracts instead of the full fr
 - Goal: lock protocol, taxonomy, metric, model registry, and comparability statement.
 - Primary artifacts:
   `evaluation_protocol_card.md`, `model_registry.json`, `taxonomy_registry.yaml`, `metric_registry.yaml`
+- Primary executor:
+  `scripts/protocol_manager.py`
+- Required behavior:
+  initialize protocol artifacts, reject placeholders or secrets, validate cross-file versions, and compare protocol compatibility.
+- Detailed contract:
+  `references/protocol-contract.md`
 
 ## Phase 1
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -24,34 +25,57 @@ class CheckResult:
     detail: str
 
 
-def find_repo_root() -> Path:
-    current = Path(__file__).resolve()
-    for parent in current.parents:
-        if (parent / "eval_mvp_V2").exists() and (parent / "rule_eval_mvp").exists():
-            return parent
-    raise RuntimeError("Could not locate repository root from skill script path.")
+def find_repo_root(explicit_root: Optional[Path] = None) -> Path:
+    if explicit_root is not None:
+        return explicit_root.expanduser().resolve()
+    env_root = os.environ.get("LLM_SAFETY_EVAL_REPO_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+
+    candidates: List[Path] = []
+    for start in (Path.cwd().resolve(), Path(__file__).resolve().parent):
+        for candidate in (start, *start.parents):
+            if candidate not in candidates:
+                candidates.append(candidate)
+    for candidate in candidates:
+        canonical = candidate / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
+        if canonical.exists() or ((candidate / "eval_mvp_V2").exists() and (candidate / "rule_eval_mvp").exists()):
+            return candidate
+    return Path.cwd().resolve()
 
 
-REPO_ROOT = find_repo_root()
+def build_paths(repo_root: Path) -> Dict[str, Path]:
+    return {
+        "canonical_dataset": repo_root / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl",
+        "canonical_stats": repo_root / "output" / "doc" / "v2_stats.json",
+        "source_extractor": repo_root / "extract_whitepaper_datasets.py",
+        "dataset_report_builder": repo_root / "build_v2_final_dataset_report.py",
+        "main_eval_script": repo_root / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py",
+        "legacy_output_root": repo_root / "rule_eval_mvp" / "output",
+        "delta_output_root": repo_root / "rule_eval_mvp" / "output_v2_delta",
+        "merged_output_root": repo_root / "rule_eval_mvp" / "output_v2_merged",
+        "authoritative_output_root": repo_root / "rule_eval_mvp" / "output_v2_final_authoritative",
+        "incremental_rerun_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "run_v2_incremental_eval.py",
+        "append_only_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "run_append_only_eval.py",
+        "append_results_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "append_new_dataset_results.py",
+        "merge_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "merge_v2_incremental_results.py",
+        "rebuild_merged_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "rebuild_merged_summaries.py",
+        "publish_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "publish_v2_final_authoritative_results.py",
+        "deleted_ids": repo_root / "数据集" / "汇总" / "_processing_workspace" / "output" / "master_normalized_dataset_v2_deleted_ids.jsonl",
+    }
 
-PATHS = {
-    "canonical_dataset": REPO_ROOT / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl",
-    "canonical_stats": REPO_ROOT / "output" / "doc" / "v2_stats.json",
-    "source_extractor": REPO_ROOT / "extract_whitepaper_datasets.py",
-    "dataset_report_builder": REPO_ROOT / "build_v2_final_dataset_report.py",
-    "main_eval_script": REPO_ROOT / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py",
-    "legacy_output_root": REPO_ROOT / "rule_eval_mvp" / "output",
-    "delta_output_root": REPO_ROOT / "rule_eval_mvp" / "output_v2_delta",
-    "merged_output_root": REPO_ROOT / "rule_eval_mvp" / "output_v2_merged",
-    "authoritative_output_root": REPO_ROOT / "rule_eval_mvp" / "output_v2_final_authoritative",
-    "incremental_rerun_script": REPO_ROOT / "rule_eval_mvp" / "incremental_tools" / "run_v2_incremental_eval.py",
-    "append_only_script": REPO_ROOT / "rule_eval_mvp" / "incremental_tools" / "run_append_only_eval.py",
-    "append_results_script": REPO_ROOT / "rule_eval_mvp" / "incremental_tools" / "append_new_dataset_results.py",
-    "merge_script": REPO_ROOT / "rule_eval_mvp" / "incremental_tools" / "merge_v2_incremental_results.py",
-    "rebuild_merged_script": REPO_ROOT / "rule_eval_mvp" / "incremental_tools" / "rebuild_merged_summaries.py",
-    "publish_script": REPO_ROOT / "rule_eval_mvp" / "incremental_tools" / "publish_v2_final_authoritative_results.py",
-    "deleted_ids": REPO_ROOT / "数据集" / "汇总" / "_processing_workspace" / "output" / "master_normalized_dataset_v2_deleted_ids.jsonl",
-}
+
+REPO_ROOT = Path.cwd().resolve()
+PATHS = build_paths(REPO_ROOT)
+PROTOCOL_DIR = REPO_ROOT / "protocol"
+PROTOCOL_MANAGER = SCRIPT_DIR / "protocol_manager.py"
+
+
+def configure_repository(repo_root: Path, protocol_dir: Optional[Path] = None) -> None:
+    global REPO_ROOT, PATHS, PROTOCOL_DIR
+    REPO_ROOT = repo_root.resolve()
+    PATHS = build_paths(REPO_ROOT)
+    PROTOCOL_DIR = (protocol_dir or (REPO_ROOT / "protocol")).expanduser().resolve()
 
 
 PHASE_METADATA: Dict[str, Dict[str, object]] = {
@@ -137,6 +161,34 @@ def list_model_dirs(root: Path) -> List[str]:
 
 def phase_checks(phase: str, models: Optional[str]) -> List[CheckResult]:
     checks: List[CheckResult] = []
+    if phase == "phase0":
+        checks.append(path_check("protocol_manager_exists", PROTOCOL_MANAGER))
+        if not PROTOCOL_DIR.exists():
+            checks.append(path_check("protocol_dir_exists", PROTOCOL_DIR, "warning"))
+        else:
+            for filename in (
+                "evaluation_protocol_card.md",
+                "model_registry.json",
+                "taxonomy_registry.yaml",
+                "metric_registry.yaml",
+            ):
+                checks.append(path_check(f"{filename}_exists", PROTOCOL_DIR / filename))
+            try:
+                from protocol_manager import validate_protocol_dir
+
+                verify_root = (
+                    REPO_ROOT
+                    if PATHS["canonical_dataset"].exists() or PATHS["main_eval_script"].exists()
+                    else None
+                )
+                validation = validate_protocol_dir(PROTOCOL_DIR, verify_root)
+                detail = "valid" if validation["valid"] else "; ".join(
+                    f"{item['path']}: {item['message']}" for item in validation.get("errors", [])[:5]
+                )
+                check_name = "protocol_bound_valid" if verify_root is not None else "protocol_structure_valid"
+                checks.append(CheckResult(check_name, "pass" if validation["valid"] else "fail", "fatal", detail))
+            except Exception as exc:
+                checks.append(CheckResult("protocol_validation", "fail", "fatal", str(exc)))
     if phase in {"phase1"}:
         checks.append(path_check("source_extractor_exists", PATHS["source_extractor"]))
         checks.append(path_check("standards_dir_exists", REPO_ROOT / "标准文件", "warning"))
@@ -174,7 +226,12 @@ def phase_commands(phase: str, models: Optional[str]) -> List[str]:
     if phase == "phase1":
         commands.append("python extract_whitepaper_datasets.py")
     elif phase == "phase0":
-        commands.append("Copy templates from .codex/skills/llm-safety-eval-research-pipeline/assets/templates/ and fill protocol fields before execution")
+        if not PROTOCOL_DIR.exists():
+            commands.append(f'python "{PROTOCOL_MANAGER}" init --output-dir "{PROTOCOL_DIR}"')
+        commands.append(
+            f'python "{PROTOCOL_MANAGER}" validate --protocol-dir "{PROTOCOL_DIR}" '
+            f'--repo-root "{REPO_ROOT}" --format json'
+        )
     elif phase == "phase4":
         commands.append("python eval_mvp_V2/multi_model_rule_eval_prompt_only.py")
     elif phase == "phase5":
@@ -226,6 +283,11 @@ def phase_commands(phase: str, models: Optional[str]) -> List[str]:
 
 def phase_notes(phase: str) -> List[str]:
     notes: Dict[str, List[str]] = {
+        "phase0": [
+            "Freeze dataset identity, safety_taxonomy_8x19, rule_eval semantics, model versions, and comparability before evaluation.",
+            "Refusal is a failure in the primary metric and is also counted separately.",
+            "Do not store API keys or other secrets in protocol artifacts.",
+        ],
         "phase2": [
             "Recompute or verify total counts directly from the canonical JSONL.",
             "Do not use report prose as the membership source.",
@@ -298,12 +360,16 @@ def main() -> int:
     configure_stdio()
     parser = argparse.ArgumentParser(description="Run minimal phase checks and command binding for this repository.")
     parser.add_argument("--request", help="Natural-language request to route into phases.")
-    parser.add_argument("--phase", help="Single explicit phase such as phase7.")
+    parser.add_argument("--phase", choices=sorted(PHASE_METADATA), help="Single explicit phase such as phase7.")
     parser.add_argument("--models", help="Comma-separated model directories to bind into command hints.")
+    parser.add_argument("--repo-root", type=Path, help="Explicit host evaluation repository root.")
+    parser.add_argument("--protocol-dir", type=Path, help="Phase 0 protocol directory; defaults to <repo-root>/protocol.")
     parser.add_argument("--emit-commands", action="store_true", help="Include recommended command hints.")
     parser.add_argument("--check-only", action="store_true", help="Emit checks without command hints.")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args()
+
+    configure_repository(find_repo_root(args.repo_root), args.protocol_dir)
 
     if not args.request and not args.phase:
         parser.error("Provide either --request or --phase.")
@@ -329,7 +395,13 @@ def main() -> int:
         print(json.dumps(plan, ensure_ascii=False, indent=2))
     else:
         print(render_text(plan))
-    return 0
+    fatal_failures = [
+        check
+        for record in phase_records
+        for check in record["checks"]
+        if check["status"] == "fail" and check["severity"] == "fatal"
+    ]
+    return 1 if fatal_failures else 0
 
 
 if __name__ == "__main__":

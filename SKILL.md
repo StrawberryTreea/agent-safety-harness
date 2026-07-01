@@ -5,7 +5,7 @@ description: Route, validate, and operationalize this repository's large-model s
 
 # LLM Safety Eval Research Pipeline
 
-Treat this skill as the protocol and execution layer for `C:\Users\xiaoz\Desktop\2026.03大模型安全测评`.
+Treat this skill as the protocol and execution layer for a V2 safety-evaluation repository selected explicitly with `--repo-root` or discovered from the current working tree.
 
 Do not invent a parallel eval stack. Reuse the current repository's canonical dataset, incremental tools, publish roots, and report assets. The skill's job is to:
 
@@ -21,6 +21,7 @@ Do not invent a parallel eval stack. Reuse the current repository's canonical da
 3. Treat `rule_eval_mvp/output_v2_final_authoritative/` as the only authoritative publish root for final leaderboard and report consumption.
 4. Treat whitepapers, summaries, DOCX files, and prose as derived artifacts only.
 5. Prefer the repository's existing scripts and output contracts before writing new orchestration code.
+6. Freeze `safety_taxonomy_8x19`, `rule_eval`, model versions, dataset identity, and comparability in Phase 0 before evaluation.
 
 ## Workflow
 
@@ -40,6 +41,7 @@ If the request already names a phase-like operation precisely, you may skip the 
 
 - For repo asset locations and path semantics, read `references/repo-asset-map.md`.
 - For phase input/output/check contracts, read `references/phase-contracts.md`.
+- For Phase 0 artifact schemas, scoring semantics, and compatibility rules, read `references/protocol-contract.md`.
 - For the full framework specification, consult `C:\Users\xiaoz\Desktop\2026.03大模型安全测评\大模型安全评测自动化科研Skill框架.md`.
 - For production artifacts, start from `assets/templates/` instead of writing registry or manifest files from scratch.
 
@@ -58,9 +60,13 @@ Use prechecks to answer questions like:
 
 Use the existing repository scripts as the primary executors:
 
+- `scripts/protocol_manager.py` for Phase 0 initialization, validation, and comparison
+- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py` as the implemented main evaluator
+
+Treat the following names as planned interfaces until their implementations exist:
+
 - `extract_whitepaper_datasets.py`
 - `build_v2_final_dataset_report.py`
-- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
 - `rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py`
 - `rule_eval_mvp/incremental_tools/run_append_only_eval.py`
 - `rule_eval_mvp/incremental_tools/append_new_dataset_results.py`
@@ -72,7 +78,7 @@ Do not replace them with a new pipeline unless the task is explicitly to refacto
 
 ### 5. Emit Standardized Artifacts
 
-When a phase changes protocol, publish state, or reporting state, emit or update the smallest applicable artifacts from `assets/templates/`:
+When a phase changes protocol, publish state, or reporting state, emit or update the smallest applicable artifacts from `assets/templates/`. For Phase 0, initialize and validate them with `scripts/protocol_manager.py`.
 
 - `evaluation_protocol_card.md`
 - `model_registry.json`
@@ -98,6 +104,13 @@ When a phase changes protocol, publish state, or reporting state, emit or update
 
 ## Quick Commands
 
+Initialize and validate Phase 0 protocol artifacts:
+
+```powershell
+python scripts/protocol_manager.py init --output-dir protocol
+python scripts/protocol_manager.py validate --protocol-dir protocol --repo-root D:\path\to\evaluation-repo --format json
+```
+
 Route a request:
 
 ```powershell
@@ -118,6 +131,7 @@ python .codex/skills/llm-safety-eval-research-pipeline/scripts/phase_executor.py
 
 ## Failure Policy
 
+- Stop when Phase 0 protocol artifacts are missing, contain placeholders or secrets, disagree on versions, or violate frozen scoring semantics.
 - Stop on canonical-total mismatches.
 - Stop if publish tries to bypass merged clean results.
 - Stop if report numbers cannot be traced back to canonical or authoritative artifacts.

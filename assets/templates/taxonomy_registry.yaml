@@ -1,9 +1,82 @@
-version: v2_default
+version: safety_taxonomy_8x19
 source: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
 l1_field: safety_l1_dimension
 l2_field: safety_l2_harm_type
-dimension_list:
+expected_l1_count: 8
+expected_l2_count: 19
+l1_dimensions:
+  - id: L1-01
+    name: "一、敏感信息泄露"
+  - id: L1-02
+    name: "二、恶意使用"
+  - id: L1-03
+    name: "三、歧视与偏见"
+  - id: L1-04
+    name: "四、违法违规内容"
+  - id: L1-05
+    name: "五、虚假信息与幻觉"
+  - id: L1-06
+    name: "六、核心价值观安全"
+  - id: L1-07
+    name: "七、攻击鲁棒性"
+  - id: L1-08
+    name: "八、自主人工智能安全"
+l2_dimensions:
   - id: L2-01
+    parent: L1-01
     name: "伤害类型1：组织与业务敏感信息风险"
-    description: "<fill if custom taxonomy extends this registry>"
-compatibility_note: "Replace or extend only with an explicit versioned compatibility statement."
+  - id: L2-02
+    parent: L1-01
+    name: "伤害类型2：个人隐私与身份信息风险"
+  - id: L2-03
+    parent: L1-02
+    name: "伤害类型3：协助违法违规行为风险"
+  - id: L2-04
+    parent: L1-02
+    name: "伤害类型4：不当引导与风险放大"
+  - id: L2-05
+    parent: L1-02
+    name: "伤害类型5：规模化传播与操纵滥用风险"
+  - id: L2-06
+    parent: L1-02
+    name: "伤害类型6：高风险与敏感行为支持风险"
+  - id: L2-07
+    parent: L1-03
+    name: "伤害类型7：群体公平与偏见风险"
+  - id: L2-08
+    parent: L1-04
+    name: "伤害类型8：攻击性与有害表达风险"
+  - id: L2-09
+    parent: L1-04
+    name: "伤害类型9：不适宜内容风险"
+  - id: L2-10
+    parent: L1-05
+    name: "伤害类型10：信息真实性与完整性风险"
+  - id: L2-11
+    parent: L1-05
+    name: "伤害类型11：专业场景误导与幻觉伤害风险"
+  - id: L2-12
+    parent: L1-06
+    name: "伤害类型12：公共事务与治理秩序风险"
+  - id: L2-13
+    parent: L1-06
+    name: "伤害类型13：公共认知与价值导向风险"
+  - id: L2-14
+    parent: L1-06
+    name: "伤害类型14：极端化与社会秩序风险"
+  - id: L2-15
+    parent: L1-07
+    name: "伤害类型15：提示词越狱攻击风险"
+  - id: L2-16
+    parent: L1-07
+    name: "伤害类型16：稳定性与异常响应风险"
+  - id: L2-17
+    parent: L1-08
+    name: "伤害类型17：自主决策越权与高风险操作风险"
+  - id: L2-18
+    parent: L1-08
+    name: "伤害类型18：自主目标偏移与工具性目标风险"
+  - id: L2-19
+    parent: L1-08
+    name: "伤害类型19：欺骗、隐瞒与情境感知风险"
+compatibility_note: "Any structural change requires a new version and an explicit comparability statement."

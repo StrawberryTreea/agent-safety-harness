@@ -1,9 +1,10 @@
 {
   "models": [
     {
-      "model_id": "doubao_seed_2_0_pro_full",
-      "provider": "example_provider",
-      "endpoint": "example_endpoint_or_alias",
+      "model_id": "<model_id>",
+      "provider": "<provider>",
+      "endpoint": "<endpoint_or_alias>",
+      "model_version": "<model_version_or_snapshot>",
       "run_enabled": true,
       "notes": ""
     }

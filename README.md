@@ -4,7 +4,7 @@
 
 This repository is a project-local Codex skill for turning a large-model safety evaluation project into a reusable, auditable, and partially executable workflow.
 
-The repository does not include the project's full canonical dataset, full evaluation outputs, or publish artifacts. It tracks only protocol files, templates, scripts, and a few synthetic sample records for schema illustration.
+The repository includes the main rule-evaluation script but does not include the 1.50 GB canonical dataset, complete multi-model outputs, or publish artifacts. The protocol pins the dataset path, total, and SHA-256 instead.
 
 It is not a new evaluation framework that replaces the original project runtime. Its role is to sit on top of an existing safety-eval codebase and provide:
 
@@ -108,14 +108,23 @@ Derived artifacts may explain results, but they must never define them.
 ├── SKILL.md
 ├── README.md
 ├── .gitignore
+├── protocol/
+│   ├── evaluation_protocol_card.md
+│   ├── metric_registry.yaml
+│   ├── model_registry.json
+│   └── taxonomy_registry.yaml
+├── eval_mvp_V2/
+│   └── multi_model_rule_eval_prompt_only.py
 ├── agents/
 │   └── openai.yaml
 ├── references/
 │   ├── phase-contracts.md
+│   ├── protocol-contract.md
 │   └── repo-asset-map.md
 ├── scripts/
 │   ├── intent_router.py
-│   └── phase_executor.py
+│   ├── phase_executor.py
+│   └── protocol_manager.py
 └── assets/
     └── templates/
         ├── evaluation_protocol_card.md
@@ -145,6 +154,8 @@ Compact operational references loaded on demand.
   Short phase-by-phase contracts.
 - `repo-asset-map.md`
   Repository asset reuse map and binding hints.
+- `protocol-contract.md`
+  Phase 0 artifact, 8-by-19 taxonomy, rule-eval scoring, and comparability contract.
 
 ### `scripts/`
 
@@ -154,6 +165,8 @@ Minimal executable prototype layer.
   Converts natural-language user requests into protocol phases.
 - `phase_executor.py`
   Runs phase prechecks, lists available model roots, and emits command hints bound to the existing project scripts.
+- `protocol_manager.py`
+  Initializes, validates, and compares Phase 0 protocol directories with non-zero failure status.
 
 ### `assets/templates/`
 
@@ -197,6 +210,8 @@ Examples:
 
 If no strong signal is found, the router defaults to `phase0` so the request can be scoped at the protocol layer before execution.
 
+Phase 0 has an executable protocol manager that freezes `safety_taxonomy_8x19`, `rule_eval`, canonical dataset identity, model versions, and comparability. It supports `init`, `validate`, and `compare`.
+
 ## Phase Execution Model
 
 The current executor is intentionally conservative.
@@ -217,11 +232,14 @@ The current executor does not yet:
 
 ## Existing Script Bindings
 
-This skill is explicitly bound to the following project runtime scripts:
+The repository now includes the implemented evaluator:
+
+- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
+
+The following names remain planned executor interfaces without implementations:
 
 - `extract_whitepaper_datasets.py`
 - `build_v2_final_dataset_report.py`
-- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
 - `rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py`
 - `rule_eval_mvp/incremental_tools/run_append_only_eval.py`
 - `rule_eval_mvp/incremental_tools/append_new_dataset_results.py`
@@ -229,7 +247,7 @@ This skill is explicitly bound to the following project runtime scripts:
 - `rule_eval_mvp/incremental_tools/rebuild_merged_summaries.py`
 - `rule_eval_mvp/incremental_tools/publish_v2_final_authoritative_results.py`
 
-That binding is the point. The skill is meant to operationalize an existing codebase, not abstract it away.
+The Phase 0 metric registry covers overall, dataset, normalized safety L1/L2, and question-type slices. The main evaluator directly emits L1 and question-type summaries; L2 currently comes from a posthoc L1/L2 summary and needs a maintained Phase 8 producer.
 
 ## Templates And Registry Files
 
@@ -344,8 +362,8 @@ Current limitations:
 - routing is keyword-driven rather than configuration-driven,
 - guards are encoded as code checks and notes, not yet as a standalone machine-readable guard registry,
 - executor emits commands but does not yet orchestrate full multi-phase `--run`,
-- template filling is manual,
-- repository binding is currently specific to one V2 safety-eval project structure.
+- Phase 0 templates can be initialized automatically but model and task fields still require manual completion,
+- V2 remains the default protocol while the host repository path is configurable with `--repo-root`.
 
 ## Roadmap
 

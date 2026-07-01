@@ -4,6 +4,8 @@
 
 这个仓库是一个项目内使用的 Codex skill，用来把一个大模型安全评测项目整理成一套可复用、可审计、部分可执行的工作流。
 
+当前仓库已包含主规则评测脚本，但不包含 1.50GB 的完整 canonical dataset、完整多模型结果或发布产物。数据集继续由协议中的路径、总数和 SHA-256 标识。
+
 它不是一个替代原始评测代码的新框架。它的定位是覆盖在现有安全评测代码库之上，提供：
 
 - 一个把用户请求映射到协议阶段的 intent router
@@ -103,14 +105,23 @@
 ├── README.md
 ├── README.zh-CN.md
 ├── .gitignore
+├── protocol/
+│   ├── evaluation_protocol_card.md
+│   ├── metric_registry.yaml
+│   ├── model_registry.json
+│   └── taxonomy_registry.yaml
+├── eval_mvp_V2/
+│   └── multi_model_rule_eval_prompt_only.py
 ├── agents/
 │   └── openai.yaml
 ├── references/
 │   ├── phase-contracts.md
+│   ├── protocol-contract.md
 │   └── repo-asset-map.md
 ├── scripts/
 │   ├── intent_router.py
-│   └── phase_executor.py
+│   ├── phase_executor.py
+│   └── protocol_manager.py
 └── assets/
     └── templates/
         ├── evaluation_protocol_card.md
@@ -137,6 +148,8 @@
   每个 phase 的简版合同说明。
 - `repo-asset-map.md`
   仓库资产复用地图与绑定提示。
+- `protocol-contract.md`
+  Phase 0 的协议文件、8×19 taxonomy、rule_eval 计分和可比性规则。
 
 ### `scripts/`
 
@@ -146,6 +159,8 @@
   把自然语言请求转成协议 phase。
 - `phase_executor.py`
   做 phase precheck、列出可用 model roots，并输出与现有项目脚本绑定的命令提示。
+- `protocol_manager.py`
+  初始化、校验并比较 Phase 0 协议目录；校验失败或协议不兼容时返回非零状态。
 
 ### `assets/templates/`
 
@@ -183,6 +198,8 @@ router 当前是关键词驱动的。这是刻意设计，不是在做“深度�
 
 如果没有明显命中信号，router 默认回落到 `phase0`，先在协议层完成范围界定。
 
+Phase 0 已实现独立协议管理器，固定 `safety_taxonomy_8x19`、`rule_eval`、canonical dataset 身份、模型版本和可比性声明。它支持 `init`、`validate` 和 `compare`。
+
 ## Phase 执行模型
 
 当前 executor 是有意保持保守的。
@@ -203,11 +220,14 @@ router 当前是关键词驱动的。这是刻意设计，不是在做“深度�
 
 ## 已绑定的项目脚本
 
-这个 skill 目前显式绑定以下项目脚本：
+当前仓库已包含并可审查的真实执行器：
+
+- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
+
+以下名称仍是规划中的执行器接口，尚无具体实现：
 
 - `extract_whitepaper_datasets.py`
 - `build_v2_final_dataset_report.py`
-- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
 - `rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py`
 - `rule_eval_mvp/incremental_tools/run_append_only_eval.py`
 - `rule_eval_mvp/incremental_tools/append_new_dataset_results.py`
@@ -215,7 +235,7 @@ router 当前是关键词驱动的。这是刻意设计，不是在做“深度�
 - `rule_eval_mvp/incremental_tools/rebuild_merged_summaries.py`
 - `rule_eval_mvp/incremental_tools/publish_v2_final_authoritative_results.py`
 
-这层绑定本身就是重点。这个 skill 的目标是把既有代码库操作化，而不是把它抽象掉。
+Phase 0 的 metric registry 已注册总体、数据集、标准化安全一级/二级维度和题型切片。主脚本直接生成一级维度与题型汇总；二级维度当前来自 posthoc L1/L2 summary，正式生成器需在 Phase 8 落地。
 
 ## 模板与 Registry 文件
 
@@ -330,8 +350,8 @@ Warning 边界：
 - routing 还是关键词驱动，不是配置驱动
 - guards 目前是代码检查和 notes，不是独立 machine-readable guard registry
 - executor 目前输出命令，但还没有完整的多 phase `--run`
-- 模板填充还是手工的
-- 仓库绑定目前只适配一个具体的 V2 safety-eval 项目结构
+- Phase 0 模板可以自动初始化，但模型和任务字段仍需人工填写
+- V2 是默认协议；宿主仓库路径可通过 `--repo-root` 配置
 
 ## Roadmap
 
@@ -352,6 +372,8 @@ Warning 边界：
 
 - skill 结构通过 `quick_validate.py`
 - `intent_router.py` 能处理中文和英文请求
+- `protocol_manager.py` 通过初始化、校验、拒答语义和可比性测试
+- `phase_executor.py` 可在没有 `rule_eval_mvp` 的独立目录中执行 Phase 0
 - `phase_executor.py` 能输出可工作的 phase7 检查和命令提示
 - Windows 下的 UTF-8 控制台输出已补齐
 
