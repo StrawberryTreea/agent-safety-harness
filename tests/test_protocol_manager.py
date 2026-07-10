@@ -4,7 +4,6 @@ import hashlib
 import json
 import subprocess
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -15,13 +14,14 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import protocol_manager  # noqa: E402
+from tests.temp_workspace import WorkspaceTempDir  # noqa: E402
 
 
 class ProtocolManagerTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.temp_dir = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp_dir.cleanup)
-        self.root = Path(self.temp_dir.name)
+        self.temp_dir = WorkspaceTempDir()
+        self.root = self.temp_dir.__enter__()
+        self.addCleanup(self.temp_dir.__exit__, None, None, None)
 
     def create_protocol(self, name: str = "protocol") -> Path:
         protocol_dir = self.root / name

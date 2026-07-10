@@ -1,0 +1,12 @@
+{
+  "models": [
+    {
+      "model_id": "test_model",
+      "provider": "test_provider",
+      "endpoint": "test_endpoint",
+      "model_version": "2026-05-17",
+      "run_enabled": true,
+      "notes": "synthetic test model"
+    }
+  ]
+}

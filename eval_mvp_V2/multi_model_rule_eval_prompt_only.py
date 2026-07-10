@@ -39,6 +39,7 @@ multi_model_rule_eval_configured.py
 from __future__ import annotations
 
 import csv
+import argparse
 import base64
 import hashlib
 import json
@@ -63,6 +64,11 @@ from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover - YAML config is optional until --config is used.
+    yaml = None
 
 
 # =============================================================================
@@ -576,6 +582,93 @@ def apply_env_overrides() -> None:
 
 
 apply_env_overrides()
+
+
+CONFIG_KEY_ALIASES: Dict[str, str] = {
+    "input_jsonl": "INPUT_JSONL",
+    "run_root": "RUN_ROOT",
+    "run_mode": "RUN_MODE",
+    "id_field": "ID_FIELD",
+    "prompt_field": "PROMPT_FIELD",
+    "reference_field": "REFERENCE_FIELD",
+    "prompt_suffix": "PROMPT_SUFFIX",
+    "system_prompt": "SYSTEM_PROMPT",
+    "use_eval_wrapper": "USE_EVAL_WRAPPER",
+    "num_shards": "NUM_SHARDS",
+    "shard_index": "SHARD_INDEX",
+    "models": "MODELS",
+}
+
+
+def load_external_config(config_path: Path) -> Dict[str, Any]:
+    if not config_path.is_file():
+        raise FileNotFoundError(f"config file does not exist: {config_path}")
+    suffix = config_path.suffix.lower()
+    if suffix in {".yaml", ".yml"}:
+        if yaml is None:
+            raise RuntimeError("PyYAML is required to load YAML config files.")
+        loaded = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    elif suffix == ".json":
+        loaded = json.loads(config_path.read_text(encoding="utf-8"))
+    else:
+        raise ValueError("config file must be YAML or JSON")
+    if not isinstance(loaded, dict):
+        raise ValueError("config file must contain a mapping")
+    return loaded
+
+
+def apply_external_config(config_doc: Dict[str, Any]) -> None:
+    """
+    Apply a Phase 3 run_config without changing the evaluator's historical defaults.
+
+    Supported shapes:
+    - config: {INPUT_JSONL: ..., RUN_ROOT: ...}
+    - evaluator_config: {input_jsonl: ..., run_mode: ...}
+    - top-level convenience keys such as input_jsonl/run_root/run_mode/fields.
+    """
+    updates: Dict[str, Any] = {}
+    for section_name in ("config", "evaluator_config"):
+        section = config_doc.get(section_name)
+        if isinstance(section, dict):
+            updates.update(section)
+
+    fields = config_doc.get("fields")
+    if isinstance(fields, dict):
+        updates.update(
+            {
+                "id_field": fields.get("id"),
+                "prompt_field": fields.get("prompt"),
+                "reference_field": fields.get("reference"),
+            }
+        )
+
+    dataset = config_doc.get("dataset")
+    if isinstance(dataset, dict):
+        updates.setdefault("input_jsonl", dataset.get("input_jsonl") or dataset.get("path"))
+
+    for key in ("input_jsonl", "run_root", "run_mode", "id_field", "prompt_field", "reference_field"):
+        if key in config_doc:
+            updates.setdefault(key, config_doc.get(key))
+
+    for raw_key, value in updates.items():
+        if value is None:
+            continue
+        config_key = raw_key if raw_key in CONFIG else CONFIG_KEY_ALIASES.get(str(raw_key))
+        if not config_key:
+            continue
+        if config_key == "MODELS":
+            if isinstance(value, list) and all(isinstance(item, dict) for item in value):
+                CONFIG[config_key] = value
+            else:
+                raise ValueError("models/MODELS override must be a list of model config mappings")
+        else:
+            CONFIG[config_key] = value
+
+
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run prompt-only rule evaluation.")
+    parser.add_argument("--config", type=Path, help="Phase 3 run_config YAML/JSON that overrides default CONFIG.")
+    return parser.parse_args(argv)
 
 
 # =============================================================================
@@ -2788,7 +2881,16 @@ def run_one_model(model_cfg: Dict[str, Any], input_path: Path, run_root: Path) -
 # 9. 入口
 # =============================================================================
 
-def main() -> int:
+def main(argv: Optional[List[str]] = None) -> int:
+    args = parse_args(argv)
+    if args.config:
+        try:
+            apply_external_config(load_external_config(args.config))
+        except Exception as exc:
+            print(f"failed to load config {args.config}: {exc}", file=sys.stderr)
+            return 2
+        apply_env_overrides()
+
     input_path = Path(CONFIG["INPUT_JSONL"])
     run_root = Path(CONFIG["RUN_ROOT"])
     ensure_dir(run_root)

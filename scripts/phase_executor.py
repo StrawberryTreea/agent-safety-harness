@@ -48,9 +48,15 @@ def build_paths(repo_root: Path) -> Dict[str, Path]:
     return {
         "canonical_dataset": repo_root / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl",
         "canonical_stats": repo_root / "output" / "doc" / "v2_stats.json",
+        "source_intake": repo_root / "scripts" / "source_intake.py",
+        "canonicalizer": repo_root / "scripts" / "canonicalize_datasets.py",
+        "canonical_validator": repo_root / "scripts" / "canonical_validate.py",
+        "phase3_preparer": repo_root / "scripts" / "prepare_phase3.py",
         "source_extractor": repo_root / "extract_whitepaper_datasets.py",
         "dataset_report_builder": repo_root / "build_v2_final_dataset_report.py",
         "main_eval_script": repo_root / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py",
+        "smoke_subset": repo_root / "eval_mvp_V2" / "data" / "test_eval_100_dataset_type_coverage.jsonl",
+        "phase3_run_config": repo_root / "work" / "phase3" / "run_config.yaml",
         "legacy_output_root": repo_root / "rule_eval_mvp" / "output",
         "delta_output_root": repo_root / "rule_eval_mvp" / "output_v2_delta",
         "merged_output_root": repo_root / "rule_eval_mvp" / "output_v2_merged",
@@ -87,12 +93,20 @@ PHASE_METADATA: Dict[str, Dict[str, object]] = {
     "phase1": {
         "title": "Source Intake",
         "summary": "Collect benchmark sources and whitepaper evidence.",
-        "artifacts": ["dataset_catalog.json", "source_inventory.csv"],
+        "artifacts": [
+            "dataset_catalog.json",
+            "source_inventory.csv",
+            "evidence_inventory.jsonl",
+            "reports/field_mapping_report.json",
+            "reports/needs_review.json",
+            "reports/failed_files.json",
+            "manifests/pending/*.pending.yaml",
+        ],
     },
     "phase2": {
         "title": "Canonical Standardization",
         "summary": "Standardize membership and ensure canonical JSONL and stats stay consistent.",
-        "artifacts": ["master_normalized_dataset_v2_final.jsonl", "dataset_sources_clean.csv", "v2_stats.json"],
+        "artifacts": ["master_normalized_dataset_v2_final.jsonl", "dataset_sources_clean.csv", "v2_stats.json", "membership_diff.json"],
     },
     "phase3": {
         "title": "Protocol Shaping",
@@ -159,7 +173,7 @@ def list_model_dirs(root: Path) -> List[str]:
     return sorted(p.name for p in root.iterdir() if p.is_dir())
 
 
-def phase_checks(phase: str, models: Optional[str]) -> List[CheckResult]:
+def phase_checks(phase: str, models: Optional[str], intake_config: Optional[Path]) -> List[CheckResult]:
     checks: List[CheckResult] = []
     if phase == "phase0":
         checks.append(path_check("protocol_manager_exists", PROTOCOL_MANAGER))
@@ -189,13 +203,27 @@ def phase_checks(phase: str, models: Optional[str]) -> List[CheckResult]:
                 checks.append(CheckResult(check_name, "pass" if validation["valid"] else "fail", "fatal", detail))
             except Exception as exc:
                 checks.append(CheckResult("protocol_validation", "fail", "fatal", str(exc)))
+    if phase in {"phase1", "phase2"}:
+        checks.append(path_check("canonical_schema_exists", PROTOCOL_DIR / "canonical_schema.yaml"))
     if phase in {"phase1"}:
-        checks.append(path_check("source_extractor_exists", PATHS["source_extractor"]))
-        checks.append(path_check("standards_dir_exists", REPO_ROOT / "标准文件", "warning"))
-    if phase in {"phase2", "phase3", "phase4", "phase5", "phase7", "phase8"}:
+        checks.append(path_check("source_intake_exists", PATHS["source_intake"]))
+        if intake_config is not None:
+            checks.append(path_check("intake_config_exists", intake_config))
+    if phase == "phase2":
+        checks.append(path_check("canonical_dataset_exists", PATHS["canonical_dataset"], "warning"))
+    if phase in {"phase3", "phase4", "phase5", "phase7", "phase8"}:
         checks.append(path_check("canonical_dataset_exists", PATHS["canonical_dataset"]))
+    if phase == "phase3":
+        checks.append(path_check("phase3_preparer_exists", PATHS["phase3_preparer"]))
+        checks.append(path_check("main_eval_script_exists", PATHS["main_eval_script"]))
+    if phase == "phase4":
+        checks.append(path_check("phase3_run_config_exists", PATHS["phase3_run_config"]))
+        checks.append(path_check("smoke_subset_exists", PATHS["smoke_subset"]))
     if phase in {"phase2", "phase7", "phase8"}:
         checks.append(path_check("canonical_stats_exists", PATHS["canonical_stats"], "warning"))
+    if phase == "phase2":
+        checks.append(path_check("canonicalizer_exists", PATHS["canonicalizer"]))
+        checks.append(path_check("canonical_validator_exists", PATHS["canonical_validator"]))
     if phase in {"phase4", "phase5"}:
         checks.append(path_check("main_eval_script_exists", PATHS["main_eval_script"]))
     if phase == "phase6":
@@ -220,11 +248,38 @@ def phase_checks(phase: str, models: Optional[str]) -> List[CheckResult]:
     return checks
 
 
-def phase_commands(phase: str, models: Optional[str]) -> List[str]:
+def phase_commands(phase: str, models: Optional[str], manifest: Optional[Path]) -> List[str]:
     model_arg = models or "doubao_seed_2_0_pro_full"
+    intake_config_arg = f' --intake-config "{manifest}"' if manifest is not None else ""
     commands: List[str] = []
     if phase == "phase1":
-        commands.append("python extract_whitepaper_datasets.py")
+        commands.append(
+            f'python "{PATHS["source_intake"]}" --benchmark-root "<benchmark_root>" '
+            f'--evidence-root "<evidence_root>"{intake_config_arg} '
+            f'--output-dir "{REPO_ROOT / "work" / "phase1"}" --protocol-dir "{PROTOCOL_DIR}"'
+        )
+    elif phase == "phase2":
+        commands.append(
+            f'python "{PATHS["canonicalizer"]}" '
+            f'--catalog "{REPO_ROOT / "work" / "phase1" / "dataset_catalog.json"}" '
+            f'--output "{PATHS["canonical_dataset"]}" --stats "{PATHS["canonical_stats"]}" '
+            f'--protocol-dir "{PROTOCOL_DIR}"'
+        )
+        commands.append(
+            f'python "{PATHS["canonical_validator"]}" '
+            f'--canonical "{PATHS["canonical_dataset"]}" --stats "{PATHS["canonical_stats"]}" '
+            f'--protocol-dir "{PROTOCOL_DIR}"'
+        )
+    elif phase == "phase3":
+        commands.append(
+            f'python "{PATHS["phase3_preparer"]}" '
+            f'--canonical "{PATHS["canonical_dataset"]}" '
+            f'--output-dir "{REPO_ROOT / "work" / "phase3"}" '
+            f'--smoke-output "{PATHS["smoke_subset"]}" '
+            f'--run-config "{PATHS["phase3_run_config"]}" '
+            f'--protocol-dir "{PROTOCOL_DIR}" '
+            f'--sample-size 100'
+        )
     elif phase == "phase0":
         if not PROTOCOL_DIR.exists():
             commands.append(f'python "{PROTOCOL_MANAGER}" init --output-dir "{PROTOCOL_DIR}"')
@@ -233,9 +288,9 @@ def phase_commands(phase: str, models: Optional[str]) -> List[str]:
             f'--repo-root "{REPO_ROOT}" --format json'
         )
     elif phase == "phase4":
-        commands.append("python eval_mvp_V2/multi_model_rule_eval_prompt_only.py")
+        commands.append(f'python "{PATHS["main_eval_script"]}" --config "{PATHS["phase3_run_config"]}"')
     elif phase == "phase5":
-        commands.append("python eval_mvp_V2/multi_model_rule_eval_prompt_only.py")
+        commands.append(f'python "{PATHS["main_eval_script"]}" --config "<full_run_config.yaml>"')
     elif phase == "phase6":
         commands.append(
             "python rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py "
@@ -292,9 +347,16 @@ def phase_notes(phase: str) -> List[str]:
             "Recompute or verify total counts directly from the canonical JSONL.",
             "Do not use report prose as the membership source.",
         ],
+        "phase3": [
+            "Generate run_config.yaml and the deterministic 100-row smoke subset before invoking the evaluator.",
+            "Prompt and scorer changes should be represented in the Phase 3 protocol config, not by editing the evaluator body.",
+        ],
+        "phase4": [
+            "Run the evaluator with work/phase3/run_config.yaml in self_test mode before any API evaluation.",
+        ],
         "phase5": [
-            "The main evaluation script uses in-file CONFIG, not a full CLI surface.",
-            "Review INPUT_JSONL, RUN_ROOT, AGGREGATE_LATEST_BY_ID, and RERUN_API_ERRORS before execution.",
+            "Use an external full-run config so INPUT_JSONL, RUN_ROOT, prompt, scorer, and model choices are auditable.",
+            "Review AGGREGATE_LATEST_BY_ID and RERUN_API_ERRORS before execution.",
         ],
         "phase6": [
             "Delta execution must not overwrite the legacy output root.",
@@ -312,14 +374,19 @@ def phase_notes(phase: str) -> List[str]:
     return notes.get(phase, [])
 
 
-def build_phase_record(phase: str, models: Optional[str], emit_commands: bool) -> Dict[str, object]:
+def build_phase_record(
+    phase: str,
+    models: Optional[str],
+    emit_commands: bool,
+    intake_config: Optional[Path] = None,
+) -> Dict[str, object]:
     metadata = PHASE_METADATA[phase]
     record: Dict[str, object] = {
         "phase": phase,
         "title": metadata["title"],
         "summary": metadata["summary"],
         "artifacts": metadata["artifacts"],
-        "checks": [asdict(check) for check in phase_checks(phase, models)],
+        "checks": [asdict(check) for check in phase_checks(phase, models, intake_config)],
         "available_models": {
             "legacy": list_model_dirs(PATHS["legacy_output_root"]),
             "merged": list_model_dirs(PATHS["merged_output_root"]),
@@ -328,7 +395,7 @@ def build_phase_record(phase: str, models: Optional[str], emit_commands: bool) -
         "notes": phase_notes(phase),
     }
     if emit_commands:
-        record["commands"] = phase_commands(phase, models)
+        record["commands"] = phase_commands(phase, models, intake_config)
     return record
 
 
@@ -362,6 +429,7 @@ def main() -> int:
     parser.add_argument("--request", help="Natural-language request to route into phases.")
     parser.add_argument("--phase", choices=sorted(PHASE_METADATA), help="Single explicit phase such as phase7.")
     parser.add_argument("--models", help="Comma-separated model directories to bind into command hints.")
+    parser.add_argument("--intake-config", type=Path, help="Optional Phase 1 intake overrides YAML/JSON.")
     parser.add_argument("--repo-root", type=Path, help="Explicit host evaluation repository root.")
     parser.add_argument("--protocol-dir", type=Path, help="Phase 0 protocol directory; defaults to <repo-root>/protocol.")
     parser.add_argument("--emit-commands", action="store_true", help="Include recommended command hints.")
@@ -383,7 +451,9 @@ def main() -> int:
         request = args.request
 
     emit_commands = False if args.check_only else args.emit_commands
-    phase_records = [build_phase_record(phase, args.models, emit_commands) for phase in phases]
+    phase_records = [
+        build_phase_record(phase, args.models, emit_commands, args.intake_config) for phase in phases
+    ]
     plan = {
         "repo_root": str(REPO_ROOT),
         "request": request,

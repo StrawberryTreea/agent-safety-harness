@@ -1,0 +1,18 @@
+schema_name: test_canonical
+version: test
+core_schema:
+  required: true
+  fields:
+  - name: id
+  - name: dataset_name
+  - name: source_id
+  - name: test_text
+  - name: reference_answer
+  - name: safety_l1_dimension
+  - name: safety_l2_harm_type
+extended_schema:
+  fields:
+  - name: raw_choices
+    type: list
+  - name: metadata
+    type: dict
