@@ -1,4 +1,5 @@
 __pycache__/
+.tmp/
 *.pyc
 data/
 datasets/
@@ -11,3 +12,4 @@ artifacts/
 eval_mvp_V2/*
 !eval_mvp_V2/multi_model_rule_eval_prompt_only.py
 rule_eval_mvp/
+.vscode/

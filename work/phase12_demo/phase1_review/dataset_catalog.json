@@ -1,0 +1,40 @@
+{
+  "phase": "phase1",
+  "benchmark_root": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\raw",
+  "evidence_root": null,
+  "intake_config": null,
+  "protocol_version": "v2_default",
+  "taxonomy_version": "safety_taxonomy_8x19",
+  "metric_version": "rule_eval",
+  "canonical_schema": {
+    "schema_path": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\protocol\\canonical_schema.yaml",
+    "schema_name": "test_canonical",
+    "version": "test",
+    "fields": [
+      "id",
+      "dataset_name",
+      "source_id",
+      "test_text",
+      "reference_answer",
+      "safety_l1_dimension",
+      "safety_l2_harm_type",
+      "raw_choices",
+      "metadata"
+    ],
+    "required_fields": [
+      "id",
+      "dataset_name",
+      "source_id",
+      "test_text",
+      "reference_answer",
+      "safety_l1_dimension",
+      "safety_l2_harm_type"
+    ]
+  },
+  "status_policy": {
+    "ready": "Required mapping fields are resolved and the benchmark can enter Phase 2.",
+    "needs_review": "Source data is readable, but required field mapping is incomplete.",
+    "failed": "Source data could not be read or its record structure could not be inferred."
+  },
+  "benchmarks": []
+}

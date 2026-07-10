@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "catalog_path": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase1_ready\\dataset_catalog.json",
+  "canonical_schema_path": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\protocol\\canonical_schema.yaml",
+  "canonical_rows": 2,
+  "quarantined_rows": 0,
+  "canonical_path": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\canonical.jsonl",
+  "canonical_sha256": "87ACD2B5564E06C3877A6661F0D1E975DA45A1C4BAC85FDD2A923169D2396166",
+  "stats_path": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\stats.json",
+  "protocol_dataset": {
+    "path": "eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl",
+    "version": "v2_final",
+    "total": 668820,
+    "sha256": "B2B6E8DBCDFE0C19D50444B3B684DB63023724A6DFB03902F44F43EB177E5647",
+    "id_field": "id"
+  },
+  "protocol_drift": {
+    "total_changed": true,
+    "sha256_changed": true
+  },
+  "outputs": {
+    "canonical": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\canonical.jsonl",
+    "stats": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\stats.json",
+    "dataset_sources_clean": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\dataset_sources_clean.csv",
+    "quarantine": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\quarantine.jsonl",
+    "membership_diff": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\membership_diff.json",
+    "report": "D:\\Projects\\Python\\llm-safety-eval-research-pipeline\\work\\phase12_demo\\phase2\\canonicalization_report.json"
+  }
+}

@@ -1,0 +1,234 @@
+schema_name: master_normalized_dataset_v2_final
+source_file: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
+version: v2_final
+
+stats:
+  total_records: 668820
+  shape_count: 14
+  core_field_count: 13
+  total_field_union: 43
+
+core_schema:
+  description: "所有记录必须包含的统一核心字段（稳定 schema）"
+  required: true
+  fields:
+    - name: id
+      type: str
+      description: "全局唯一记录ID"
+
+    - name: dataset_name
+      type: str
+      description: "来源子数据集名称"
+
+    - name: source_id
+      type: str
+      description: "原始样本ID"
+
+    - name: test_text
+      type: str
+      description: "模型评测输入文本"
+
+    - name: reference_answer
+      type: str
+      description: "标准答案/标签"
+
+    - name: expected_behavior
+      type: str
+      description: "期望模型行为描述"
+
+    - name: l1_category
+      type: str
+      description: "一级类别"
+
+    - name: l2_category
+      type: str
+      description: "二级类别"
+
+    - name: eval_method
+      type: str
+      description: "评测方法（规则/模型评估等）"
+
+    - name: note
+      type: str
+      description: "补充说明字段"
+
+    - name: type
+      type: str
+      description: "题型（选择/判断/生成/填空等）"
+
+    - name: safety_l1_dimension
+      type: str
+      description: "安全一级维度"
+
+    - name: safety_l2_harm_type
+      type: str
+      description: "安全二级伤害类型"
+
+
+extended_schema:
+  description: "按需出现的扩展字段（非所有记录必有）"
+  fields:
+
+    - name: base_prompt
+      type: str
+      count: 120
+      description: "原始基础提示词"
+
+    - name: benign_prompt
+      type: str
+      count: 490
+      description: "表面正常提示词（常用于攻击/对照）"
+
+    - name: historical_target_response
+      type: str
+      count: 653
+      description: "历史目标输出"
+
+    - name: image_path
+      type: str
+      count: 8641
+      description: "图像路径"
+
+    - name: pii_units
+      type: str
+      count: 653
+      description: "隐私实体/脱敏单元"
+
+    - name: raw_choices
+      type: list
+      count: 30388
+      description: "原始选项列表"
+
+    - name: raw_history
+      type: list
+      count: 101
+      description: "多轮对话历史"
+
+    - name: raw_input
+      type: str
+      count: 6061
+      description: "原始输入"
+
+    - name: raw_options
+      type: list
+      count: 607
+      description: "原始选项集合"
+
+    - name: raw_post
+      type: str
+      count: 5960
+      description: "后置模板"
+
+    - name: raw_prompt
+      type: str
+      count: 5960
+      description: "原始prompt"
+
+    - name: raw_query
+      type: str
+      count: 607
+      description: "原始query"
+
+    - name: raw_question
+      type: str
+      count: 32918
+      description: "原始问题"
+
+    - name: raw_test_text
+      type: str
+      count: 39066
+      description: "未清洗测试文本"
+
+    - name: redacted_query
+      type: str
+      count: 653
+      description: "脱敏后的query"
+
+    - name: redteam_query
+      type: str
+      count: 8641
+      description: "红队攻击query"
+
+    - name: rubric
+      type: list
+      count: 490
+      description: "评分标准"
+
+    - name: target_response
+      type: str
+      count: 120
+      description: "目标输出"
+
+    - name: v2_answer_mode
+      type: str
+      count: 32602
+      description: "V2答案模式"
+
+    - name: v2_correct_signature
+      type: dict
+      count: 32602
+      description: "正确答案签名"
+
+    - name: v2_decoy_signature_1
+      type: dict
+      count: 32602
+      description: "干扰签名1"
+
+    - name: v2_decoy_signature_2
+      type: dict
+      count: 32602
+      description: "干扰签名2"
+
+    - name: v2_judgment_original_answer_mode
+      type: str|null
+      count: 56128
+      description: "改写前答案模式"
+
+    - name: v2_judgment_original_reference_answer
+      type: str
+      count: 56128
+      description: "改写前参考答案"
+
+    - name: v2_judgment_original_type
+      type: str
+      count: 56128
+      description: "改写前题型"
+
+    - name: v2_option_map
+      type: dict
+      count: 32602
+      description: "选项映射"
+
+    - name: v2_original_reference_answer
+      type: str
+      count: 32602
+      description: "原始参考答案"
+
+    - name: v2_original_reference_answer_length
+      type: int
+      count: 32602
+      description: "原始答案长度"
+
+    - name: v2_previous_transform
+      type: null
+      count: 56128
+      description: "历史transform（当前均为空）"
+
+    - name: v2_transform
+      type: str
+      count: 60535
+      description: "V2转换类型"
+
+
+schema_usage_guidelines:
+  - "核心字段（13个）用于所有统计、过滤、分类任务"
+  - "raw_* 用于追溯原始数据来源"
+  - "v2_* 用于分析转换链路与评测逻辑"
+  - "redacted_query / pii_units 用于隐私分析"
+  - "image_path / redteam_query 用于多模态与攻击样本分析"
+  - "扩展字段必须做存在性判断，不可假设全量存在"
+
+design_notes:
+  - "该数据集为多shape混合结构，但核心schema完全稳定"
+  - "扩展字段来自不同pipeline阶段（raw / v2 / redteam / privacy）"
+  - "所有记录可统一依赖 core_schema 作为 canonical representation"
