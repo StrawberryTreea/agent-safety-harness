@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from tools.build_stage_selections import STRATIFICATION_FIELDS, build_selections, read_jsonl
 
@@ -50,6 +51,16 @@ class StageSelectionsTest(unittest.TestCase):
             build_selections(PACKAGE_ROOT / "case_index.jsonl", Path(first), "test-seed")
             build_selections(PACKAGE_ROOT / "case_index.jsonl", Path(second), "test-seed")
             self.assertEqual(tree_hash(Path(first)), tree_hash(Path(second)))
+
+    def test_source_locator_survives_different_windows_drives(self) -> None:
+        index = PACKAGE_ROOT / "case_index.jsonl"
+        with tempfile.TemporaryDirectory() as output:
+            with patch("tools.build_stage_selections.os.path.relpath", side_effect=ValueError("different drives")):
+                manifest = build_selections(index, Path(output), "test-seed")
+            self.assertEqual(Path(manifest["source_index"]), index.resolve())
+            self.assertEqual(manifest["source_index_sha256"], hashlib.sha256(index.read_bytes()).hexdigest())
+            self.assertEqual(len(read_jsonl(Path(output) / "smoke20" / "all.jsonl")), 120)
+            self.assertEqual(len(read_jsonl(Path(output) / "pilot100" / "all.jsonl")), 600)
 
 
 if __name__ == "__main__":

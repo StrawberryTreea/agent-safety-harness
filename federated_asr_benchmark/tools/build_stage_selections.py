@@ -104,6 +104,12 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
             f"{sorted(STRATIFICATION_FIELDS)}"
         )
 
+    try:
+        source_index = Path(os.path.relpath(index_path, output_root)).as_posix()
+    except ValueError:
+        # Windows cannot express a relative path between different drives.
+        source_index = index_path.resolve().as_posix()
+
     manifest: dict[str, Any] = {
         "schema_version": "0.1",
         "dataset_id": "product-federated-asr-v1",
@@ -115,7 +121,7 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
         ),
         "shared_across_products": True,
         "stages_are_disjoint": True,
-        "source_index": Path(os.path.relpath(index_path, output_root)).as_posix(),
+        "source_index": source_index,
         "source_index_sha256": hashlib.sha256(index_path.read_bytes()).hexdigest(),
         "benchmarks": {},
     }

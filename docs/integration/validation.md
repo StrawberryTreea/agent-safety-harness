@@ -4,18 +4,18 @@
 
 ## 统一验收
 
-在 Windows PowerShell、Python 3.14.4 下运行：
+在 Windows PowerShell、Python 3.14.4 下，最新全新 Git 检出运行：
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/check_repo.py --out runs/v1-check
+.\.venv\Scripts\python.exe scripts/check_repo.py --out runs/fresh-install-check
 ```
 
 | 测试范围 | 发现 | 通过 | 跳过 | 失败/错误 |
 |---|---:|---:|---:|---:|
 | 根目录 | 36 | 36 | 0 | 0 |
 | Harness | 165 | 155 | 10 | 0 |
-| 产品模块 | 190 | 136 | 54 | 0 |
-| 合计 | 391 | 327 | 64 | 0 |
+| 产品模块 | 191 | 137 | 54 | 0 |
+| 合计 | 392 | 328 | 64 | 0 |
 
 64 项跳过需要仓库未附带的外部来源数据或专用 runtime；日志保留具体测试及缺失资产。跳过不算通过，也不授予真实产品或官方 benchmark 资格。
 
@@ -28,10 +28,10 @@
 
 ## 全新检出与安装
 
-为验证协作者拿到 Git 文件后可以运行，用 `git checkout-index --all` 从暂存 Git blobs 检出独立目录，让实际 Git 换行属性生效；在该目录新建虚拟环境，安装 `requirements-dev.txt`，执行同一个统一验收入口。创建环境、安装依赖、完整验收均返回 0，结果仍为 327 通过、64 跳过、0 失败/错误。
+为验证协作者拿到 Git 文件后可以运行，用 `git checkout-index --all` 从暂存 Git blobs 检出独立目录，让实际 Git 换行属性生效；在该目录新建虚拟环境，安装 `requirements-dev.txt`，执行同一个统一验收入口。创建环境、安装依赖、完整验收均返回 0，结果为 328 通过、64 跳过、0 失败/错误。
 
-- 检出快照 tree：`11241bc90edc62cdf9d1dc28c45bfe8635e123c7`，包含 341 个受版本控制的文件。
-- 检出目录：`.tmp/collaborator-v1-20261013T102004Z/`。
+- 检出快照 tree：`5fa7dce1dcb6612e1b321acabe2e4407c81865ca`，包含 341 个受版本控制的文件。
+- 检出目录：`.tmp/collaborator-v1-20261013T103445Z/`。
 - 记录：`runs/v1-fresh-check.json`。
 - 日志：`runs/v1-fresh-venv.log`、`runs/v1-fresh-install.log`、`runs/v1-fresh-acceptance.log`。
 - 三套测试及示例的逐步记录：检出目录内的 `runs/fresh-install-check/summary.json`。
@@ -40,7 +40,7 @@
 
 `.gitattributes` 固定 JSONL 与协议绑定评测器使用 LF。产品选择集测试同时验证 `case_index.jsonl` 的原始字节哈希与 manifest 相同，确保 Windows 的 `core.autocrlf` 不改变冻结来源索引。
 
-以上快照记录代码验收时点；随后完成首页分支说明、验收文档、内部变量命名及分发打包测试的旧输入绑定清理。最终提交的 CI 使用同一入口再验收。日志、虚拟环境和预览均被 Git 忽略，协作者应生成自己的记录。
+以上快照已包含首页分支说明、旧输入绑定清理和跨盘符修复；随后仅更新本验收记录的时点、计数与修复说明。最终提交的 CI 使用同一入口再验收。日志、虚拟环境和预览均被 Git 忽略，协作者应生成自己的记录。
 
 ## 首页图与文档
 
@@ -64,6 +64,8 @@
 - 来源/执行构建器不再绑定旧发布数量；按当前 manifest 与显式最小数量验证。来源 parity 与合成 replay 成功不等于 `formal_ready`。
 - 分发打包测试按当前输入核对完整集、抽样子集、执行/离线类别和 manifest，不再要求旧实验固定行数；输入可通过 `AGENT_EVAL_CURATED_TASKS_ROOT` 指定。
 - 另外提供 60 条合成 TaskSpec（执行 50、离线 judge 10）运行打包回归，1 项通过；日志为 `runs/v1-current-packaging-test.log`。这是额外工具检查，不改变统一验收的通过/跳过计数。
+
+首轮 GitHub CI 暴露仓库在 D 盘、临时目录在 C 盘时的相对路径异常；选择集生成器已改为同盘保存相对来源路径、跨盘保存绝对来源定位，并新增回归检查。来源原始哈希和抽样结果保持可验证。最终提交的 CI 结果见 PR 当前 HEAD checks。
 
 ## 验收范围
 
