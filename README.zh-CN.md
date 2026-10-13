@@ -4,32 +4,64 @@
 
 本仓库是项目的主仓库。整合后的平台从 **V1（1.0.0）** 开始：统一管理 LLM 评测、内部 Agent 执行、完整产品原生评测和离线轨迹评审，利用失败证据规划下一轮测试与改进。
 
-**已实现：** 四轨原生入口、公开执行与私有评分、结果分析、未接纳的候选计划。**待实现：** 自动生成任务、执行验收、发布新测试集、自动改进 Agent 或模型。
+**已实现：** 四轨原生入口、公开执行与私有评分、结果分析、未接纳的候选计划。**未实现：** 通用实验调度、重放诊断、测试集自动进化、LLM / Agent 自动改进与版本晋升、回滚。
 
-## 图 1：评测与改进闭环
+## 图 1：自动化评测与自进化 Harness 双回路
 
-实线为现有执行与分析关系，虚线为后续工作。各轨道保留自己的指标和分母。
+节点直接标注实现状态：**已实现**有现有代码入口；**部分实现**具备协议与配置；**未实现**为设计模块，使用虚线边框。箭头表示目标架构的数据流，自动控制器与两个反馈回路尚未串联。四条轨道分别统计原生指标和分母。
 
 ```mermaid
+%%{init: {"flowchart": {"wrappingWidth": 340}}}%%
 flowchart TB
-    Input["冻结任务、目标与评测协议"] --> Tracks
-    subgraph Tracks["四条评测轨道，独立统计"]
-        QA["LLM 规则评测"]
-        Agent["内部 Agent 执行与私有评分"]
-        Product["完整产品与原生 scorer"]
-        Judge["离线轨迹评审"]
+    Inputs["部分实现：本轮输入冻结<br/>已有协议与配置；自动快照未实现"]
+    Controller["未实现：实验控制器<br/>调度、预算、恢复、版本记录"]
+    Inputs --> Controller
+
+    Execute["已实现：原生执行模块<br/>LLM · 内部 Agent · 完整产品"]
+    Score["已实现：各轨原生判分<br/>规则与独立私有评分"]
+    Judge["已实现：离线轨迹评审<br/>独立任务与指标"]
+    Results["已实现：结果与证据分析<br/>指标、失败、异常、未接纳候选计划"]
+    Controller --> Execute --> Score --> Results
+    Controller --> Judge --> Results
+    Results --> Diagnosis["未实现：重放诊断与反馈过滤<br/>验证失败条件、隔离私有信息"]
+
+    subgraph TestLoop["回路 A：测试集进化"]
+        Generate["未实现：生成测试候选<br/>任务、攻击与环境变体"]
+        Admission["未实现：候选验收<br/>执行八项门槛与隔离检查"]
+        Dataset["未实现：测试集版本发布<br/>进入下一版演化池"]
+        Generate --> Admission --> Dataset
     end
-    Tracks --> Analysis["结果分析：指标、失败、异常与证据"]
-    Analysis --> Plans["候选测试计划<br/>admitted=false"]
-    Plans -.-> Generate["待实现：任务与攻击生成"]
-    Generate -.-> Gates["待实现：八项验收与版本发布"]
-    Gates -.-> Next["下一轮：冻结更新后的任务并重新评测"]
-    Analysis -.-> Improve["待研究：Agent / 模型改进<br/>冻结留出集验证"]
-    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5
-    class Generate,Gates,Improve,Next planned
+
+    subgraph TargetLoop["回路 B：LLM / Agent 进化"]
+        Improve["未实现：生成目标候选<br/>提示、策略、工具、代码"]
+        Validate["未实现：基线与候选对照复测<br/>安全、正常能力、有效率、成本"]
+        Promote["未实现：独立发布验证与晋升<br/>通过更新，失败保留旧版，可回滚"]
+        Improve --> Validate --> Promote
+    end
+
+    Diagnosis --> TestLoop
+    Diagnosis --> TargetLoop
+    Dataset --> Next["未实现：自动进入下一轮<br/>重新锁定任务与目标版本"]
+    Promote --> Next
+    classDef planned stroke-dasharray:5 5
+    class Controller,Diagnosis,Generate,Admission,Dataset,Improve,Validate,Promote,Next planned
 ```
 
-用户原始思路图和逐项实现映射见[架构](docs/integration/architecture.md)。
+图按单轮展开：底部“下一轮”回到顶部重新评测。测试集和目标的变化分别对照，避免把测试难度变化当成目标改进；独立发布验证在停止调优后使用封存留出集。
+
+### 实现状态与代码入口
+
+| 图中职责 | 状态 | 当前证据与缺口 |
+|---|---|---|
+| 输入协议与冻结 | 部分实现 | [protocol/](protocol)、[配置](docs/configuration.md)与各模块原生 manifest 已有；自动轮次快照和统一版本账本未实现 |
+| 三类执行模块 | 已实现 | [LLM 评测器](llm_eval/multi_model_rule_eval_prompt_only.py)、[内部 Agent](harness/ash.py)、[产品执行器](federated_asr_benchmark/tools/run_product.py)；真实运行须配置目标、数据与原生环境 |
+| 判分与离线评审 | 已实现 | `ash.py score/judge`、LLM 规则与产品原生 scorer；四轨独立统计，产品 ASR 越低越好 |
+| 结果分析与候选计划 | 已实现 | [result_analysis.py](scripts/result_analysis.py)输出失败、异常与 `candidate_plans.jsonl`；`admitted=false`、`root_cause=unconfirmed` |
+| 控制器与重放诊断 | 未实现 | [pipeline_cli.py](scripts/pipeline_cli.py)的 `plan` 仅输出命令，`smoke` 仅编排三条合成 Agent 示例；通用调度、统一预算、恢复与反馈过滤未实现 |
+| 回路 A：测试集进化 | 未实现 | [八项验收定义](protocol/evaluation_tracks.json)已有，候选槽位均为 `pending`；真实任务生成、验收执行与版本发布未实现 |
+| 回路 B：目标进化与下一轮 | 未实现 | 候选改进、自动对照复测、独立发布验证、晋升/回滚和轮次循环未实现；模型权重训练作为后续插件 |
+
+详细设计见[Harness 结构与模块方案](docs/integration/harness_design.md)；用户原始思路图及现有模块映射见[架构](docs/integration/architecture.md)。
 
 ## 图 2：模块架构与评分边界
 

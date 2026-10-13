@@ -4,32 +4,64 @@
 
 This is the primary project repository. The integrated platform starts at **V1 (1.0.0)**, combining LLM evaluation, internal Agent execution, full-product native evaluation and offline trace judging. Failure evidence informs new tests and subsequent improvements.
 
-**Implemented:** native entry points, public execution with separate private scoring, result analysis and unaccepted candidate plans. **Planned:** task generation, acceptance execution, dataset release and automatic Agent/model improvement.
+**Implemented:** native entry points, public execution with separate private scoring, result analysis and unaccepted candidate plans. **Not implemented:** general experiment scheduling, replay diagnosis, automatic test-set evolution, LLM / Agent improvement, promotion and rollback.
 
-## Figure 1: evaluation and improvement loop
+## Figure 1: dual-loop evaluation and evolution Harness
 
-Solid arrows describe current execution and analysis. Dashed arrows describe future work. Each track keeps its native metrics and denominator.
+Every node states its status: **Implemented** has a code entry point; **Partial** has protocols and configuration; **Not implemented** is a proposed module with a dashed border. Arrows show the intended data flow; the automatic controller and feedback loops are not connected yet. Each of the four tracks keeps its native metrics and denominator.
 
 ```mermaid
+%%{init: {"flowchart": {"wrappingWidth": 340}}}%%
 flowchart TB
-    Input["Freeze tasks, targets and protocol"] --> Tracks
-    subgraph Tracks["Four tracks with separate metrics"]
-        QA["LLM rule evaluation"]
-        Agent["Internal Agent execution and private scoring"]
-        Product["Full product and native scorer"]
-        Judge["Offline trace judging"]
+    Inputs["Partial: freeze round inputs<br/>Protocols/configs exist; automatic snapshots do not"]
+    Controller["Not implemented: experiment controller<br/>Scheduling, budgets, recovery, versions"]
+    Inputs --> Controller
+
+    Execute["Implemented: native executors<br/>LLM · internal Agent · full product"]
+    Score["Implemented: native scoring<br/>Rules and separate private scoring"]
+    Judge["Implemented: offline trace judging<br/>Separate tasks and metrics"]
+    Results["Implemented: result and evidence analysis<br/>Metrics, failures, invalids, unaccepted plans"]
+    Controller --> Execute --> Score --> Results
+    Controller --> Judge --> Results
+    Results --> Diagnosis["Not implemented: replay diagnosis and feedback filtering<br/>Verify failure conditions; isolate private information"]
+
+    subgraph TestLoop["Loop A: test-set evolution"]
+        Generate["Not implemented: generate test candidates<br/>Tasks, attacks and environment variants"]
+        Admission["Not implemented: candidate admission<br/>Execute eight gates and isolation checks"]
+        Dataset["Not implemented: dataset version release<br/>Update the evolution pool"]
+        Generate --> Admission --> Dataset
     end
-    Tracks --> Analysis["Analyze metrics, failures, invalids and evidence"]
-    Analysis --> Plans["Candidate test plans<br/>admitted=false"]
-    Plans -.-> Generate["Planned: task and attack generation"]
-    Generate -.-> Gates["Planned: eight acceptance gates and dataset release"]
-    Gates -.-> Next["Next round: freeze updated tasks and re-evaluate"]
-    Analysis -.-> Improve["Research: Agent / model improvement<br/>Frozen holdout validation"]
-    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5
-    class Generate,Gates,Improve,Next planned
+
+    subgraph TargetLoop["Loop B: LLM / Agent evolution"]
+        Improve["Not implemented: generate target candidates<br/>Prompts, strategies, tools, code"]
+        Validate["Not implemented: baseline/candidate comparison<br/>Safety, benign capability, validity, cost"]
+        Promote["Not implemented: independent release check and promotion<br/>Promote on pass; retain baseline on failure; rollback"]
+        Improve --> Validate --> Promote
+    end
+
+    Diagnosis --> TestLoop
+    Diagnosis --> TargetLoop
+    Dataset --> Next["Not implemented: automatic next round<br/>Freeze task and target versions again"]
+    Promote --> Next
+    classDef planned stroke-dasharray:5 5
+    class Controller,Diagnosis,Generate,Admission,Dataset,Improve,Validate,Promote,Next planned
 ```
 
-See [architecture](docs/integration/architecture.md) for the original concept and implementation mapping.
+The diagram unfolds one round: the bottom node returns to the top for re-evaluation. Compare test-set changes and target changes separately so a change in test difficulty is not mistaken for target improvement. Independent release validation uses a sealed holdout after tuning stops.
+
+### Implementation status and entry points
+
+| Responsibility | Status | Current evidence and remaining work |
+|---|---|---|
+| Input protocols and freezing | Partial | [protocol/](protocol), [configuration](docs/configuration.md) and native manifests exist; automatic round snapshots and a shared version ledger do not |
+| Three execution modules | Implemented | [LLM evaluator](llm_eval/multi_model_rule_eval_prompt_only.py), [internal Agent](harness/ash.py), [product executor](federated_asr_benchmark/tools/run_product.py); real runs require configured targets, data and native environments |
+| Scoring and offline judging | Implemented | `ash.py score/judge`, LLM rules and product-native scorers; four separate populations; lower product ASR is better |
+| Analysis and candidate plans | Implemented | [result_analysis.py](scripts/result_analysis.py) emits failures, invalids and `candidate_plans.jsonl`; `admitted=false`, `root_cause=unconfirmed` |
+| Controller and replay diagnosis | Not implemented | In [pipeline_cli.py](scripts/pipeline_cli.py), `plan` only prints commands and `smoke` orchestrates three synthetic Agent fixtures; general scheduling, shared budgets, recovery and feedback filtering are missing |
+| Loop A: test-set evolution | Not implemented | [Eight gate definitions](protocol/evaluation_tracks.json) exist and all candidate slots are `pending`; actual task generation, gate execution and version release are missing |
+| Loop B: target evolution and next round | Not implemented | Candidate improvement, automated comparison, independent release checks, promotion/rollback and round cycling are missing; weight training is a future plugin |
+
+See the [Harness design](docs/integration/harness_design.md) for the full module proposal, and [architecture](docs/integration/architecture.md) for the original concept and existing implementation mapping.
 
 ## Figure 2: module architecture and scoring boundary
 

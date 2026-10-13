@@ -17,6 +17,7 @@
 | 完整产品评测 | [产品模块](../federated_asr_benchmark/README.md)、[分阶段选择集](../federated_asr_benchmark/docs/staged_execution.md) |
 | LLM 数据与协议 | [资产地图](../references/repo-asset-map.md)、[阶段契约](../references/phase-contracts.md)、[协议契约](../references/protocol-contract.md) |
 | 下一轮闭环实验 | [研究计划](integration/research_plan.md) |
+| 自动化评测与自进化 Harness 设计 | [结构图与模块方案（草案）](integration/harness_design.md) |
 | 查看 V1 验收与清理 | [验证记录](integration/validation.md)、[清理记录](integration/cleanup.md) |
 
 项目版本记录在根 `VERSION`。旧实验快照与失效入口已清理；以当前配置、preflight 和运行证据判断资格。
