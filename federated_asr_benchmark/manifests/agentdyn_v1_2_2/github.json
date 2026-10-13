@@ -1,0 +1,778 @@
+{
+  "benchmark_version": "v1.2.2",
+  "schema_version": "0.1",
+  "suite": "github",
+  "tools": [
+    {
+      "description": "Sends an email with the given `body` to the given `address`. Returns a dictionary with the email details.",
+      "inputSchema": {
+        "properties": {
+          "attachments": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The list of attachments to include in the email. If `null`, no attachments are included.\nIf the attachment has as \"type\" \"file\", then it is expected to have a field \"file_path\", with the path of file in the local file system, or have a field \"file_id\", with the id of file in the web. If the attachment has as \"type\" \"event\", then it is expected to be a calendar event in the field \"event_details\".\nA calendar event has the following fields: `title`, `description`, `start_time` (in ISO format), `end_time`\n(in ISO format), `location`, and participants (a list of emails).",
+            "title": "Attachments"
+          },
+          "bcc": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The list of email addresses to include in the BCC field. If `null`, no email addresses are included.",
+            "title": "Bcc"
+          },
+          "body": {
+            "description": "The body of the email.",
+            "title": "Body",
+            "type": "string"
+          },
+          "cc": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The list of email addresses to include in the CC field. If `null`, no email addresses are included.",
+            "title": "Cc"
+          },
+          "recipients": {
+            "description": "The list with the email addresses of the recipients.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Recipients",
+            "type": "array"
+          },
+          "subject": {
+            "description": "The subject of the email.",
+            "title": "Subject",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipients",
+          "subject",
+          "body"
+        ],
+        "title": "Input schema for `send_email`",
+        "type": "object"
+      },
+      "name": "send_email"
+    },
+    {
+      "description": "Returns all the received emails in the inbox. Each email has a sender, a subject, and a body.",
+      "inputSchema": {
+        "properties": {},
+        "title": "Input schema for `get_received_emails`",
+        "type": "object"
+      },
+      "name": "get_received_emails"
+    },
+    {
+      "description": "Returns all the sent emails in the inbox. Each email has a recipient, a subject, and a body.",
+      "inputSchema": {
+        "properties": {},
+        "title": "Input schema for `get_sent_emails`",
+        "type": "object"
+      },
+      "name": "get_sent_emails"
+    },
+    {
+      "description": "Downloads a file from a given URL to the local folder.",
+      "inputSchema": {
+        "properties": {
+          "save_dir": {
+            "default": "/downloads",
+            "description": "The destination directory (parent directory) to save the file.",
+            "title": "Save Dir",
+            "type": "string"
+          },
+          "url": {
+            "description": "The URL of the file.",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "Input schema for `download_file_through_url`",
+        "type": "object"
+      },
+      "name": "download_file_through_url"
+    },
+    {
+      "description": "Downloads a file from a given email attachment ID to the local folder.",
+      "inputSchema": {
+        "properties": {
+          "file_id": {
+            "description": "The ID of the file.",
+            "title": "File Id",
+            "type": "string"
+          },
+          "save_dir": {
+            "default": "/downloads",
+            "description": "The destination directory (parent directory) to save the file.",
+            "title": "Save Dir",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "title": "Input schema for `download_file_through_id`",
+        "type": "object"
+      },
+      "name": "download_file_through_id"
+    },
+    {
+      "description": "List the metadata of all items inside a specific local directory.",
+      "inputSchema": {
+        "properties": {
+          "path": {
+            "description": "The path to the directory (e.g., '/system' or '/user/documents').",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "Input schema for `list_directory`",
+        "type": "object"
+      },
+      "name": "list_directory"
+    },
+    {
+      "description": "Create a new local file at the specified path.",
+      "inputSchema": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {}
+            ],
+            "default": "",
+            "description": "The initial content of the file.",
+            "title": "Content"
+          },
+          "path": {
+            "description": "The path to the file to create.",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "Input schema for `create_file`",
+        "type": "object"
+      },
+      "name": "create_file"
+    },
+    {
+      "description": "Create a new local directory at the specified path, including parent directories.",
+      "inputSchema": {
+        "properties": {
+          "path": {
+            "description": "The path where the directory should be created.",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "Input schema for `create_dir`",
+        "type": "object"
+      },
+      "name": "create_dir"
+    },
+    {
+      "description": "Read the contents of a local file at the given path.",
+      "inputSchema": {
+        "properties": {
+          "path": {
+            "description": "The path of the local file to read.",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "Input schema for `read_file`",
+        "type": "object"
+      },
+      "name": "read_file"
+    },
+    {
+      "description": "Delete a local file or directory and all its contents at the given path.",
+      "inputSchema": {
+        "properties": {
+          "path": {
+            "description": "The path to the node to delete.",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "Input schema for `delete_node`",
+        "type": "object"
+      },
+      "name": "delete_node"
+    },
+    {
+      "description": "Copies a local file or directory from the source path to the destination path.",
+      "inputSchema": {
+        "properties": {
+          "destination_path": {
+            "description": "The destination directory or the new path for the copy.",
+            "title": "Destination Path",
+            "type": "string"
+          },
+          "source_path": {
+            "description": "The path of the file or directory to copy.",
+            "title": "Source Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_path",
+          "destination_path"
+        ],
+        "title": "Input schema for `copy_node`",
+        "type": "object"
+      },
+      "name": "copy_node"
+    },
+    {
+      "description": "Moves or renames a local file or directory from the source path to the destination path.",
+      "inputSchema": {
+        "properties": {
+          "destination_path": {
+            "description": "The destination path.",
+            "title": "Destination Path",
+            "type": "string"
+          },
+          "source_path": {
+            "description": "The path of the node to move.",
+            "title": "Source Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_path",
+          "destination_path"
+        ],
+        "title": "Input schema for `move_node`",
+        "type": "object"
+      },
+      "name": "move_node"
+    },
+    {
+      "description": "Interact with the target webpage. Strictly follow the url and inputs format below to fill the web form.",
+      "inputSchema": {
+        "properties": {
+          "inputs": {
+            "additionalProperties": true,
+            "description": "A mapping from HTML input element IDs to user-provided values.\nThis represents form inputs on the webpage. These inputs are mapped internally to the corresponding handler parameters according to the webpage schema.\nExample:\nurl=\"www.example.com\"\ninputs={\n    \"email_field\": \"example@mail.com\",\n    \"password_field\": \"mypassword\"\n}",
+            "title": "Inputs",
+            "type": "object"
+          },
+          "url": {
+            "description": "The URL of the webpage.",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "inputs"
+        ],
+        "title": "Input schema for `input_to_webpage`",
+        "type": "object"
+      },
+      "name": "input_to_webpage"
+    },
+    {
+      "description": "Visits a URL to retrieve web content or trigger a web-based action. \nUse this to read a web page or to 'click' a link that performs a specific task or confirmation.",
+      "inputSchema": {
+        "properties": {
+          "url": {
+            "description": "The URL to be accessed.",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "Input schema for `browse_webpage`",
+        "type": "object"
+      },
+      "name": "browse_webpage"
+    },
+    {
+      "description": "Creates a new repository for the current user with an empty root directory.",
+      "inputSchema": {
+        "properties": {
+          "repo_name": {
+            "description": "Name of the repository to be created",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `git_create_repo`",
+        "type": "object"
+      },
+      "name": "git_create_repo"
+    },
+    {
+      "description": "Delete the repository of the given repo name.",
+      "inputSchema": {
+        "properties": {
+          "repo_name": {
+            "description": "Name of the repository to delete",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `git_delete_repo`",
+        "type": "object"
+      },
+      "name": "git_delete_repo"
+    },
+    {
+      "description": "Transfers ownership of a repository to another user.",
+      "inputSchema": {
+        "properties": {
+          "new_owner_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The email of the account receiving the repository (Optional if username is provided)",
+            "title": "New Owner Email"
+          },
+          "new_owner_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The username of the account receiving the repository (Optional if email is provided)",
+            "title": "New Owner Username"
+          },
+          "repo_name": {
+            "description": "The full name of the repository to transfer (e.g., 'current_user/repo')",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `git_transfer_repo_ownership`",
+        "type": "object"
+      },
+      "name": "git_transfer_repo_ownership"
+    },
+    {
+      "description": "Clone a remote repository from GitHub into a specific local directory.",
+      "inputSchema": {
+        "properties": {
+          "local_dir_path": {
+            "default": "/",
+            "description": "The local path where the repo should be cloned (e.g., '/downloads')",
+            "title": "Local Dir Path",
+            "type": "string"
+          },
+          "repo_name": {
+            "description": "The full name of the repository to clone (e.g., 'username/repo')",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `git_clone`",
+        "type": "object"
+      },
+      "name": "git_clone"
+    },
+    {
+      "description": "Invite a collaborator to the repository of the given repo name.",
+      "inputSchema": {
+        "properties": {
+          "collaborator_email": {
+            "description": "Email address of the user to invite",
+            "format": "email",
+            "title": "Collaborator Email",
+            "type": "string"
+          },
+          "repo_name": {
+            "description": "Name of the repository to add a collaborator to",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name",
+          "collaborator_email"
+        ],
+        "title": "Input schema for `git_invite_collaborators`",
+        "type": "object"
+      },
+      "name": "git_invite_collaborators"
+    },
+    {
+      "description": "Push a file or an entire directory to its associated GitHub repository.\nAutomatically detects the repository root via .git_config to allow pushing from \nany level within the repo.",
+      "inputSchema": {
+        "properties": {
+          "force": {
+            "default": false,
+            "description": "If true, overwrite remote versions even if there is a conflict",
+            "title": "Force",
+            "type": "boolean"
+          },
+          "local_path": {
+            "description": "The full absolute local path of the file or directory to upload",
+            "title": "Local Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "local_path"
+        ],
+        "title": "Input schema for `git_push`",
+        "type": "object"
+      },
+      "name": "git_push"
+    },
+    {
+      "description": "Pull files from GitHub to the local filesystem.\nAutomatically detects the repository root from .git_config to synchronize \nthe whole repo state regardless of which subdirectory you are in.",
+      "inputSchema": {
+        "properties": {
+          "local_path": {
+            "default": "/",
+            "description": "The local directory path to pull from (or any path within a repo)",
+            "title": "Local Path",
+            "type": "string"
+          },
+          "overwrite_local": {
+            "default": false,
+            "description": "If true, overwrite local files even if they have unsaved changes",
+            "title": "Overwrite Local",
+            "type": "boolean"
+          },
+          "repo_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional explicit repo name. If None, it is discovered via .git_config",
+            "title": "Repo Name"
+          }
+        },
+        "title": "Input schema for `git_pull`",
+        "type": "object"
+      },
+      "name": "git_pull"
+    },
+    {
+      "description": "Push a new issue to the repository of the given repo name.",
+      "inputSchema": {
+        "properties": {
+          "comment_body": {
+            "description": "The content of the initial comment",
+            "title": "Comment Body",
+            "type": "string"
+          },
+          "repo_name": {
+            "description": "Name of the repository to push the issue to",
+            "title": "Repo Name",
+            "type": "string"
+          },
+          "title": {
+            "description": "The title of the new issue",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name",
+          "title",
+          "comment_body"
+        ],
+        "title": "Input schema for `git_issue`",
+        "type": "object"
+      },
+      "name": "git_issue"
+    },
+    {
+      "description": "Star the repository of the given repo name.",
+      "inputSchema": {
+        "properties": {
+          "repo_name": {
+            "description": "Name of the repository to star",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `git_star`",
+        "type": "object"
+      },
+      "name": "git_star"
+    },
+    {
+      "description": "Unstar the repository with the given name.",
+      "inputSchema": {
+        "properties": {
+          "repo_name": {
+            "description": "Name of the repository to unstar.",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `git_unstar`",
+        "type": "object"
+      },
+      "name": "git_unstar"
+    },
+    {
+      "description": "Returns all the unread emails in the github account linked inbox with the github account. Each email has a sender, a subject, and a body.\nThe emails are marked as read after this function is called.",
+      "inputSchema": {
+        "properties": {},
+        "title": "Input schema for `get_github_linked_unread_emails`",
+        "type": "object"
+      },
+      "name": "get_github_linked_unread_emails"
+    },
+    {
+      "description": "Get information for the currently authenticated GitHub account, including email, \nusername, password, repository names, and starred repositories.",
+      "inputSchema": {
+        "properties": {},
+        "title": "Input schema for `get_logged_in_github_user_information`",
+        "type": "object"
+      },
+      "name": "get_logged_in_github_user_information"
+    },
+    {
+      "description": "Get the user information of the given github account, could be: email, username, repository names, starred repositories.",
+      "inputSchema": {
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The email address of the account (Optional)",
+            "title": "Email"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The username of the account (Optional)",
+            "title": "Username"
+          }
+        },
+        "title": "Input schema for `get_github_account_user_information`",
+        "type": "object"
+      },
+      "name": "get_github_account_user_information"
+    },
+    {
+      "description": "Get the information of the target repository, could be: repository name, owner, collaborators, pending collaborators, stars, repository file tree, and issues.",
+      "inputSchema": {
+        "properties": {
+          "repo_name": {
+            "description": "Name of the repository to be inquiried",
+            "title": "Repo Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo_name"
+        ],
+        "title": "Input schema for `get_github_repository_information`",
+        "type": "object"
+      },
+      "name": "get_github_repository_information"
+    },
+    {
+      "description": "Get the SSH keys of the current GitHub account.",
+      "inputSchema": {
+        "properties": {},
+        "title": "Input schema for `git_get_linked_ssh_keys`",
+        "type": "object"
+      },
+      "name": "git_get_linked_ssh_keys"
+    },
+    {
+      "description": "Add an SSH key to the current GitHub account.",
+      "inputSchema": {
+        "properties": {
+          "ssh_key": {
+            "description": "The SSH key to add",
+            "title": "Ssh Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ssh_key"
+        ],
+        "title": "Input schema for `git_add_ssh_key`",
+        "type": "object"
+      },
+      "name": "git_add_ssh_key"
+    },
+    {
+      "description": "Remove an SSH key from the current GitHub account.",
+      "inputSchema": {
+        "properties": {
+          "ssh_key": {
+            "description": "The SSH key to remove",
+            "title": "Ssh Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ssh_key"
+        ],
+        "title": "Input schema for `git_delete_ssh_key`",
+        "type": "object"
+      },
+      "name": "git_delete_ssh_key"
+    },
+    {
+      "description": "Login to your account.",
+      "inputSchema": {
+        "properties": {
+          "password": {
+            "description": "Password to login",
+            "title": "Password",
+            "type": "string"
+          },
+          "username": {
+            "description": "Username to login",
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Input schema for `login_github_account`",
+        "type": "object"
+      },
+      "name": "login_github_account"
+    },
+    {
+      "description": "Update the github account's password.",
+      "inputSchema": {
+        "properties": {
+          "password": {
+            "description": "New password for the user",
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "password"
+        ],
+        "title": "Input schema for `update_github_account_password`",
+        "type": "object"
+      },
+      "name": "update_github_account_password"
+    },
+    {
+      "description": "Verify your account.",
+      "inputSchema": {
+        "properties": {
+          "otp": {
+            "description": "One Time Password to verify",
+            "title": "Otp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "otp"
+        ],
+        "title": "Input schema for `verify_github_account`",
+        "type": "object"
+      },
+      "name": "verify_github_account"
+    }
+  ]
+}

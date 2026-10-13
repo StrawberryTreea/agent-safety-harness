@@ -1,0 +1,27 @@
+{
+  "run_id": "codex-0.122.0-agentleak-v0.2",
+  "benchmark_id": "agentleak",
+  "product": {
+    "product_id": "codex",
+    "executable": "codex",
+    "version": "0.122.0",
+    "product_model": "deepseek-v4-flash",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "agentleak-product-adapter",
+    "adapter_version": "0.2.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "disposable_workspace",
+    "fresh_product_state": true,
+    "network_policy": "benchmark_defined",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {
+    "case_index": "../../../selections/v0.2/ten_percent/agentleak.jsonl"
+  },
+  "output_dir": "../../../.codex_tmp/federated_asr_runs/v0.2/codex/agentleak",
+  "timeout_seconds": 600
+}

@@ -1,11 +1,11 @@
 ---
 name: llm-safety-eval-research-pipeline
-description: Route, validate, and operationalize this repository's large-model safety evaluation workflow. Use when work involves this project's canonical dataset, taxonomy or metric changes, benchmark intake, smoke or full evaluation, API-error reruns, V2 merge and authoritative publish, leaderboard refresh, whitepaper generation, or any request that must reuse local safety-eval scripts and artifact conventions instead of inventing a parallel process.
+description: Route, validate, and operationalize this repository's large-model safety evaluation workflow. Use when work involves this project's canonical dataset, taxonomy or metric changes, benchmark intake, smoke or full evaluation, API-error reruns, V2 merge and authoritative publish, leaderboard refresh, whitepaper generation, Agent execution, full-product native evaluation, offline trace judging, failure analysis, candidate-test evolution, or any request that must reuse local safety-eval contracts.
 ---
 
 # LLM Safety Eval Research Pipeline
 
-Treat this skill as the protocol and execution layer for a V2 safety-evaluation repository selected explicitly with `--repo-root` or discovered from the current working tree.
+Treat this skill as the protocol and execution layer for this LLM and Agent evaluation repository. Select the track with `pipeline.py inventory`; read `docs/integration/architecture.md` and `protocol/evaluation_tracks.json` for its native executor and metric boundary.
 
 Do not invent a parallel eval stack. Reuse the current repository's canonical dataset, incremental tools, publish roots, and report assets. The skill's job is to:
 
@@ -16,12 +16,14 @@ Do not invent a parallel eval stack. Reuse the current repository's canonical da
 
 ## Operating Rules
 
-1. Treat `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl` as the canonical dataset truth source.
-2. Treat `output/doc/v2_stats.json` as a derived stats snapshot that must stay consistent with the canonical JSONL.
-3. Treat `rule_eval_mvp/output_v2_final_authoritative/` as the only authoritative publish root for final leaderboard and report consumption.
+1. For `llm_qa`, treat `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl` as the canonical dataset truth source.
+2. For `llm_qa`, treat `output/doc/v2_stats.json` as a derived stats snapshot that must stay consistent with the canonical JSONL.
+3. For `llm_qa`, treat `rule_eval_mvp/output_v2_final_authoritative/` as the only authoritative publish root for final leaderboard and report consumption.
 4. Treat whitepapers, summaries, DOCX files, and prose as derived artifacts only.
 5. Prefer the repository's existing scripts and output contracts before writing new orchestration code.
-6. Freeze `safety_taxonomy_8x19`, `rule_eval`, model versions, dataset identity, and comparability in Phase 0 before evaluation.
+6. For LLM QA, freeze `safety_taxonomy_8x19` and `rule_eval`; for every track, freeze its own model/product versions, data, environment, scorer and metric units before comparable evaluation.
+7. Keep execution and offline judging separate. Unknown/invalid and missing task-success rules must retain their native semantics.
+8. Candidate plans are unaccepted; require replay, benign solvability, private oracle, provenance/license, deduplication, diversity, holdout isolation and review evidence before dataset admission.
 
 ## Workflow
 
@@ -42,7 +44,7 @@ If the request already names a phase-like operation precisely, you may skip the 
 - For repo asset locations and path semantics, read `references/repo-asset-map.md`.
 - For phase input/output/check contracts, read `references/phase-contracts.md`.
 - For Phase 0 artifact schemas, scoring semantics, and compatibility rules, read `references/protocol-contract.md`.
-- For the full framework specification, consult `C:\Users\xiaoz\Desktop\2026.03大模型安全测评\大模型安全评测自动化科研Skill框架.md`.
+- For integration and research scope, read `docs/integration/architecture.md` and `docs/integration/research_plan.md`.
 - For production artifacts, start from `assets/templates/` instead of writing registry or manifest files from scratch.
 
 ### 3. Run Prechecks Before Execution
@@ -100,7 +102,8 @@ When a phase changes protocol, publish state, or reporting state, emit or update
 - `Phase 6`: incremental rerun or append-only evaluation
 - `Phase 7`: merge, clean, authoritative publish, manifest
 - `Phase 8`: leaderboard, charts, whitepaper, report consistency
-- `Phase 9`: agent-safety extension anchored to current taxonomy
+- `Phase 9`: native Agent execution, full-product evaluation or offline trace judging
+- `Phase 10`: result analysis and unaccepted candidate-test plans
 
 ## Quick Commands
 
@@ -114,20 +117,24 @@ python scripts/protocol_manager.py validate --protocol-dir protocol --repo-root 
 Route a request:
 
 ```powershell
-python .codex/skills/llm-safety-eval-research-pipeline/scripts/intent_router.py --request "更新 leaderboard"
+python scripts/intent_router.py --request "更新 leaderboard"
 ```
 
 Generate phase checks and command hints:
 
 ```powershell
-python .codex/skills/llm-safety-eval-research-pipeline/scripts/phase_executor.py --request "更新 leaderboard" --emit-commands
+python scripts/phase_executor.py --request "更新 leaderboard" --emit-commands
 ```
 
 Check a specific publish phase directly:
 
 ```powershell
-python .codex/skills/llm-safety-eval-research-pipeline/scripts/phase_executor.py --phase phase7 --models doubao_seed_2_0_pro_full --emit-commands
+python scripts/phase_executor.py --phase phase7 --models doubao_seed_2_0_pro_full --emit-commands
 ```
+
+## Integrated Entry Point
+
+Use `pipeline.py inventory`, `plan --track ...`, `smoke`, and `analyze --track ... --results ... --out ...`. Plans emit argv arrays; only smoke invokes local synthetic fixtures. Analysis keeps lineage and native score direction and does not generate or accept new tasks.
 
 ## Failure Policy
 

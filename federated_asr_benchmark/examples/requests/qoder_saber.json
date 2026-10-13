@@ -1,0 +1,25 @@
+{
+  "run_id": "qoder-1.0.48-product-v0.1",
+  "benchmark_id": "saber",
+  "product": {
+    "product_id": "qoder",
+    "executable": "qodercli",
+    "version": "1.0.48",
+    "product_model": "${QODER_DEEPSEEK_MODEL_ID}",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "saber-product-adapter",
+    "adapter_version": "0.1.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "container",
+    "fresh_product_state": true,
+    "network_policy": "deny_except_benchmark",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {"case_index": "../../case_index.jsonl"},
+  "output_dir": "../../../.codex_tmp/federated_asr_dry_runs/qoder/saber",
+  "timeout_seconds": 300
+}

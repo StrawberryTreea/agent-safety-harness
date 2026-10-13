@@ -1,0 +1,22 @@
+{
+  "models": {
+    "example_openai_compatible": {
+      "provider": "openai_compatible",
+      "base_url": "https://api.example.com/v1",
+      "api_key_env": "OPENAI_COMPATIBLE_API_KEY",
+      "model": "example-model",
+      "temperature": 0.0,
+      "max_tokens": 512,
+      "timeout_seconds": 60
+    },
+    "deepseek_v4_flash": {
+      "provider": "openai_compatible",
+      "base_url": "https://api.deepseek.com",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "model": "deepseek-v4-flash",
+      "temperature": 0.0,
+      "max_tokens": 1024,
+      "timeout_seconds": 120
+    }
+  }
+}

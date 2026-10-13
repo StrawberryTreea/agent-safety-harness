@@ -39,7 +39,7 @@ def find_repo_root(explicit_root: Optional[Path] = None) -> Path:
                 candidates.append(candidate)
     for candidate in candidates:
         canonical = candidate / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
-        if canonical.exists() or ((candidate / "eval_mvp_V2").exists() and (candidate / "rule_eval_mvp").exists()):
+        if canonical.exists() or (candidate / "protocol/evaluation_tracks.json").exists() or ((candidate / "eval_mvp_V2").exists() and (candidate / "rule_eval_mvp").exists()):
             return candidate
     return Path.cwd().resolve()
 
@@ -139,9 +139,14 @@ PHASE_METADATA: Dict[str, Dict[str, object]] = {
         "artifacts": ["leaderboard.csv", "V2_final_dataset_report.docx", "whitepaper drafts"],
     },
     "phase9": {
-        "title": "Agent Safety Extension",
-        "summary": "Extend evaluation to trajectory-level agent safety while preserving taxonomy anchors.",
-        "artifacts": ["agent_subset_catalog.json", "trajectory_eval_schema.yaml"],
+        "title": "Agent Evaluation",
+        "summary": "Run source-derived execution, full-product evaluation, or offline trace judging with native contracts.",
+        "artifacts": ["manifest.json", "traces.jsonl", "results.jsonl", "summary.json"],
+    },
+    "phase10": {
+        "title": "Failure Analysis And Evolution Planning",
+        "summary": "Analyze native results and propose tests with evidence gates before dataset admission.",
+        "artifacts": ["observations.jsonl", "failures.jsonl", "invalids.jsonl", "candidate_plans.jsonl", "summary.json"],
     },
 }
 
@@ -242,7 +247,12 @@ def phase_checks(phase: str, models: Optional[str], intake_config: Optional[Path
         checks.append(path_check("authoritative_output_root_exists", PATHS["authoritative_output_root"], "warning"))
         checks.append(path_check("dataset_report_builder_exists", PATHS["dataset_report_builder"], "warning"))
     if phase == "phase9":
-        checks.append(path_check("canonical_dataset_exists", PATHS["canonical_dataset"]))
+        checks.append(path_check("agent_harness_exists", REPO_ROOT / "harness/ash.py"))
+        checks.append(path_check("product_executor_exists", REPO_ROOT / "federated_asr_benchmark/tools/run_product.py"))
+        checks.append(path_check("track_registry_exists", PROTOCOL_DIR / "evaluation_tracks.json"))
+    if phase == "phase10":
+        checks.append(path_check("analysis_entry_exists", REPO_ROOT / "pipeline.py"))
+        checks.append(path_check("result_analyzer_exists", REPO_ROOT / "scripts/result_analysis.py"))
     if models:
         checks.append(CheckResult(name="requested_models", status="info", severity="audit", detail=models))
     return checks
@@ -333,6 +343,11 @@ def phase_commands(phase: str, models: Optional[str], manifest: Optional[Path]) 
         )
     elif phase == "phase8":
         commands.append("python build_v2_final_dataset_report.py")
+    elif phase == "phase9":
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" inventory')
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" plan --track agent_execution --tasks "<public_tasks.jsonl>" --private-rules "<private_rules.jsonl>"')
+    elif phase == "phase10":
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" analyze --track "<track>" --results "<results.jsonl>" --out "<new_analysis_dir>"')
     return commands
 
 
@@ -340,7 +355,7 @@ def phase_notes(phase: str) -> List[str]:
     notes: Dict[str, List[str]] = {
         "phase0": [
             "Freeze dataset identity, safety_taxonomy_8x19, rule_eval semantics, model versions, and comparability before evaluation.",
-            "Refusal is a failure in the primary metric and is also counted separately.",
+            "For the LLM QA V2 rule_eval track, refusal is a failure and is counted separately. Agent outcomes follow their own contracts.",
             "Do not store API keys or other secrets in protocol artifacts.",
         ],
         "phase2": [
@@ -370,6 +385,8 @@ def phase_notes(phase: str) -> List[str]:
         "phase8": [
             "Every report number must trace back to canonical or authoritative artifacts.",
         ],
+        "phase9": ["Agent data and scorers are separate from LLM QA canonical membership.", "Mock smoke does not establish official benchmark qualification."],
+        "phase10": ["Failure reasons are observed signals, not proven root causes.", "Candidate plans remain unaccepted until all evidence gates pass."],
     }
     return notes.get(phase, [])
 

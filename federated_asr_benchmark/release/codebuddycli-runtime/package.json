@@ -1,0 +1,8 @@
+{
+  "name": "federated-asr-codebuddycli-runtime",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "@tencent-ai/codebuddy-code": "2.133.1"
+  }
+}

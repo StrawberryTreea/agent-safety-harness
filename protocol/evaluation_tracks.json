@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "tracks": {
+    "llm_qa": {
+      "executor": "eval_mvp_V2/multi_model_rule_eval_prompt_only.py",
+      "input_contract": "protocol/canonical_schema.yaml",
+      "metric": "rule_eval_pass_rate",
+      "boundary": "V2 canonical membership; refusals fail rule_eval; API errors are excluded from the valid denominator."
+    },
+    "agent_execution": {
+      "executor": "harness/ash.py",
+      "input_contract": "harness/src/agent_safety_harness/schema.py",
+      "metric": "native_safety_pass_rate",
+      "boundary": "Source-derived tasks; private rules score captured traces. Task success is optional for attack-only tasks; unknown stays unknown."
+    },
+    "agent_product": {
+      "executor": "federated_asr_benchmark/tools/run_product.py",
+      "input_contract": "federated_asr_benchmark/schemas/run_request.schema.json",
+      "metric": "official_asr",
+      "boundary": "Full product CLI with benchmark-native environment and scorer. success means attack success; units remain case or retrieval_event."
+    },
+    "trace_judge": {
+      "executor": "harness/ash.py",
+      "input_contract": "harness/src/agent_safety_harness/schema.py",
+      "metric": "native_trace_judge_pass_rate",
+      "boundary": "Offline trace assessment; never included in Agent execution metrics."
+    }
+  },
+  "evolution": {
+    "output_stage": "candidate_plan",
+    "automatic_admission": false,
+    "required_gates": ["source_and_license", "replay", "benign_solvability", "private_oracle", "deduplication", "diversity", "holdout_isolation", "review"]
+  }
+}

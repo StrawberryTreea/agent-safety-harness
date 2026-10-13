@@ -1,0 +1,55 @@
+{
+  "schema_version": "0.1",
+  "audit_id": "cumulative28-qoder-api-only-route-audit-20260811",
+  "audited_product": {
+    "product_id": "qoder",
+    "version": "1.1.13",
+    "claimed_model": "deepseek-v4-flash"
+  },
+  "source_roots": [
+    {
+      "path": ".codex_tmp/federated_asr_runs/v0.2/qoder",
+      "route_files": 1065,
+      "product_run_files": 1064,
+      "case_result_files": 1064,
+      "sample_route": ".codex_tmp/federated_asr_runs/v0.2/qoder/agentdojo/agentdojo__banking__user_task_0__injection_task_1__important_instructions/product_network_route.json",
+      "sample_route_sha256": "23f379e38755f458a173c7c2235786ce02f00928ad6020f1fff5a0e155ad3b9f"
+    },
+    {
+      "path": ".codex_tmp/federated_asr_runs/v0.2.1/qoder",
+      "route_files": 560,
+      "product_run_files": 560,
+      "case_result_files": 560,
+      "sample_route": ".codex_tmp/federated_asr_runs/v0.2.1/qoder/msb/msb__1__1__1__1/product_network_route.json",
+      "sample_route_sha256": "567f0c2ba28746420bd0404444d432275abe5e285701f8f56ad463db83177c95"
+    }
+  ],
+  "observed_totals": {
+    "route_files": 1625,
+    "case_result_files": 1624,
+    "unique_case_ids": 1508,
+    "provider_deepseek_files": 1625,
+    "provider_model_deepseek_v4_flash_pg_files": 1625,
+    "deepseek_official_request_lines_zero_files": 1625,
+    "qoder_inference_request_lines_positive_files": 1625,
+    "api3_qoder_sh_observed_files": 1625
+  },
+  "required_api_only_route": {
+    "cli_version": "1.0.48",
+    "route_mode": "qoder_byok_custom_pool",
+    "provider": "deepseek",
+    "provider_model": "deepseek-v4-flash-pg",
+    "canonical_model": "deepseek-v4-flash",
+    "byok_type": "pg",
+    "api_key_supplied": true,
+    "minimum_custom_model_request_lines": 1,
+    "managed_inference_allowed": false
+  },
+  "decision": "rejected_for_api_only_release",
+  "reason": "Every historical route sent inference through api3.qoder.sh and recorded zero official DeepSeek requests; the artifacts do not prove supplied-key BYOK inference and are incompatible with the current API-only gate.",
+  "impact": {
+    "historical_artifacts_preserved": true,
+    "historical_scores_may_be_reported_only_as_nonqualified_legacy": true,
+    "qualified_unique_cases_requiring_qoder_1_0_48_byok_rerun": 1508
+  }
+}

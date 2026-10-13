@@ -1,0 +1,190 @@
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:449", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:449", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:57", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:57", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:416", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:416", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:99", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:99", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:254", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:254", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:219", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:219", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:345", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:345", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:348", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:348", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:487", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:487", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:330", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:330", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:125", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:125", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:369", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:369", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:63", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:63", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:416", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:416", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:291", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:291", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:319", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:319", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:360", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:360", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:280", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:280", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:270", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:270", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:363", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:363", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:175", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:175", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:444", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:444", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:29", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:29", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:129", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:129", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:377", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:377", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:176", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:176", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:202", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:202", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:32", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:32", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:101", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:101", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:76", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:76", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:473", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:473", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:421", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:421", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:264", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:264", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:137", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:137", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:479", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:479", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:248", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:248", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:405", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:405", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:414", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:414", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:87", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:87", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:532", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:532", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:468", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:468", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:427", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:427", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:379", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:379", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:112", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:112", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:35", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:35", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:148", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:148", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:335", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:335", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:295", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:295", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:269", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:269", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:161", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:161", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:496", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:496", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:267", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:267", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:333", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:333", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:486", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:486", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:357", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:357", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:147", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:147", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:255", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:255", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:498", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:498", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:198", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:198", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:182", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:182", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:392", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:392", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:541", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:541", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:252", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:252", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:277", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:277", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:142", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:142", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:223", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:223", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:438", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:438", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:259", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:259", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:226", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:226", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:173", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:173", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:470", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:470", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:428", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:428", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:79", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:79", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:49", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:49", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:27", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:27", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:174", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:174", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:453", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:453", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:442", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:442", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:39", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:39", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:150", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:150", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:262", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:262", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:256", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:256", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:472", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:472", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:228", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:228", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:390", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:390", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:64", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:64", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:323", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:323", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:271", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:271", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:220", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:220", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:111", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:111", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:13", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:13", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:45", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:45", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:127", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:127", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:352", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:352", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:222", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:222", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:520", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:520", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:230", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:230", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:86", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:86", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:247", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:247", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:452", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:452", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:60", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:60", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:277", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:277", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:465", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:465", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:440", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:440", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:404", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:404", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:344", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:344", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:39", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:39", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:404", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:404", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:463", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:463", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:77", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:77", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:300", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:300", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:180", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:180", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:142", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:142", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:319", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:319", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:437", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:437", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:425", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:425", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:374", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:374", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:67", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:67", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:507", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:507", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:92", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:92", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:10", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:10", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:426", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:426", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:393", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:393", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:237", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:237", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:334", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:334", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:81", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:81", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:273", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:273", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:457", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:457", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:480", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:480", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:159", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:159", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:99", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:99", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:351", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:351", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:485", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:485", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:317", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:317", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:111", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:111", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:239", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:239", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:140", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:140", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:179", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:179", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:302", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:302", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:459", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:459", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:531", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:531", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:43", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:43", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:261", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:261", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:407", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:407", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:482", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:482", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:232", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:232", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:54", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:54", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:118", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:118", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:278", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:278", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:389", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:389", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:418", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:418", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:311", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:311", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:482", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:482", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:110", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:110", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:14", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:14", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:410", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:410", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:282", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:282", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:331", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:331", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:337", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:337", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:34", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:34", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:503", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:503", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:214", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:214", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:418", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:418", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:307", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:307", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:195", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:195", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:176", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:176", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:295", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:295", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:61", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:61", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:40", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:40", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:281", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:281", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:484", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:484", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:543", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:543", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:298", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:298", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:433", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:433", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:84", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:84", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:542", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:542", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:473", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:473", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:484", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:484", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:158", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:158", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:146", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:146", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:260", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:260", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:113", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:113", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:488", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:488", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:488", "metadata": {"attack_track": "ds", "attack_type": "Physical Data"}, "native_case_id": "ds:488", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:162", "metadata": {"attack_track": "dh", "attack_type": "Data Security Harm"}, "native_case_id": "dh:162", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:76", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:76", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:19", "metadata": {"attack_track": "ds", "attack_type": "Financial Data"}, "native_case_id": "ds:19", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:36", "metadata": {"attack_track": "dh", "attack_type": "Financial Harm"}, "native_case_id": "dh:36", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:358", "metadata": {"attack_track": "ds", "attack_type": "Others"}, "native_case_id": "ds:358", "schema_version": "0.1"}
+{"benchmark_id": "injecagent", "case_id": "injecagent:dh:426", "metadata": {"attack_track": "dh", "attack_type": "Physical Harm"}, "native_case_id": "dh:426", "schema_version": "0.1"}

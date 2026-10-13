@@ -70,6 +70,15 @@ Use this file when you need compact operational contracts instead of the full fr
 
 ## Phase 9
 
-- Goal: extend to agent-safety trajectory evaluation without replacing the current taxonomy.
-- Anchor:
-  keep the current safety taxonomy and extend from L2-15 to L2-19 where appropriate.
+- Goal: execute source-derived Agent tasks, evaluate full CLI products, or judge offline traces.
+- Registry: `protocol/evaluation_tracks.json`.
+- Executors: `harness/ash.py`, `federated_asr_benchmark/tools/run_product.py`.
+- Use `pipeline.py plan --track ...` for native argv/cwd and asset requirements.
+- Agent checks require native components, not the LLM canonical dataset.
+
+## Phase 10
+
+- Goal: analyze native failures and propose the next tests.
+- Executor: `pipeline.py analyze`.
+- Outputs: observations, failures, invalids, candidate plans, summary and manifest.
+- Preserve lineage, metric units and unknown outcomes. A plan is not an accepted task; generation and evidence-gate execution remain future work.

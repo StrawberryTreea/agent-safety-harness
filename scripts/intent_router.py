@@ -78,10 +78,16 @@ ROUTES = [
         "follow_up_actions": ["Use authoritative results and manifest as the only numeric sources."],
     },
     {
-        "keywords": ["agent 安全", "agent safety", "trajectory", "轨迹评测"],
+        "keywords": ["agent 安全", "agent safety", "trajectory", "轨迹评测", "智能体", "agent 评测"],
         "phases": ["phase0", "phase9"],
-        "rationale": "Request asks for an agent-safety extension protocol.",
-        "follow_up_actions": ["Anchor the extension to the current taxonomy instead of replacing it."],
+        "rationale": "Request involves Agent execution, full-product evaluation, or offline trace judging.",
+        "follow_up_actions": ["Choose the native track using pipeline.py inventory and plan."],
+    },
+    {
+        "keywords": ["进化", "演化", "闭环", "失败分析", "failure analysis", "evolution", "候选测试"],
+        "phases": ["phase10"],
+        "rationale": "Request involves failure feedback and candidate-test planning.",
+        "follow_up_actions": ["Preserve lineage and unknown outcomes; require evidence gates before dataset admission."],
     },
 ]
 

@@ -1,0 +1,46 @@
+{
+  "schema_version": "0.1",
+  "product": "codebuddy",
+  "cli_version": "2.133.1",
+  "canonical_model": "deepseek-v4-flash",
+  "provider": "deepseek",
+  "credential_source": "runner_user_dpapi_loaded_DEEPSEEK_API_KEY",
+  "built_in_quota_used": false,
+  "qualification_status": "ready",
+  "six_benchmark_adapter_smoke": {
+    "selected": 30,
+    "valid": 30,
+    "invalid": 0
+  },
+  "adaptive_qualification": {
+    "campaign_id": "codebuddy-adaptive-qualified-smoke-v03",
+    "release_id": "federated-asr-v0.4.3-codebuddy-adaptive-qualified-smoke",
+    "release_hash": "ed632284b748ab67a646e4dbd67bd1feea78396f700ff73dd1eb3aa4d17d78c9",
+    "selection_sha256": "6fc1fbeebcd2090ab3490bbbb49b3e9a88d2b2b5d74d6df8f234d1251905e2f3",
+    "selected": 12,
+    "complete": 12,
+    "failed": 0,
+    "strict_invalid": 0,
+    "unique_lease_tokens": 18,
+    "observed_authenticated_route_requests": 49,
+    "all_isolated_state_removed": true,
+    "saber_judge_cleanup_complete": true,
+    "secret_literal_hits": 0,
+    "secret_pattern_hits": 0
+  },
+  "scale_regression": {
+    "campaign_id": "codebuddy-scale-regression-smoke-v04",
+    "release_id": "federated-asr-v0.4.4-codebuddy-scale-regression-smoke",
+    "release_hash": "42388c3555b72cb6d80558d7117ea8799aa69679b38c73e146e83cdbb25fc5f2",
+    "selection_sha256": "647660ddb2c5b399801a8768fd884645ca2a65afb21e31612f3681ff592c49b8",
+    "selected": 6,
+    "complete": 6,
+    "failed": 0,
+    "strict_invalid": 0,
+    "worker_launches": 3,
+    "worker_stop_requests": 1,
+    "observed_scale_sequence": [2, 3, 2],
+    "scale_down_overshoot": false
+  },
+  "full_5384_case_campaign_executed": false
+}

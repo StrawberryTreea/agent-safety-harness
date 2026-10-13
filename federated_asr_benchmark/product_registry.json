@@ -1,0 +1,69 @@
+{
+  "schema_version": "0.1",
+  "track": "product_native_only",
+  "execution_policy": {
+    "system_prompt": "retain the product default; do not replace it with an official scaffold prompt",
+    "state": "fresh isolated product profile for every case; no user memory, project rules, plugins, skills or prior sessions",
+    "permissions": "preauthorize only benchmark tools inside an external sandbox so confirmation UI does not become the measured variable",
+    "network": "deny by default; allow only product authentication/model endpoints and benchmark-declared services",
+    "repetitions": "one deterministic run per case in v0.1; pin product-selected model and all exposed stochastic settings",
+    "leaderboard_key": "product_id + product_version + product_model + benchmark_release + adapter_version"
+  },
+  "products": [
+    {
+      "product_id": "codex",
+      "display_name": "Codex",
+      "detected_version": "0.122.0",
+      "executable": "codex",
+      "request_model": "deepseek-v4-flash",
+      "runtime_model": "deepseek-v4-flash",
+      "noninteractive_command": "codex -m deepseek-v4-flash <DeepSeek provider overrides> exec --json --ephemeral --ignore-user-config --ignore-rules --skip-git-repo-check -C <workspace> <prompt>",
+      "structured_output": "JSONL events on stdout",
+      "mcp_configuration": "supply benchmark-scoped mcp_servers entries through an isolated config/profile",
+      "preflight": "verify that the isolated configuration exposes only the selected benchmark MCP servers and that no AGENTS.md or user rules are loaded"
+    },
+    {
+      "product_id": "claude_code",
+      "display_name": "Claude Code",
+      "detected_version": "2.1.195",
+      "executable": "claude",
+      "request_model": "deepseek-v4-flash",
+      "runtime_model": "deepseek-v4-flash",
+      "noninteractive_command": "claude -p --model deepseek-v4-flash --output-format stream-json --no-session-persistence <prompt>",
+      "structured_output": "stream-json on stdout",
+      "mcp_configuration": "--strict-mcp-config --mcp-config <config>",
+      "preflight": "verify safe-mode behavior for the pinned release and allow only benchmark tools; do not override the product system prompt"
+    },
+    {
+      "product_id": "qoder",
+      "display_name": "Qoder",
+      "detected_version": "1.0.48",
+      "executable": ".runtime/qodercli-1.0.48/node_modules/.bin/qodercli",
+      "request_model": "model_1786147854337_zp7v4vd",
+      "runtime_model": "model_1786147854337_zp7v4vd",
+      "canonical_model": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "provider_model": "deepseek-v4-flash-pg",
+      "byok_type": "pg",
+      "noninteractive_command": "qodercli -p --model model_1786147854337_zp7v4vd --settings <fresh-dir>/settings.json --setting-sources user --output-format stream-json --no-session-persistence --strict-mcp-config --mcp-config <config> --config-dir <fresh-dir> -w <workspace> <prompt>",
+      "structured_output": "configured structured stream on stdout",
+      "mcp_configuration": "--strict-mcp-config --mcp-config <config>",
+      "preflight": "materialize the pinned DeepSeek custom-pool model in fresh isolated state from runner-supplied DEEPSEEK_API_KEY; require matching custom-model request evidence, reject unpaired managed generation or built-in quota use, and verify the MCP event schema"
+    },
+    {
+      "product_id": "codebuddy",
+      "display_name": "CodeBuddy Code CLI",
+      "detected_version": "2.133.1",
+      "executable": ".runtime/codebuddycli-2.133.1/node_modules/@tencent-ai/codebuddy-code/bin/codebuddy",
+      "request_model": "deepseek-v4-flash",
+      "runtime_model": "custom-local:deepseek-v4-flash",
+      "canonical_model": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "provider_model": "deepseek-v4-flash",
+      "noninteractive_command": "codebuddy --print --output-format stream-json --no-session-persistence --strict-mcp-config --mcp-config <config> --permission-mode bypassPermissions --model deepseek-v4-flash <prompt>",
+      "structured_output": "stream-json on stdout plus sanitized audited route evidence",
+      "mcp_configuration": "--strict-mcp-config --mcp-config <config> with selected tools forced out of deferred loading",
+      "preflight": "require runner-supplied DEEPSEEK_API_KEY, force an isolated custom-local DeepSeek profile through the audited loopback forwarder, reject product-native credentials or built-in quota use, verify authenticated api.deepseek.com tool requests, and remove per-case state"
+    }
+  ]
+}

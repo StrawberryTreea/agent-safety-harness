@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/federated-asr/run_request.schema.json",
+  "title": "Federated ASR Run Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "benchmark_id", "product", "adapter", "isolation", "selection", "output_dir"],
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "benchmark_id": {"type": "string", "minLength": 1},
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "executable", "version"],
+      "properties": {
+        "product_id": {"enum": ["codex", "claude_code", "qoder", "codebuddy"]},
+        "executable": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "product_model": {"type": ["string", "null"]},
+        "state_source": {"type": ["string", "null"]}
+      }
+    },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_id", "adapter_version", "mcp_config"],
+      "properties": {
+        "adapter_id": {"type": "string", "minLength": 1},
+        "adapter_version": {"type": "string", "minLength": 1},
+        "mcp_config": {"type": ["string", "null"]}
+      }
+    },
+    "isolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "fresh_product_state", "network_policy", "tool_permission_mode"],
+      "properties": {
+        "mode": {"enum": ["container", "vm", "disposable_workspace"]},
+        "fresh_product_state": {"const": true},
+        "network_policy": {"enum": ["deny_except_benchmark", "deny_all", "benchmark_defined"]},
+        "tool_permission_mode": {"const": "autonomous_preapproved_in_sandbox"}
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_index"],
+      "properties": {
+        "case_index": {"type": "string", "minLength": 1},
+        "case_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "output_dir": {"type": "string", "minLength": 1},
+    "seed": {"type": "integer", "default": 42},
+    "timeout_seconds": {"type": "integer", "minimum": 1},
+    "benchmark_options": {"type": "object"}
+  }
+}

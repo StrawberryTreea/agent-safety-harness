@@ -1,0 +1,100 @@
+{
+  "schema_version": "0.1",
+  "audit_id": "optional-replacement-runtime-gate-20260811",
+  "research_scope": {
+    "items": ["SafePro", "AgentLAB SHADE-Arena", "ST-WebAgentBench"],
+    "source_basis": "pinned local artifacts only",
+    "fields": [
+      "unique executable cases",
+      "attack or policy delivery",
+      "real product execution bridge",
+      "observable outcome",
+      "case-level ASR contract",
+      "isolation and runtime fixtures",
+      "scorer and judge evidence",
+      "provenance and license"
+    ]
+  },
+  "decisions": {
+    "safepro": {
+      "decision": "rejected_current_release",
+      "unique_task_ids": 276,
+      "category_count": 51,
+      "safe_criteria_present": 276,
+      "unsafe_criteria_present": 276,
+      "tasks_with_reference_files": 103,
+      "reference_file_mentions": 208,
+      "local_reference_files": 0,
+      "scoring_mode": "LLM judge over complete transcript and safe/unsafe criteria",
+      "reasons": [
+        "103 tasks cannot be reconstructed because none of the 208 referenced files are local",
+        "the native harness executes OpenHands CodeActAgent rather than Codex, Claude Code, or Qoder CLI",
+        "no benchmark-scoped MCP bridge exists for the remaining professional task environments",
+        "no per-case product route, tool trajectory, isolated state, or DeepSeek V4 Flash judge evidence has been qualified",
+        "the upstream README uses a machine-specific default dataset path and requires an unpinned OpenHands runtime image"
+      ],
+      "source_hashes": {
+        "safepro_v0.json": "2e9c12a4974585eac72b9b7f54d4a224550eb587c1832824ea8c76a9f3b51cee",
+        "LICENSE": "90bd960a6d24cce8f64f3f2b9be5923d5b33e2650afd6fb683ced4be83e5bb94",
+        "agi_safety_README.md": "b08d34b45a18e7b3dc9dc22d2e2ab65383c6a382f4de2c58713fe6d5a4d58dba",
+        "agi_safety_run_infer.py": "6f3651a601ef5eac8d454c76f182ace857b1365f10fb91943e63fe7ae925209d",
+        "agi_safety_get_score.py": "00f6e7e0d9280437022f0f58e91608490182f2993c4f667e1628305ab280230c"
+      }
+    },
+    "agentlab_shade_arena": {
+      "decision": "rejected_current_release",
+      "distinct_public_task_pairs": 5,
+      "task_pair_ids": [
+        "american_airlines_2",
+        "api_key_calendar_agendas_2",
+        "bank_transfer_2",
+        "expenditure_accounting",
+        "spam_filter_update"
+      ],
+      "environment_modules": 19,
+      "tool_modules": 15,
+      "evaluation_modules": 8,
+      "reasons": [
+        "the public split contains only five distinct long-horizon task pairs",
+        "the upstream experiment loop is an AgentDojo-derived model API pipeline rather than the three tested product CLIs",
+        "no benchmark-scoped MCP bridge, per-case workspace reset, or product route evidence exists",
+        "the README states that full result reproduction is impossible without the private tasks",
+        "the integration cost and stability risk are disproportionate to five unique cases"
+      ],
+      "source_hashes": {
+        "SHADE_Arena_README.md": "21bc3e94fcbe36054519ae48f3ecfaa9b764a260df6bfd6175554d050a767e39",
+        "SHADE_Arena_LICENSE": "10afbf1d9375046c397093682ec37ff0182bc542e95745d46e10ed55714d3d74",
+        "SHADE_Arena_pyproject.toml": "765ece2404bc09cc4d92d0b756f4ae0dc6d6546b9e0f64838e8a770876f290b8"
+      }
+    },
+    "st_webagentbench": {
+      "decision": "rejected_current_release",
+      "policy_rows": 3057,
+      "unique_task_ids": 375,
+      "unique_intents": 235,
+      "sites": ["gitlab", "shopping_admin", "suitecrm"],
+      "policy_template_count": 11,
+      "local_files": 2,
+      "local_code_files": 0,
+      "local_license_files": 0,
+      "reasons": [
+        "3,057 is a policy-instance count and must not be reported as unique questions",
+        "the local snapshot contains only test.csv and README.md with no execution harness or evaluator code",
+        "WebArena, ShoppingAdmin, and SuiteCRM fixtures are not locally provisioned or pinned",
+        "no product CLI browser bridge, isolated reset, action trajectory, or deterministic evaluator evidence exists",
+        "license is declared only in dataset metadata; no local license text is present"
+      ],
+      "source_hashes": {
+        "test.csv": "a533c41d03c49bb7b7065fef86249fec38746d75fd2ffecf709dc3796c312afd",
+        "README.md": "e712feb15886d5a2aba1051d419dc69dc6e58c9a86a9d2d566090bbbf67492fc"
+      }
+    }
+  },
+  "totals": {
+    "optional_unique_cases_reviewed": 656,
+    "accepted_current_release": 0,
+    "rejected_current_release": 656,
+    "maximum_unique_questions_after_primary_pending_smoke": 6152
+  },
+  "quality_decision": "Do not replace rejected primary candidates with annotation rows, incomplete public splits, missing reference artifacts, or native-agent harnesses that do not execute the tested product CLIs."
+}

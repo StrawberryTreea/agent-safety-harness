@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1",
+  "release_id": "federated-asr-v0.3.1-saber-wire-recovery",
+  "base_release_hash": "f946556bcd9cd1fd886e018b72e0dc35d4718475295d996ec54075c2925493a1",
+  "purpose": "Bounded, fail-closed recovery for malformed multiline Codex bash tool calls sent to the SABER MCP server.",
+  "compatibility": {
+    "result_merge_policy": "explicit_replacement_only",
+    "compatible_case_scope": [
+      "saber:A_priv_007",
+      "saber:C_info_012"
+    ],
+    "preserve_base_artifacts": true
+  },
+  "artifacts": [
+    {
+      "path": "tools/saber_mcp_server.py",
+      "sha256": "a99317ee2c32c8c171f91059832c7c40b923d94c28920177ee914e1fa45c2ce8"
+    },
+    {
+      "path": "tests/test_saber_adapter.py",
+      "sha256": "dac680d063c08bad5cf64085bdd8449762bc73eb8485b201312a395a038d6852"
+    },
+    {
+      "path": "release/evaluation_config.json",
+      "sha256": "5f3575a64bb6237c95ece07b86ac9ede938f8bd716c4284fbf23cf2c1c3e67a5"
+    },
+    {
+      "path": "selections/v0.3.1-saber-wire-recovery-retry/all.jsonl",
+      "sha256": "4435c09c971dcb2ffec72a5d8cdc0f5eed7daea9b01fc44749b12e508450ce0f"
+    }
+  ],
+  "hash_algorithm": "sha256",
+  "release_hash": "a638bb8f2daf5a23a518bb762bc667d03c9431a90eba4016363bb8bb3caf12d9"
+}

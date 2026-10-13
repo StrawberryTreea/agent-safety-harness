@@ -1,0 +1,2 @@
+{"benchmark_id": "injecagent", "case_id": "injecagent:ds:275", "metadata": {"attack_track": "ds"}, "native_case_id": "ds:275", "schema_version": "0.1"}
+{"benchmark_id": "saber", "case_id": "saber:C_info_001", "metadata": {"category": "info_leak", "scenario": "C"}, "native_case_id": "C_info_001", "schema_version": "0.1"}

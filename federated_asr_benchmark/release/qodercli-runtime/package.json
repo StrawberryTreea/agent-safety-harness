@@ -1,0 +1,8 @@
+{
+  "name": "federated-asr-qodercli-runtime",
+  "private": true,
+  "version": "1.0.48",
+  "dependencies": {
+    "@qoder-ai/qodercli": "1.0.48"
+  }
+}

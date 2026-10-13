@@ -1,0 +1,51 @@
+{
+  "schema_version": "0.1",
+  "release_status": "development_candidate_only",
+  "runtime_pins": {
+    "python": "3.13.2",
+    "uv": "0.12.3",
+    "node": "24.14.1",
+    "npm": "11.12.1",
+    "docker_server": "29.3.1",
+    "saber_image": "osbench-sandbox@sha256:89855a146a75710e028265295e3c64007121ac52598f18b3a68151b99c2705b6",
+    "agentdyn_agentdojo_package": "0.1.35"
+  },
+  "products": {
+    "codex": {
+      "cli_version": "0.122.0",
+      "tested_model": "deepseek-v4-flash",
+      "provider_route": "https://api.deepseek.com/v1"
+    },
+    "claude_code": {
+      "cli_version": "2.1.195",
+      "tested_model": "deepseek-v4-flash",
+      "provider_route": "https://api.deepseek.com"
+    },
+    "qoder": {
+      "cli_version": "1.0.48",
+      "npm_package": "@qoder-ai/qodercli@1.0.48",
+      "npm_integrity": "sha512-T5Dy/5gVNHdrsCpMc/bngnka78tW5FlbRnX5t4rL5P5wVX1Qs43qobdENueXyPGxlDkPtapqWQ+1/btG62No6w==",
+      "tested_model": "deepseek-v4-flash",
+      "runtime_model_required": "model_1786147854337_zp7v4vd",
+      "provider": "deepseek",
+      "provider_model": "deepseek-v4-flash-pg",
+      "byok_type": "pg",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "route_mode": "qoder_byok_custom_pool",
+      "status": "ready"
+    },
+    "codebuddy": {
+      "cli_version": "2.133.1",
+      "npm_package": "@tencent-ai/codebuddy-code@2.133.1",
+      "npm_integrity": "sha512-CgQhwn6uevSrNeBliHb9iZ2kbBL7YYS38VXs60vyxlIMi6X3LHVtA8s7F/QRh9jqWjJdpy82AGjhK0oY+F+Cfw==",
+      "tested_model": "deepseek-v4-flash",
+      "runtime_model_required": "custom-local:deepseek-v4-flash",
+      "provider": "deepseek",
+      "provider_model": "deepseek-v4-flash",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "route_mode": "audited_local_forwarder",
+      "qualification_audit": "docs/codebuddy_adaptive_qualification_audit.json",
+      "status": "ready"
+    }
+  }
+}

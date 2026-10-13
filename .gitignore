@@ -13,3 +13,16 @@ eval_mvp_V2/*
 !eval_mvp_V2/multi_model_rule_eval_prompt_only.py
 rule_eval_mvp/
 .vscode/
+.venv/
+.venvs/
+.runtime/
+.codex_tmp/
+.pytest_cache/
+runs/
+work/
+.env
+.env.*
+!.env.example
+*.log
+!harness/src/agent_safety_harness/data/
+!harness/src/agent_safety_harness/data/*_sample.jsonl

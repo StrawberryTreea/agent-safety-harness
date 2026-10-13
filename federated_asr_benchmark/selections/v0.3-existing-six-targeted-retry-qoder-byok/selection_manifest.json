@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "selection_id": "v0.3-existing-six-targeted-retry-qoder-byok",
+  "source_selection": "selections/v0.3-existing-six-complement/all.jsonl",
+  "selection_file": "all.jsonl",
+  "selection_sha256": "22e705f25c17b5ff97b8ac25a9eb69951ac04d8e92c5740793a52a510b14af17",
+  "case_count": 14,
+  "unique_case_count": 14,
+  "benchmark_counts": {
+    "agentpoison_strategyqa": 1,
+    "msb": 4,
+    "saber": 9
+  },
+  "excludes_posthoc_repaired_cases": [
+    "saber:B_code_021",
+    "saber:B_code_045",
+    "saber:B_fs_011"
+  ],
+  "purpose": "Retry only unresolved Qoder 1.0.48 BYOK complement failures without touching valid artifacts."
+}

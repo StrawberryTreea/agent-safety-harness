@@ -1,0 +1,48 @@
+{
+  "schema_version": "0.1",
+  "dataset_id": "product-federated-asr-v0.1",
+  "case_count": 5384,
+  "counts": {
+    "injecagent": 1054,
+    "msb": 2000,
+    "agentdojo": 629,
+    "agentleak": 496,
+    "saber": 715,
+    "agentpoison_strategyqa": 490
+  },
+  "agentdojo_index_source": "数据集\\评测数据\\AgentDojo\\runs\\claude-3-5-sonnet-20240620",
+  "saber_selection_audit": {
+    "declared_manifest_count": 716,
+    "selected_existing_task_count": 715,
+    "excluded_missing_task_ids": [
+      "A_persist_035"
+    ]
+  },
+  "note": "AgentDojo run files are used only to enumerate the complete pinned case lattice, not as labels.",
+  "sources": {
+    "injecagent_dh": {
+      "path": "数据集\\评测数据\\InjecAgent-main\\data\\test_cases_dh_base.json"
+    },
+    "injecagent_ds": {
+      "path": "数据集\\评测数据\\InjecAgent-main\\data\\test_cases_ds_base.json"
+    },
+    "msb_agents": {
+      "path": "数据集\\评测数据\\MSB-main\\MSB-main\\data\\agent_task.jsonl"
+    },
+    "msb_attack_tasks": {
+      "path": "数据集\\评测数据\\MSB-main\\MSB-main\\data\\attack_task.jsonl"
+    },
+    "msb_attack_types": {
+      "path": "数据集\\评测数据\\MSB-main\\MSB-main\\data\\attack_type.jsonl"
+    },
+    "agentleak": {
+      "path": "数据集\\评测数据\\AgentLeak-main\\AgentLeak-main\\agentleak_data\\datasets\\scenarios_full_1000.jsonl"
+    },
+    "saber": {
+      "path": "数据集\\评测数据\\saber-main\\saber-main\\dataset\\manifest.json"
+    },
+    "agentpoison": {
+      "path": "数据集\\评测数据\\AgentPoison-master\\AgentPoison-master\\ReAct\\database\\strategyqa_test.json"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "profile_id": "model_01",
+      "model": "provider-model-id",
+      "openai_base_url": "https://gateway.example.com/openai/v1",
+      "anthropic_base_url": "https://gateway.example.com/anthropic"
+    }
+  ]
+}

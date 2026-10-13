@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "selection_id": "v0.4-codebuddy-adaptive-smoke",
+  "seed": "federated-asr-codebuddy-adaptive-smoke-v0.4",
+  "logical_shards": 32,
+  "unique_questions": 4,
+  "counts": {
+    "injecagent": 2,
+    "msb": 2
+  },
+  "files": {
+    "all.jsonl": {
+      "rows": 4
+    }
+  }
+}

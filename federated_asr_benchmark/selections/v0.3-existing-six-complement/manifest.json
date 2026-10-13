@@ -1,0 +1,48 @@
+{
+  "complement_count": 3876,
+  "completed_count": 1508,
+  "completed_selection": "selections/v0.2/cumulative28/all.jsonl",
+  "counts": {
+    "agentdojo": {
+      "complement": 453,
+      "completed": 176,
+      "population": 629
+    },
+    "agentleak": {
+      "complement": 357,
+      "completed": 139,
+      "population": 496
+    },
+    "agentpoison_strategyqa": {
+      "complement": 353,
+      "completed": 137,
+      "population": 490
+    },
+    "injecagent": {
+      "complement": 759,
+      "completed": 295,
+      "population": 1054
+    },
+    "msb": {
+      "complement": 1440,
+      "completed": 560,
+      "population": 2000
+    },
+    "saber": {
+      "complement": 514,
+      "completed": 201,
+      "population": 715
+    }
+  },
+  "population_count": 5384,
+  "proof": {
+    "case_ids_unique": true,
+    "completed_and_complement_disjoint": true,
+    "completed_is_population_subset": true,
+    "completed_union_complement_equals_population": true,
+    "order": "source case_index order"
+  },
+  "schema_version": "0.3",
+  "selection_id": "existing-six-population-minus-cumulative28",
+  "source_population": "case_index.jsonl"
+}

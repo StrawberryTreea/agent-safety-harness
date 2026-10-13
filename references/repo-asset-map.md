@@ -77,3 +77,7 @@ Authoritative publish supplements:
   `rule_eval_mvp/output_v2_merged/`
 - Authoritative publish root:
   `rule_eval_mvp/output_v2_final_authoritative/`
+
+## Integrated Agent and evolution modules
+
+See `protocol/evaluation_tracks.json` and `docs/integration/architecture.md` for the authoritative integration map. `pipeline.py` is the shared entry point; `harness/` and `federated_asr_benchmark/` preserve their native executors. External assets use `AGENT_EVAL_DATA_ROOT` and dedicated interpreter environment variables. Runtime results belong under ignored `runs/` paths.
