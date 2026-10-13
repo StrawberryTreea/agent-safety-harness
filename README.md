@@ -6,6 +6,44 @@ This is the primary repository for our LLM and Agent safety evaluation project. 
 
 **Implemented:** native evaluation entry points, local capture/private scoring/reporting, result analysis and unaccepted candidate plans. **Planned:** automatic task generation, acceptance execution, test-set publication and Agent/model improvement.
 
+## Project workflow
+
+Solid arrows show existing execution and analysis paths. Dashed arrows and yellow nodes show the planned feedback loop. Each track retains its native metrics; candidate plans do not enter the test set automatically.
+
+```mermaid
+flowchart TB
+    Inputs["Tasks, configuration, versions and existing traces"]
+    Inputs --> QA
+    Inputs --> Execution
+    Inputs --> Product
+    Inputs --> Judge
+    subgraph Tracks["Four independent evaluation tracks"]
+        QA["llm_qa<br/>LLM rule evaluation"]
+        Execution["agent_execution<br/>Public task execution and trace capture"]
+        Private["Separate private rule scoring"]
+        Product["agent_product<br/>Full product with native environment / scorer"]
+        Judge["trace_judge<br/>Offline trace assessment"]
+        Execution --> Private
+    end
+    QA --> Results["Native results per track<br/>Preserve metric direction and denominator"]
+    Private --> Results
+    Product --> Results
+    Judge --> Results
+    Results --> Analyze["pipeline.py analyze<br/>Result analysis and evidence lineage"]
+    Analyze --> Reports["Observations, grouped statistics and reports"]
+    Analyze --> Invalid["Separate invalid / unknown records<br/>Investigation and reruns remain pending"]
+    Analyze --> Failures["Valid failure observations<br/>Root cause remains unconfirmed"]
+    Failures --> Plans["Candidate test plans<br/>admitted=false"]
+    Plans -.-> Generate["Planned: instantiate tasks and attacks"]
+    Generate -.-> Gates["Planned: execute eight acceptance gates"]
+    Gates -.-> Version["Planned: publish a versioned test set"]
+    Version -.-> NextRound["Next round: evaluate with the new test set"]
+    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5,color:#24292f
+    class Generate,Gates,Version,NextRound planned
+```
+
+Real LLM/product runs require credentials, external assets and the corresponding environments. See [Detailed architecture](docs/integration/architecture.md) for the separate Agent/model improvement and holdout-validation research path.
+
 ## Quick start
 
 Validated platform: Windows PowerShell with Python 3.14. The local examples require no API key, product CLI, Docker or downloaded dataset. Run from the repository root:
@@ -27,6 +65,24 @@ The check validates local Markdown links, runs all three test suites, executes s
 | LLM reference self-test | 3/3 rule passes; returns the answer key without calling a model |
 
 These results verify plumbing, not model or product safety. [Run individual examples](docs/getting_started.md).
+
+### Collaborator run sequence
+
+```mermaid
+flowchart TB
+    subgraph Local["Step 1: install and verify locally"]
+        direction LR
+        Install["Create a virtual environment<br/>Install dependencies"] --> Check["check_repo.py<br/>Docs, tests and fixtures"]
+        Check --> Evidence["Read summary.json and logs<br/>Inspect passes and skips"]
+    end
+    subgraph Real["Step 2: choose a track and run"]
+        direction LR
+        Choose["Choose a track<br/>Prepare inputs, config and runtime"] --> Plan["inventory / plan<br/>Inspect commands; no execution"]
+        Plan --> Native["Call the native executor<br/>Use a new run directory"]
+        Native --> Analyze["analyze<br/>Review results, denominators and candidates"]
+    end
+    Local --> Real
+```
 
 ## Choose a track
 

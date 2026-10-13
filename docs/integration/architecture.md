@@ -6,29 +6,33 @@
 
 ![原始评测与演化概念图](../../assets/figures/evaluation-evolution-concept.png)
 
-图中的主线是测试数据管理、环境构建、被测 Agent 接入、执行与轨迹记录、评分、分析、对抗测试生成、验收、进入下一轮测试集。本轮把已实现部分接通，并为生成与验收定义可审查的交接产物。
+上图是用户提供的原始设计参考。下面按当前代码重绘实现流程：实线表示现有执行与分析关系；虚线和黄色节点表示待实现的反馈或研究步骤。环境自动部署、环境变异和已验证根因分析仍需后续实现与证据。
 
 ```mermaid
 flowchart TD
-    Sources[来源数据与版本] --> Tasks[任务与协议治理]
-    Tasks --> LLM[LLM QA 执行器]
-    Tasks --> Harness[Agent 执行与公开轨迹捕获]
-    Tasks --> Product[完整产品与原生环境]
-    Tasks --> Judge[离线轨迹评审]
-    Harness --> Private[私有规则评分]
-    LLM --> Analysis[统一结果分析与来源证据]
+    Sources["来源数据、配置与版本"] --> Tasks["任务与协议治理"]
+    Tasks --> LLM["llm_qa<br/>LLM 规则评测"]
+    Tasks --> Harness["agent_execution<br/>公开任务执行与轨迹捕获"]
+    Tasks --> Product["agent_product<br/>完整产品与原生环境 / scorer"]
+    Offline["已有轨迹与 judge 任务"] --> Judge["trace_judge<br/>离线轨迹评审"]
+    Harness --> Private["独立私有规则评分"]
+    Rules["隔离的私有规则"] --> Private
+    LLM --> Analysis["统一结果分析与来源证据<br/>保留各轨道指标与分母"]
     Private --> Analysis
     Product --> Analysis
     Judge --> Analysis
-    Analysis --> Failures[有效失败观察]
-    Analysis --> Infra[运行异常修复与重跑]
-    Failures --> Plans[候选测试计划：已实现]
-    Plans -. 下一阶段 .-> Generator[实例化新任务与攻击]
-    Generator --> Gates[回放、良性可解性、评分与去重验收]
-    Gates --> Version[发布新版测试集]
-    Version --> Tasks
-    Failures -. 独立研究轨道 .-> Repair[Agent 或模型改进方案]
-    Repair --> Holdout[冻结留出集验证]
+    Analysis --> Reports["观察、分组统计与报告"]
+    Analysis --> Failures["有效失败观察<br/>根因尚未确认"]
+    Analysis --> Infra["异常 / unknown 记录<br/>排查与重跑待处理"]
+    Failures --> Plans["候选测试计划：已实现<br/>admitted=false；八项验收 pending"]
+    Plans -.-> Generator["待实现：实例化新任务与攻击"]
+    Generator -.-> Gates["待实现：执行八项验收"]
+    Gates -.-> Version["待实现：发布新版测试集"]
+    Version -.-> Tasks
+    Failures -.-> Repair["待研究：Agent 或模型改进"]
+    Repair -.-> Holdout["待研究：冻结留出集验证"]
+    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5,color:#24292f
+    class Generator,Gates,Version,Repair,Holdout planned
 ```
 
 测试集演化和 Agent/模型改进是两条可独立验证的反馈链。自动改代码、训练模型或宣称系统已自我进化，都需要另外的实现和实验依据。

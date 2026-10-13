@@ -86,3 +86,17 @@ AgentPoison 已改用公共解释器配置，并设置 `AGENTPOISON_PYTHON`。�
 本地日志保存在被忽略的 `runs/cleanup-check/`，新安装记录在 `.tmp/collaborator-clean-20261013/runs/fresh-install-check/`。summary.json 逐步骤记录 returncode、测试通过/跳过数及示例结果。CI 同样运行 scripts/check_repo.py，并通过 acceptance-logs artifact 保存证据；远端结论以当前 PR 的最新 checks 为准。
 
 64 项 skip 是外部数据/环境缺失，不代表正式产品/benchmark 资格。真实 API 批次、任务生成、验收执行和新版测试集发布仍需后续实现/验证。
+
+## README 流程图补齐与重绘
+
+日期：2026-10-13。本次只修改文档，补齐此前仅链接到架构文档的首页图示。
+
+- 中英文 README 各增加项目总流程与协作者运行顺序，共 4 张。
+- Harness README 增加公开捕获、独立私有评分、报告与分析流程，离线 judge 单独绘制。
+- 产品 README 增加 preflight、固定选择集、原生执行与 scorer、聚合与阶段资格检查流程。
+- 架构文档重绘详细总图，区分现有能力、待实现测试集反馈链与 Agent/模型改进研究链。
+- 用户原始 PNG 保留为设计参考；它没有被重绘或当作已实现状态图。
+
+7 个 Mermaid 图块均使用 `@mermaid-js/mermaid-cli` 12.0.0 和本机 headless Edge 实际渲染，逐图返回 0，并检查中文/英文标签、连线与布局。渲染工具仅安装到被忽略的 `.tmp/`；预览与日志位于 `runs/readme-diagrams/`，不增加项目运行依赖。
+
+实际运行 `python scripts/check_repo.py --out runs/readme-diagram-check`：398 项发现、334 项通过、64 项外部资产 skip、0 失败/错误；safe/unsafe 和 LLM 参考答案自测与上轮一致。文档检查覆盖 24 份 Markdown、104 个本地目标链接，0 悬空链接。随后只有图示布局与本验证段落调整，最终链接检查见 `runs/readme-diagram-docs-final/summary.json`。这些文档检查与合成示例不新增真实产品资格或自动演化实验结论。

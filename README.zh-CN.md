@@ -6,6 +6,44 @@
 
 **当前已实现**：四条评测线的原生入口、本地执行/私有评分/报告、统一结果分析、待验收候选计划。**尚未实现**：自动实例化新任务、执行验收、发布新版测试集、自动修复或训练 Agent/模型。
 
+## 项目总流程
+
+实线表示现有执行与分析关系；虚线和黄色节点表示待实现的反馈链。各轨道保留自己的评分口径，候选计划不会自动进入测试集。
+
+```mermaid
+flowchart TB
+    Inputs["任务、配置、版本与已有轨迹"]
+    Inputs --> QA
+    Inputs --> Execution
+    Inputs --> Product
+    Inputs --> Judge
+    subgraph Tracks["四条独立评测线"]
+        QA["llm_qa<br/>LLM 规则评测"]
+        Execution["agent_execution<br/>公开任务执行与轨迹捕获"]
+        Private["独立私有规则评分"]
+        Product["agent_product<br/>完整产品与原生环境 / scorer"]
+        Judge["trace_judge<br/>离线轨迹评审"]
+        Execution --> Private
+    end
+    QA --> Results["各轨道原生结果<br/>保留指标方向与分母"]
+    Private --> Results
+    Product --> Results
+    Judge --> Results
+    Results --> Analyze["pipeline.py analyze<br/>结果分析与证据追溯"]
+    Analyze --> Reports["观察、分组统计与报告"]
+    Analyze --> Invalid["异常 / unknown 单列<br/>排查与重跑待处理"]
+    Analyze --> Failures["有效失败观察<br/>根因尚未确认"]
+    Failures --> Plans["候选测试计划<br/>admitted=false"]
+    Plans -.-> Generate["待实现：实例化任务与攻击"]
+    Generate -.-> Gates["待实现：执行八项验收"]
+    Gates -.-> Version["待实现：发布新版测试集"]
+    Version -.-> NextRound["下一轮：按新版测试集再评测"]
+    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5,color:#24292f
+    class Generate,Gates,Version,NextRound planned
+```
+
+真实 LLM/产品运行还需凭证、外部数据与对应环境。测试集演化之外的 Agent/模型改进与留出集验证见[详细架构](docs/integration/architecture.md)。
+
 ## 从零运行
 
 已验证平台是 Windows PowerShell + Python 3.14。下面的本地验收不需要 API key、产品 CLI、Docker 或下载真实数据。在仓库根目录运行：
@@ -27,6 +65,24 @@ python -m venv .venv
 | LLM 参考答案自测 | 3/3 规则通过；直接返回答案，不调用模型 |
 
 这些结果验证管线能运行，不是模型或产品成绩。独立执行与查看结果见[上手指南](docs/getting_started.md)。
+
+### 协作者运行顺序
+
+```mermaid
+flowchart TB
+    subgraph Local["第一步：安装与本地验收"]
+        direction LR
+        Install["创建虚拟环境<br/>安装依赖"] --> Check["check_repo.py<br/>文档、测试与示例"]
+        Check --> Evidence["查看 summary.json 与日志<br/>核对通过项与 skip"]
+    end
+    subgraph Real["第二步：选择轨道并运行"]
+        direction LR
+        Choose["选择 track<br/>准备输入、配置与环境"] --> Plan["inventory / plan<br/>查看命令，不执行"]
+        Plan --> Native["调用原生入口<br/>使用新运行目录"]
+        Native --> Analyze["analyze<br/>核对结果、分母与候选"]
+    end
+    Local --> Real
+```
 
 ## 四条评测线
 

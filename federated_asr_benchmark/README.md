@@ -4,6 +4,28 @@
 
 本模块用完整产品 CLI 替换原 benchmark 的 Agent runner，保留原生任务、工具、环境与 scorer。测量产品默认系统行为、规划和工具编排；结果不能直接与原论文模型排行榜混排。
 
+## 产品评测执行链
+
+这张图描述真实运行的步骤与资格检查，不表示当前已完成这些实验。按每个产品分别统计原生 ASR；阶段放行条件见[分阶段协议](docs/staged_execution.md)。
+
+```mermaid
+flowchart TB
+    Assets["准备外部数据 / runtime / CLI<br/>锁定 profile 与 judge policy"] --> Preflight["preflight<br/>检查环境、版本、路由与 judge"]
+    Preflight --> Ready{"检查通过？"}
+    Ready -->|否| Fix["修复依赖或配置<br/>通过后重新检查"]
+    Fix --> Preflight
+    Ready -->|是| Selection["选定固定阶段集合<br/>smoke20 或放行后的 pilot100"]
+    Selection --> Run["run_product / run_product_batch<br/>每个 case 使用新产品状态"]
+    Run --> Native["原生任务、工具与环境<br/>原生 scorer 判定"]
+    Native --> Results["case_result.jsonl<br/>结果、排除理由与证据"]
+    Results --> Aggregate["aggregate_results<br/>原生 ASR、coverage 与有效性检查"]
+    Aggregate --> Gate{"阶段覆盖率与资格达标？"}
+    Gate -->|是| Next["放行下一阶段<br/>完整资格达标后才发布正式汇总"]
+    Gate -->|否| Audit["保留部分结果<br/>排查 invalid / excluded 与缺失判定"]
+    Results --> Analyze["pipeline.py analyze<br/>track=agent_product"]
+    Analyze --> Plans["攻击成功等有效失败观察<br/>候选计划 admitted=false"]
+```
+
 ## 当前资产和限制
 
 仓库有 adapter 源码、schema、registry、请求示例、固定索引和选择集。`case_index.jsonl` 的 v0.1 快照有 5,384 条：InjecAgent 1,054、MSB 2,000、AgentDojo 629、AgentLeak 496、SABER 715、AgentPoison-StrategyQA 490。索引不是原始数据或当前已完成的成绩。

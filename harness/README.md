@@ -19,6 +19,20 @@
 
 ## 原生执行链
 
+```mermaid
+flowchart TB
+    Public["公开运行任务<br/>不含私有评分规则"] --> Capture["ash.py capture<br/>Agent 执行与轨迹捕获"]
+    Capture --> Traces["traces.jsonl<br/>manifest 与环境证据"]
+    Traces --> Score["ash.py score<br/>按 task_id 配对并独立评分"]
+    Private["隔离的私有规则<br/>不传给被测 Agent"] --> Score
+    Score --> Results["results.jsonl"]
+    Results --> Report["ash.py report<br/>summary 与 report"]
+    Results --> Analyze["pipeline.py analyze<br/>track=agent_execution"]
+    Analyze --> Plans["失败与异常记录<br/>候选计划 admitted=false"]
+    Offline["已有轨迹与 judge 任务"] --> Judge["ash.py judge<br/>track=trace_judge"]
+    Judge --> JudgeResults["离线评审结果<br/>与执行轨道独立统计"]
+```
+
 下面完整使用随仓库的合成任务与示例规则：
 
 ```powershell
