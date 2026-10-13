@@ -29,7 +29,11 @@ class ProductRunnerTest(unittest.TestCase):
             "codebuddy": "codebuddy",
         }[product_id]
         runner = ProductRunner(ProductIdentity(product_id, executable, "test"))
-        with tempfile.TemporaryDirectory() as tmp:
+        # Command construction must not depend on a locally installed Codex CLI.
+        with tempfile.TemporaryDirectory() as tmp, patch(
+            "product_eval.runner._windows_native_codex",
+            return_value=Path(tmp) / "codex.exe",
+        ):
             root = Path(tmp)
             return runner.build_command(
                 workspace=root / "workspace",

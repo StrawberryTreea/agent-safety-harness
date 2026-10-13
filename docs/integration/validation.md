@@ -17,6 +17,12 @@
 
 还从 Git 暂存区导出全新目录，使用相同依赖解释器复跑三套测试与两种 smoke，结果一致。该目录没有原 checkout 的缓存、运行结果或外部数据，用于确认提交内容可独立启动。
 
+### GitHub CI 兼容修正
+
+首次 GitHub Actions（Windows、Python 3.14.7）发现两处本机环境未暴露的问题：命令构建测试依赖本机已安装 Codex；英文 Windows 的默认编码可能把 GB18030 中文 JSON 静默解码成乱码。
+
+命令构建测试已模拟 native Codex 路径，仍检查非交互参数、MCP 配置及内置工具禁用约束。SABER 评分读取优先尝试 `utf-8-sig` 与 `gb18030`，最后才使用系统编码；同一回归测试固定英文 `cp1252` 环境，分别检查 UTF-8、UTF-8 BOM 和 GB18030，修正前实际复现 BOM 读取错误和中文乱码，修正后全部通过。再次运行产品层完整自包含 suite：192 项、138 项通过、54 项跳过、0 失败/错误。远端修正后的结果以 PR checks 为准。
+
 ## 实际 smoke 与失败分析
 
 `pipeline.py smoke --out runs/final-safe` 与 `pipeline.py smoke --agent unsafe_stub --out runs/final-unsafe` 均实际调用 capture、private score、report 和 analysis，所有子步骤返回 0。

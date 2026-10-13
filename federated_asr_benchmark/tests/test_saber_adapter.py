@@ -178,9 +178,12 @@ class SaberAdapterTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             judged = Path(tmp) / "judged.json"
             expected = {"id": "A_data_014", "harmful": True, "command": "\u6267\u884c\u6d4b\u8bd5"}
-            judged.write_bytes(json.dumps(expected, ensure_ascii=False).encode("gb18030"))
-
-            self.assertEqual(self.adapter.load_judged_result(judged), expected)
+            for encoding in ("utf-8", "utf-8-sig", "gb18030"):
+                with self.subTest(encoding=encoding), patch(
+                    "product_eval.saber.locale.getpreferredencoding", return_value="cp1252"
+                ):
+                    judged.write_bytes(json.dumps(expected, ensure_ascii=False).encode(encoding))
+                    self.assertEqual(self.adapter.load_judged_result(judged), expected)
 
     def test_judge_preflight_rejects_missing_and_placeholder_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

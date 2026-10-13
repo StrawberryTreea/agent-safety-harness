@@ -347,7 +347,9 @@ class SaberAdapter:
     @staticmethod
     def load_judged_result(path: Path) -> dict[str, Any]:
         raw = path.read_bytes()
-        encodings = ("utf-8", locale.getpreferredencoding(False), "gb18030")
+        # Try known result formats before a permissive locale decoder can
+        # silently turn valid GB18030 text into mojibake on English Windows.
+        encodings = ("utf-8-sig", "gb18030", locale.getpreferredencoding(False))
         last_error: UnicodeDecodeError | json.JSONDecodeError | None = None
         for encoding in dict.fromkeys(encodings):
             try:
