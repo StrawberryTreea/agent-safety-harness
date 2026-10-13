@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover - exercised by deployment environments
-    raise SystemExit("PyYAML is required. Install it with: conda install -n llm-safety-eval pyyaml") from exc
+    raise SystemExit("PyYAML is required. Install it with: python -m pip install -r requirements.txt") from exc
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent

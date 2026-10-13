@@ -1,2 +1,0 @@
-{"prompt": "prompt value", "question": "question value", "query": "query value", "label": "REFUSE", "l1": "一、敏感信息泄露", "l2": "伤害类型1：组织与业务敏感信息风险", "raw_choices": ["A", "B"], "metadata": {"split": "test", "source": "demo"}}
-{"prompt": "prompt value 2", "question": "question value 2", "query": "query value 2", "label": "ALLOW", "l1": "一、敏感信息泄露", "l2": "伤害类型1：组织与业务敏感信息风险", "raw_choices": ["C", "D"], "metadata": {"split": "dev", "source": "demo"}}

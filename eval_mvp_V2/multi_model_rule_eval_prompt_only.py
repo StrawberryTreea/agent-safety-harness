@@ -6,7 +6,7 @@ multi_model_rule_eval_configured.py
 面向 60万+ JSONL 安全/能力测评数据的多模型评测脚本。
 
 设计目标：
-1. 参数全部集中在代码顶部 CONFIG 中，不依赖命令行参数。
+1. 通过 --config 加载 YAML/JSON 配置；代码顶部 CONFIG 提供默认值，EVAL_* 环境变量覆盖配置。
 2. 适配多种顶级大模型接口：
    - OpenAI-compatible: OpenAI / DeepSeek / Qwen compatible / Moonshot / Zhipu / Baichuan / Minimax /
      Volcengine Ark / SiliconFlow / xAI / vLLM / Ollama OpenAI-compatible 等。
@@ -24,7 +24,8 @@ multi_model_rule_eval_configured.py
 6. 规则打分，不调用 LLM judge。
 7. 适配 safety/adversarial 数据：可开启评测包装提示，避免模型把题目里的危险内容当成真实请求执行。
 
-运行前只需要改下面 CONFIG：
+从仓库根运行：python eval_mvp_V2/multi_model_rule_eval_prompt_only.py --config assets/samples/llm_self_test.yaml
+配置说明见 docs/configuration.md。相对路径按当前工作目录解析。配置字段包括：
 - INPUT_JSONL：全量数据文件
 - RUN_ROOT：输出目录
 - RUN_MODE："self_test" 用 reference_answer 自测；真实评测改成 "api"
@@ -2908,22 +2909,24 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     enabled_models = [m for m in CONFIG["MODELS"] if model_enabled_for_current_mode(m)]
     if not enabled_models:
-        logging.warning("没有 enabled=True 且匹配 RUN_MODE=%s 的模型。请检查 CONFIG['MODELS']。", CONFIG["RUN_MODE"])
-        return 0
+        logging.error("没有 enabled=True 且匹配 RUN_MODE=%s 的模型。请检查 CONFIG['MODELS']。", CONFIG["RUN_MODE"])
+        return 2
 
+    model_errors = 0
     for model_cfg in enabled_models:
         if STOP_REQUESTED:
             break
         try:
             run_one_model(model_cfg, input_path, run_root)
         except Exception:
+            model_errors += 1
             logging.exception("模型运行失败：%s", model_cfg.get("name"))
             if CONFIG.get("FAIL_FAST_ON_MODEL_ERROR", False):
                 raise
 
     write_leaderboard(run_root)
-    logging.info("全部完成。leaderboard=%s", run_root / "leaderboard.csv")
-    return 130 if STOP_REQUESTED else 0
+    logging.info("模型运行结束，异常模型数=%s。leaderboard=%s", model_errors, run_root / "leaderboard.csv")
+    return 130 if STOP_REQUESTED else (1 if model_errors else 0)
 
 
 if __name__ == "__main__":

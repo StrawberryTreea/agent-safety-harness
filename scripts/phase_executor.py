@@ -255,11 +255,12 @@ def phase_checks(phase: str, models: Optional[str], intake_config: Optional[Path
         checks.append(path_check("result_analyzer_exists", REPO_ROOT / "scripts/result_analysis.py"))
     if models:
         checks.append(CheckResult(name="requested_models", status="info", severity="audit", detail=models))
+    if phase in {"phase6", "phase7", "phase8"}:
+        checks.append(CheckResult("phase_implementation", "fail", "fatal", "Reserved phase: no runnable executor is bundled in this repository."))
     return checks
 
 
 def phase_commands(phase: str, models: Optional[str], manifest: Optional[Path]) -> List[str]:
-    model_arg = models or "doubao_seed_2_0_pro_full"
     intake_config_arg = f' --intake-config "{manifest}"' if manifest is not None else ""
     commands: List[str] = []
     if phase == "phase1":
@@ -301,48 +302,6 @@ def phase_commands(phase: str, models: Optional[str], manifest: Optional[Path]) 
         commands.append(f'python "{PATHS["main_eval_script"]}" --config "{PATHS["phase3_run_config"]}"')
     elif phase == "phase5":
         commands.append(f'python "{PATHS["main_eval_script"]}" --config "<full_run_config.yaml>"')
-    elif phase == "phase6":
-        commands.append(
-            "python rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py "
-            f"--base-script eval_mvp_V2/multi_model_rule_eval_prompt_only.py "
-            f"--input-jsonl {PATHS['canonical_dataset']} "
-            f"--run-root {PATHS['delta_output_root']} "
-            f"--models {model_arg} --rerun-api-errors"
-        )
-        commands.append(
-            "python rule_eval_mvp/incremental_tools/run_append_only_eval.py "
-            f"--base-script eval_mvp_V2/multi_model_rule_eval_prompt_only.py "
-            "--input-jsonl <new_dataset_jsonl> "
-            f"--run-root {REPO_ROOT / 'rule_eval_mvp' / 'output_append_delta'} "
-            f"--models {model_arg}"
-        )
-    elif phase == "phase7":
-        commands.append(
-            "python rule_eval_mvp/incremental_tools/merge_v2_incremental_results.py "
-            f"--base-script eval_mvp_V2/multi_model_rule_eval_prompt_only.py "
-            f"--base-run-root {PATHS['legacy_output_root']} "
-            f"--delta-run-root {PATHS['delta_output_root']} "
-            f"--merged-run-root {PATHS['merged_output_root']} "
-            f"--deleted-ids {PATHS['deleted_ids']} "
-            f"--v2-final-jsonl {PATHS['canonical_dataset']} "
-            f"--models {model_arg}"
-        )
-        commands.append(
-            "python rule_eval_mvp/incremental_tools/rebuild_merged_summaries.py "
-            f"--base-script eval_mvp_V2/multi_model_rule_eval_prompt_only.py "
-            f"--merged-run-root {PATHS['merged_output_root']} "
-            f"--models {model_arg}"
-        )
-        commands.append(
-            "python rule_eval_mvp/incremental_tools/publish_v2_final_authoritative_results.py "
-            f"--base-script eval_mvp_V2/multi_model_rule_eval_prompt_only.py "
-            f"--source-root {PATHS['merged_output_root']} "
-            f"--publish-root {PATHS['authoritative_output_root']} "
-            f"--canonical-dataset {PATHS['canonical_dataset']} "
-            f"--models {model_arg}"
-        )
-    elif phase == "phase8":
-        commands.append("python build_v2_final_dataset_report.py")
     elif phase == "phase9":
         commands.append(f'python "{REPO_ROOT / "pipeline.py"}" inventory')
         commands.append(f'python "{REPO_ROOT / "pipeline.py"}" plan --track agent_execution --tasks "<public_tasks.jsonl>" --private-rules "<private_rules.jsonl>"')
@@ -400,6 +359,7 @@ def build_phase_record(
     metadata = PHASE_METADATA[phase]
     record: Dict[str, object] = {
         "phase": phase,
+        "implementation_status": "reserved" if phase in {"phase6", "phase7", "phase8"} else "implemented",
         "title": metadata["title"],
         "summary": metadata["summary"],
         "artifacts": metadata["artifacts"],

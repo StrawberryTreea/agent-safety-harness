@@ -1,4 +1,6 @@
-# 整合验证记录
+# 整合与清理验证记录
+
+最新协作者验收见本文件末尾。下面的首轮迁移记录对应 bff2ef 提交之前/当时的工作；其计数和资产存在性不是清理后的当前状态。
 
 验证日期：2026-10-13。环境：Windows PowerShell、Python 3.14.4、仓库本地 `.venv` 与 `requirements-dev.txt`。下列结果来自本机实际执行；GitHub Actions 的结果单独以 PR checks 为准。
 
@@ -55,8 +57,32 @@ AgentPoison 已改用公共解释器配置，并设置 `AGENTPOISON_PYTHON`。�
 
 四条 track 均生成了执行计划，检查 argv、cwd、输入路径及 `executed=false`。LLM 计划只检查配置文件路径；canonical 数据和 API 运行条件尚未满足。SABER `saber:A_code_007` 的 Codex 请求实际 dry-run 返回 `status=dry_run`，未调用产品执行或 scorer，也未生成正式 case_result。
 
-370 个迁移源文件均存在且未被 `.gitignore` 意外排除。原始数据、第三方 runtime、虚拟环境与历史 runs 不进入此次提交。验证日志、smoke manifests 和重建索引保存在本地被忽略的 `runs/`。
+首轮迁移检查时 370 个迁移源文件均存在且未被 `.gitignore` 意外排除；清理后删除项见 cleanup.md 和 migration manifest 的 dispositions。原始数据、第三方 runtime、虚拟环境与历史 runs 不进入此次提交。验证日志、smoke manifests 和重建索引保存在本地被忽略的 `runs/`。
 
 ## 当前证据边界
 
 本轮验证支持代码迁移、统一入口、指标边界与失败分析交接。尚未执行真实付费 LLM/产品批次、生成新攻击任务、运行八项验收、发布新测试集、自动修复或训练 Agent/模型。固定索引、source integration 和 mock 检查不证明官方 benchmark 的完整资格，也不证明闭环提高了安全性。
+
+
+## 协作者清理后的最新验收
+
+日期：2026-10-13。Windows PowerShell、Python 3.14.4；安装入口是 requirements-dev.txt → requirements.txt。当前实现与删除记录见 [cleanup.md](cleanup.md)。
+
+实际执行 `python scripts/check_repo.py --out runs/cleanup-check`，再从 Git 暂存源码 tree `3873a07c54847a96559b99f853b706c1f2f20e0a` 导出无 .venv/runs/缓存的新目录，创建全新虚拟环境、安装依赖、运行同一验收入口。两次结果一致：
+
+| 范围 | 发现 | 通过 | 跳过 | 失败/错误 |
+|---|---:|---:|---:|---:|
+| 根测试（含 reserved phase 与 evaluator 退出码回归） | 36 | 36 | 0 | 0 |
+| Harness | 170 | 160 | 10 | 0 |
+| 产品模块 | 192 | 138 | 54 | 0 |
+| 合计 | 398 | 334 | 64 | 0 |
+
+- 文档：24 份 Markdown、100 个本地目标链接，0 个悬空链接。
+- safe/unsafe 实际调用 capture → 私有 score → report → analyze，分别 3/3、1/3 通过，候选计划分别 0、2，接纳均为 0。
+- LLM 三条多选题参考答案自测：3 条 success/pass，分析中 0 unknown、0 候选、0 接纳。没有调用模型 API。
+- 新环境安装了 PyYAML 6.0.3、jsonschema 4.26.0、psutil 7.2.2 及其依赖。
+- 全新源码不含旧工作区数据或运行输出；验证 tree 之后的改动仅为文档记录，不修改已测源码。
+
+本地日志保存在被忽略的 `runs/cleanup-check/`，新安装记录在 `.tmp/collaborator-clean-20261013/runs/fresh-install-check/`。summary.json 逐步骤记录 returncode、测试通过/跳过数及示例结果。CI 同样运行 scripts/check_repo.py，并通过 acceptance-logs artifact 保存证据；远端结论以当前 PR 的最新 checks 为准。
+
+64 项 skip 是外部数据/环境缺失，不代表正式产品/benchmark 资格。真实 API 批次、任务生成、验收执行和新版测试集发布仍需后续实现/验证。

@@ -1,0 +1,13 @@
+# Run from the repository root. No network or API credentials are used.
+evaluator_config:
+  input_jsonl: assets/samples/llm_qa_demo.jsonl
+  run_root: runs/llm-self-test
+  run_mode: self_test
+  models:
+    - name: self_test_reference
+      provider: self_test
+      enabled: true
+      model: reference_answer
+      max_workers: 1
+      rpm: 1000000
+      tpm: 100000000

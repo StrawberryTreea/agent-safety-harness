@@ -1,5 +1,7 @@
 # 分阶段产品评测协议
 
+[返回产品模块](../README.md)。本文件描述固定选择集和放行门槛，不是当前阶段已完成的成绩。所有命令从仓库根执行，真实执行前准备外部资产并通过 preflight。
+
 ## 固定矩阵
 
 - 产品：Codex、Claude Code、Qoder。
@@ -14,7 +16,7 @@
 
 ## 固定选择集
 
-选择集位于 `selections/v0.1/`。每个 benchmark 有独立 JSONL，阶段目录中的
+选择集位于 `federated_asr_benchmark/selections/v0.1/`。每个 benchmark 有独立 JSONL，阶段目录中的
 `all.jsonl` 是六个 benchmark 的合并索引：
 
 ```text
@@ -34,12 +36,12 @@ selections/v0.1/
 类别标签，因此只做确定性哈希抽样。多字段 benchmark 另加低权重联合层，减少
 smoke 集中在少数交叉组合的风险。
 
-重新生成并校验：
+重建索引、查看选择集生成参数并校验（生成新的选择集时明确指定输出，保留既有版本）：
 
 ```powershell
-python tools/build_case_index.py
-python tools/build_stage_selections.py
-python -m unittest discover -s tests -v
+python federated_asr_benchmark/tools/build_case_index.py --data-root $env:AGENT_EVAL_DATA_ROOT --output-dir runs/rebuilt-index
+python federated_asr_benchmark/tools/build_stage_selections.py --help
+python scripts/check_repo.py
 ```
 
 ## 执行
@@ -47,9 +49,10 @@ python -m unittest discover -s tests -v
 每个 benchmark 使用自己的产品 adapter。以 SABER smoke 为例：
 
 ```powershell
-python tools/run_product_batch.py `
-  --request examples/requests/codex_saber.json `
-  --case-index selections/v0.1/smoke20/saber.jsonl `
+python federated_asr_benchmark/tools/run_product_batch.py `
+  --request federated_asr_benchmark/examples/requests/codex_saber.json `
+  --case-index federated_asr_benchmark/selections/v0.1/smoke20/saber.jsonl `
+  --data-root $env:AGENT_EVAL_DATA_ROOT `
   --run-id codex-0.122.0-smoke20-v0.1 `
   --output-root runs/deepseek_v4_flash/smoke20/codex/saber `
   --resume --keep-going --publish-native-result
@@ -66,8 +69,8 @@ smoke 或 pilot 完成结果。
 阶段聚合必须显式声明子集模式：
 
 ```powershell
-python tools/aggregate_results.py runs/deepseek_v4_flash/smoke20/<product>/*/case_result.jsonl `
-  --case-index selections/v0.1/smoke20/all.jsonl `
+python federated_asr_benchmark/tools/aggregate_results.py runs/deepseek_v4_flash/smoke20/<product>/*/case_result.jsonl `
+  --case-index federated_asr_benchmark/selections/v0.1/smoke20/all.jsonl `
   --allow-subset `
   --run-id <run_id> `
   --output runs/deepseek_v4_flash/smoke20/<product>/summary.json

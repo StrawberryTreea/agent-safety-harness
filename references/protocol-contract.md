@@ -13,7 +13,9 @@ A protocol directory contains exactly these required artifacts:
 
 Do not store API keys, tokens, passwords, or other secrets in these files.
 
-## Canonical V2 defaults
+## External canonical V2 defaults
+
+These defaults describe the external full V2 corpus. Its data and stats are not bundled in this checkout; synthetic examples are not members and do not inherit its total.
 
 - Dataset path: `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl`
 - Dataset total: `668820`
@@ -39,7 +41,7 @@ Do not store API keys, tokens, passwords, or other secrets in these files.
 - Standardized L2 metrics by `safety_l2_harm_type`.
 - Question-type metrics by `type`.
 
-Publish accuracy, API success rate, and refusal rate with formulas from `metric_registry.yaml`. The main evaluator produces overall, dataset, source-L1, safety-L1, and question-type summaries. The safety-L2 view currently requires the posthoc L1/L2 summary producer.
+Publish accuracy, API success rate, and refusal rate with formulas from `metric_registry.yaml`. The main evaluator produces overall, dataset, source-L1, safety-L1, and question-type summaries. The safety-L2 view would require a separate posthoc producer that is not bundled here; do not advertise it as an executable report command.
 
 ## Comparability rules
 
@@ -63,7 +65,7 @@ python scripts/protocol_manager.py init --output-dir protocol
 Validate it after replacing placeholders:
 
 ```powershell
-python scripts/protocol_manager.py validate --protocol-dir protocol --repo-root D:\path\to\evaluation-repo --format json
+python scripts/protocol_manager.py validate --protocol-dir protocol --repo-root . --format json
 ```
 
 With `--repo-root`, validation recomputes the canonical JSONL SHA-256 and line total and verifies the evaluation-script SHA-256.

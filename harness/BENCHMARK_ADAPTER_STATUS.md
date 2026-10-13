@@ -1,45 +1,24 @@
-# Benchmark 适配状态
+# Adapter 状态与正式准入
 
-“数据已导入”“工具环境可执行”“规则可评估”“可进入正式集”是四个不同状态。
-只有最后一个状态的任务才能用于模型排名。
+本文件描述代码契约，不把迁移来源的个人实验计数或抽检成绩当成当前 checkout 的能力。
 
-## 当前结论
+## 四种状态
 
-- 聚合执行候选任务：`18,136` 条。
-- 同时具备两项确定性规则：`0` 条。
-- 已接入固定官方工具环境：Agent-SafetyBench。
-- 已完成真实 CLI 端到端验证：Agent-SafetyBench 案例 388，以及 6 条人工审核规则的官方环境抽检。
-- Codex 六题实际抽检结果：安全违规率 `50.0%`，任务完成率 `66.7%`；仅代表该校准小样本。
-- CodeBuddy + DeepSeek V4 Flash 出现未解析 DSML 工具协议，已按 `unknown` 排除；Qoder 隔离登录需重建。
-- 当前不得发布所谓 18,136 条全集的模型安全率。
+| 状态 | 必需证据 | 不能据此声称 |
+|---|---|---|
+| 来源已映射 | 原始字段、provenance、TaskSpec 校验 | 原生环境已执行 |
+| 工具环境可执行 | 版本、工具 schema、状态变化与轨迹 | 评分 oracle 已成立 |
+| 私有规则可评估 | 规则 ID、命中证据、可重放、unknown 路径 | 全集有正式资格 |
+| 正式任务集可用 | 上述证据、许可、去重、隔离、验收清单与覆盖率 | 其他版本/产品也合格 |
 
-## 来源状态
+具体入口见 [Harness README](README.md)、[benchmark 配置](config/benchmarks.json)、[来源导入配置](config/benchmark_imports.json)、[adapter 实现](src/agent_safety_harness/adapters)。产品原生 adapter 另见[产品模块](../federated_asr_benchmark/README.md)。
 
-| Benchmark | 候选数 | 环境状态 | 规则状态 |
-|---|---:|---|---|
-| Agent-SafetyBench | 2,000 | 固定官方环境和工具 schema 已接入 | 待逐题审核；案例 388 已验证 |
-| AgentDojo | 184 | 官方仓库存在 | 执行单元需重建为 user task x injection task x attack |
-| AgentHarm | 468 | 本地仅数据 | 无可靠规则，不能正式运行 |
-| AgentHazard | 2,653 | 本地仅数据 | 无环境和规则 |
-| AgentLAB | 2,028 | 仓库存在 | 需去除约 1,698 条内嵌 ASB 重复后适配 |
-| AgentLeak | 100 | 仓库存在 | 待适配环境和规则 |
-| CUAHarm | 52 | 需要 VM/OSWorld | 待适配任务 evaluator |
-| InjecAgent | 510 | 仓库存在 | 待映射目标工具和攻击工具规则 |
-| MCPTox | 485 | 数据和代码存在 | 待固定环境版本和规则 |
-| MSB | 1,560 | MCP 场景存在 | 待适配攻击成功规则 |
-| OpenAgentSafety | 356 | 每题环境材料存在 | 只接收可改写为确定性规则的任务 |
-| RAS-Eval | 3,802 | 仓库存在 | 待适配环境和轨迹规则 |
-| SABER | 716 | 工作区环境存在 | 待适配状态变化规则 |
-| ST-WebAgentBench | 3,057 | 当前主要是数据快照 | 缺浏览器运行环境和规则 |
-| ToolEmu | 144 | 仓库存在 | 原 LLM rubric 不直接进入正式流程 |
-| WASP | 21 | WebArena 环境存在 | 待适配注入成功规则 |
+## 评分规则
 
-`R-Judge` 的 521 条是离线轨迹分类数据，不属于 Agent 执行任务，不与上述两个指标混算。
+- 私有 oracle 不进入公开任务或被测产品提示。
+- safety_violation 与 task_success 独立；缺完成规则的攻击任务没有完成率分母。
+- 环境、工具、规则错误输出 unknown，不能补成安全通过。
+- 确定性命中需要规则与执行证据；人工/LLM judge 保留不同契约。
+- 源数据规模、固定索引和 mock 结果不等于正式可评分集。
 
-## 统一准入原则
-
-1. 优先复用官方环境、工具 schema、状态机和确定性 evaluator。
-2. 官方 LLM judge 不进入分发包；无法可靠规则化的样本排除。
-3. 每条规则必须可解释、可重放，并保存规则 ID 与命中证据。
-4. 环境失败、工具不可用、规则失败均输出 `unknown`，不计入指标。
-5. 打包时缺少任一规则即失败，不能先运行再补判。
+当前自包含证据和外部验证的限制统一记录在[验证记录](../docs/integration/validation.md)。新增/更新 adapter 要提交对应环境、规则、失败与 unknown 回归。

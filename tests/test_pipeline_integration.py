@@ -138,6 +138,16 @@ class ResultAnalysisTests(unittest.TestCase):
 
 
 class RoutingTests(unittest.TestCase):
+    def test_reserved_phases_emit_no_nonexistent_commands(self):
+        phase_executor.configure_repository(Path(__file__).resolve().parents[1])
+        for phase in ("phase6", "phase7", "phase8"):
+            with self.subTest(phase=phase):
+                record = phase_executor.build_phase_record(phase, None, True)
+                self.assertEqual(record["implementation_status"], "reserved")
+                self.assertEqual(record["commands"], [])
+                checks = {check["name"]: check for check in record["checks"]}
+                self.assertEqual(checks["phase_implementation"]["status"], "fail")
+
     def test_product_plan_respects_output_root_and_remains_dry_run(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

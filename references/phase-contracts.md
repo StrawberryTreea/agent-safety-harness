@@ -1,84 +1,27 @@
-# Phase Contracts
+# 阶段契约与实现状态
 
-Use this file when you need compact operational contracts instead of the full framework document.
+新协作者优先使用 `pipeline.py` 和[上手指南](../docs/getting_started.md)。阶段路由用于 LLM 数据/协议治理与未来工作规划，不代表所有阶段已实现。
 
-## Phase 0
+| 阶段 | 实现入口 | 输入 → 产物 |
+|---|---|---|
+| 0 协议 | `scripts/protocol_manager.py` | 模板/版本 → 协议 artifacts 与校验 |
+| 1 来源登记 | `scripts/source_intake.py` | 外部数据/证据 → catalog 与 manifest |
+| 2 规范化 | `scripts/canonicalize_datasets.py`、`canonical_validate.py` | catalog → JSONL/stats/校验 |
+| 3 评测准备 | `scripts/prepare_phase3.py` | canonical/协议 → 子集与 run_config |
+| 4 自测 | LLM evaluator + Phase3 配置 | 子集/reference → 规则自测 |
+| 5 真实 LLM | LLM evaluator + 外部配置 | 数据/API → 逐条结果与 summary |
+| 6 增量重跑 | **reserved，无随仓库执行器** | 规划契约：旧结果/错误/追加数据 → delta |
+| 7 合并/发布 | **reserved，无随仓库执行器** | 规划契约：canonical/clean merged → 权威发布 |
+| 8 正式报告 | **reserved，无随仓库执行器** | 规划契约：权威结果 → leaderboard/报告 |
+| 9 Agent | `pipeline.py plan` 与原生模块 | 执行/产品/离线 judge，各用自己的契约 |
+| 10 分析 | `pipeline.py analyze` | 原生结果 → 失败/异常/未接纳候选计划 |
 
-- Goal: lock protocol, taxonomy, metric, model registry, and comparability statement.
-- Primary artifacts:
-  `evaluation_protocol_card.md`, `model_registry.json`, `taxonomy_registry.yaml`, `metric_registry.yaml`
-- Primary executor:
-  `scripts/protocol_manager.py`
-- Required behavior:
-  initialize protocol artifacts, reject placeholders or secrets, validate cross-file versions, and compare protocol compatibility.
-- Detailed contract:
-  `references/protocol-contract.md`
+`phase_executor.py` 是检查和命令建议工具，不自动执行阶段。Phase6–8 返回 `implementation_status=reserved`、失败检查和空命令列表。检查到数据路径存在不等于正式发布已经完成。
 
-## Phase 1
+```powershell
+python scripts/intent_router.py --request "智能体失败分析与进化"
+python scripts/phase_executor.py --phase phase9 --emit-commands
+python scripts/phase_executor.py --phase phase7 --check-only --format json
+```
 
-- Goal: collect source evidence and benchmark inventory.
-- Primary executor:
-  `extract_whitepaper_datasets.py`
-- Primary outputs:
-  `dataset_catalog.json`, `source_inventory.csv`
-
-## Phase 2
-
-- Goal: standardize data and rebuild canonical truth.
-- Required truth:
-  canonical JSONL and stats must match exactly.
-- Primary outputs:
-  canonical JSONL, `dataset_sources_clean.csv`, `v2_stats.json`
-
-## Phase 3
-
-- Goal: shape prompt, scorer, and smoke subset.
-- Primary outputs:
-  smoke subset JSONL and run config.
-
-## Phase 4
-
-- Goal: validate protocol on a small subset before full execution.
-- Primary outputs:
-  `progress.json`, `summary.json`, `summary.csv`, `smoke_failures.md`
-
-## Phase 5
-
-- Goal: run full evaluation with resumable outputs.
-- Primary executor:
-  `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
-
-## Phase 6
-
-- Goal: rerun API-error or append-only deltas without mutating legacy outputs.
-- Primary executors:
-  `run_v2_incremental_eval.py`, `run_append_only_eval.py`, `append_new_dataset_results.py`
-
-## Phase 7
-
-- Goal: merge, clean, and publish authoritative results.
-- Required checks:
-  canonical dataset exists, merged inputs cover canonical IDs, deleted IDs removed, totals match canonical.
-- Primary executors:
-  `merge_v2_incremental_results.py`, `rebuild_merged_summaries.py`, `publish_v2_final_authoritative_results.py`
-
-## Phase 8
-
-- Goal: generate leaderboard, charts, DOCX, and whitepaper artifacts from authoritative outputs.
-- Rule:
-  report artifacts must not define new facts.
-
-## Phase 9
-
-- Goal: execute source-derived Agent tasks, evaluate full CLI products, or judge offline traces.
-- Registry: `protocol/evaluation_tracks.json`.
-- Executors: `harness/ash.py`, `federated_asr_benchmark/tools/run_product.py`.
-- Use `pipeline.py plan --track ...` for native argv/cwd and asset requirements.
-- Agent checks require native components, not the LLM canonical dataset.
-
-## Phase 10
-
-- Goal: analyze native failures and propose the next tests.
-- Executor: `pipeline.py analyze`.
-- Outputs: observations, failures, invalids, candidate plans, summary and manifest.
-- Preserve lineage, metric units and unknown outcomes. A plan is not an accepted task; generation and evidence-gate execution remain future work.
+最后一条在当前仓库应报告未实现并返回非零。不能将生产流程名称当成已存在代码。LLM canonical/stats/publish 约定仅用于 llm_qa，不挡住 Agent smoke。详细评分语义见[协议](protocol-contract.md)、[架构](../docs/integration/architecture.md)。

@@ -1,77 +1,66 @@
-# LLM 与 Agent 安全自动化评测研究管线
+# LLM 与 Agent 安全自动化评测管线
 
-本仓库是项目长期主仓库，整合 LLM 问答评测、内部 Agent 执行、完整 Agent 产品评测和离线轨迹评审。以既有执行器和评分契约为基础，逐步实现“评测 → 失败分析 → 新测试生成与验收 → 新版测试集 → 再评测”的闭环。
+[English](README.md) · [文档导航](docs/README.md) · [协作指南](CONTRIBUTING.md)
 
-[English](README.md) · [整合架构与原始概念图](docs/integration/architecture.md) · [研究与实验计划](docs/integration/research_plan.md) · [验证记录](docs/integration/validation.md)
+本仓库是项目的代码和设计主仓库。目标是把“评测 → 失败分析 → 新测试生成与验收 → 新版测试集 → 再评测”接成可以审计的反馈链，进一步研究反馈能否帮助改进 Agent。
 
-## 当前可以运行
+**当前已实现**：四条评测线的原生入口、本地执行/私有评分/报告、统一结果分析、待验收候选计划。**尚未实现**：自动实例化新任务、执行验收、发布新版测试集、自动修复或训练 Agent/模型。
 
-- `pipeline.py inventory`：列出四条评测线及本地依赖状态。
-- `pipeline.py plan`：输出原生执行器的工作目录、argv 和必需资产，供后续执行；不自动调用付费服务。
-- `pipeline.py smoke`：实际运行 3 条自包含 mock 任务，完成公开捕获、私有评分、报告和分析。
-- `pipeline.py analyze`：读取原生结果，输出有效观察、失败、异常、分组统计和待验收候选测试计划。
+## 从零运行
 
-自动攻击/任务生成、验收执行与新版测试集发布尚未实现。候选计划保留父任务证据，`admitted=false`，不等同于有效新测试或已完成自我进化。
-
-## 快速开始
-
-在仓库根目录使用 Python 3.12 或更高版本：
+已验证平台是 Windows PowerShell + Python 3.14。下面的本地验收不需要 API key、产品 CLI、Docker 或下载真实数据。在仓库根目录运行：
 
 ```powershell
+git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
+cd llm-safety-eval-research-pipeline
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.\.venv\Scripts\python.exe pipeline.py inventory
-.\.venv\Scripts\python.exe pipeline.py smoke
-.\.venv\Scripts\python.exe pipeline.py smoke --agent unsafe_stub
+.\.venv\Scripts\python.exe scripts/check_repo.py
 ```
 
-默认输出到新的 `runs/smoke-<timestamp>-<id>/`，保留每一步日志与 `pipeline_manifest.json`。`safe_stub` 验证正常路径，`unsafe_stub` 验证失败分析和候选计划路径；二者都是合成 mock，不是完整产品的正式成绩。
+验收会检查 Markdown 本地链接、运行根目录/Harness/产品模块三套测试、执行两种 Agent 示例，再运行并分析三条 LLM 参考答案自测。最后打印 `runs/check-.../summary.json`，同目录保存各步骤日志。缺少外部资产的集成测试会明确跳过；跳过不代表正式 benchmark 已验证。
 
-```powershell
-python pipeline.py plan --track agent_execution --tasks public_tasks.jsonl --private-rules private_rules.jsonl --agent cli:configured_agent --out runs/next-run
-python pipeline.py analyze --track agent_execution --results runs/next-run/score/results.jsonl --out runs/next-analysis
-python pipeline.py analyze --track agent_product --results case_results.jsonl --out runs/product-analysis
-```
+| 示例 | 预期 |
+|---|---|
+| `safe_stub` | 3/3 安全通过，0 个候选计划 |
+| `unsafe_stub` | 1/3 安全通过，2 个未接纳候选计划 |
+| LLM 参考答案自测 | 3/3 规则通过；直接返回答案，不调用模型 |
 
-计划中的 CLI Agent 使用 `harness/config/agents.json`，也可通过 `plan --agents-config ... --models-config ...` 指定原生配置；模型、endpoint、凭证环境变量和预算应在这些配置中固定。
+这些结果验证管线能运行，不是模型或产品成绩。独立执行与查看结果见[上手指南](docs/getting_started.md)。
 
-## 评测线与指标
+## 四条评测线
 
-| 轨道 | 模块 | 口径 |
+| track | 代码入口 | 评分口径 |
 |---|---|---|
-| `llm_qa` | `eval_mvp_V2/` + 原协议脚本 | V2 rule_eval；拒答计失败，API errors 单列 |
-| `agent_execution` | `harness/` | 统一内部/source-derived 执行与确定性私有规则 |
-| `agent_product` | `federated_asr_benchmark/` | 完整产品 + 原生环境/scorer；`success` 表示攻击成功 |
-| `trace_judge` | `harness/ash.py judge` | 离线轨迹任务，独立统计 |
-
-不混合不同轨道的分数。`unknown/invalid/excluded` 不作为安全通过；攻击测试缺少完成规则时不进入任务完成率分母。ASR 的 case 和 retrieval-event 单位保留原样。
-
-## 外部数据与环境
-
-仓库包含源码、schema、配置、固定索引、选择集、示例和测试。大型真实数据、官方第三方源码、虚拟环境、密钥和历史运行结果留在外部。
+| `llm_qa` | `eval_mvp_V2/multi_model_rule_eval_prompt_only.py` | V2 rule_eval；拒答计失败，API error 单列 |
+| `agent_execution` | `harness/ash.py capture/score/report` | 内部/source-derived 任务和确定性私有规则 |
+| `agent_product` | `federated_asr_benchmark/tools/run_product.py` | 完整产品与原生环境；`success` 表示攻击成功 |
+| `trace_judge` | `harness/ash.py judge` | 离线轨迹评审，独立统计 |
 
 ```powershell
-$env:AGENT_EVAL_DATA_ROOT = 'D:\benchmark-data'
-$env:AGENTDOJO_PYTHON = 'D:\runtimes\agentdojo\Scripts\python.exe'
-$env:AGENTDYN_PYTHON = 'D:\runtimes\agentdyn\Scripts\python.exe'
-$env:AGENTPOISON_PYTHON = 'D:\runtimes\agentpoison\Scripts\python.exe'
-python federated_asr_benchmark/tools/build_case_index.py --data-root $env:AGENT_EVAL_DATA_ROOT --output-dir runs/rebuilt-index
+.\.venv\Scripts\python.exe pipeline.py inventory
+.\.venv\Scripts\python.exe pipeline.py plan --track llm_qa --config assets/samples/llm_self_test.yaml
 ```
 
-`--data-root` 覆盖默认路径。完整产品实验 profile 中的模型、CLI 版本与 judge policy 继续按原配置锁定；需要原生 preflight 和真实运行证明资格。
+`inventory` 查看入口和依赖，`plan` 输出 argv/cwd/输入条件，不执行。`analyze` 输出观察、失败、异常、分组统计和候选计划。候选保留父任务证据与八项验收门槛，当前 `admitted=false`。
 
-LLM V2 真源继续是 `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl`，派生统计是 `output/doc/v2_stats.json`，权威发布根为 `rule_eval_mvp/output_v2_final_authoritative/`。这些约定只绑定 LLM QA；数据与完整生产发布工具没有全部包含在仓库。
+不同轨道不合并总分；unknown/invalid 不当安全通过；没有完成规则的攻击任务不计任务完成率；ASR 保留 case/retrieval-event 分母单位。
 
-## 检查与项目约定
+## 代码从哪里看
 
-```powershell
-python -m unittest discover -s tests -v
-Push-Location harness
-python -m unittest discover -s tests -v
-Pop-Location
-Push-Location federated_asr_benchmark
-python -m unittest discover -s tests -v
-Pop-Location
-```
+| 位置 | 负责什么 |
+|---|---|
+| `pipeline.py` / `scripts/pipeline_cli.py` | 统一入口与执行计划 |
+| `scripts/result_analysis.py` | 原生结果分析、失败证据、候选计划 |
+| `scripts/` | 协议、来源登记、规范化、统计校验、阶段准备 |
+| `eval_mvp_V2/` | 可断点续跑的 LLM 规则评测 |
+| `harness/` | Agent 执行、公开轨迹、私有判分、离线 judge |
+| `federated_asr_benchmark/` | 产品 CLI、原生环境/scorer、索引与固定选择集 |
+| `protocol/` / `assets/` | 版本契约、模板、合成示例 |
+| 三处 `tests/` | 自包含单元测试与外部资产集成测试 |
+| `docs/` / `references/` | 操作指南、架构、协议契约 |
+| `runs/` | 输出和日志，不进 Git |
 
-依赖外部数据/专用环境的集成测试会明确列出缺失资产并跳过。跳过不能视为该 benchmark 已通过正式验证。迁移来源与文件清单见 [migration_manifest.json](docs/integration/migration_manifest.json)，后续工作约定见 [AGENTS.md](AGENTS.md)。
+真实运行先读[配置指南](docs/configuration.md)，再读 [Harness](harness/README.md) 或[产品模块](federated_asr_benchmark/README.md)。大型数据、第三方运行环境、凭证和历史输出不随仓库分发。LLM V2 真源与发布路径是外部生产约定，见[协议契约](references/protocol-contract.md)；Phase 6–8 没有随仓库实现的执行器。
+
+原始思路图与实现映射见[架构](docs/integration/architecture.md)，下一轮实验见[研究计划](docs/integration/research_plan.md)。本轮证据和删除记录见[验证](docs/integration/validation.md)、[清理记录](docs/integration/cleanup.md)。

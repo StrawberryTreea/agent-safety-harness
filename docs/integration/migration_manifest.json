@@ -398,5 +398,215 @@
         "tools/windows_dpapi_credential.ps1"
       ]
     }
-  }
+  },
+  "snapshot_commit": "bff2ef47914dde37a343d7d498614752ad6af23d",
+  "inventory_kind": "historical_migration_source_snapshot",
+  "current_checkout_note": "Historical source inventory, not a list of currently present files. See cleanup_dispositions and cleanup.md.",
+  "cleanup_dispositions": [
+    {
+      "path": "docs/phase1_phase2_phase3_handoff.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "environment.yml",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/agent_security_evaluation_briefing_zh.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/codebuddy_candidate_qualification.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/current_status.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/dataset_taxonomy_asr_report_zh.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/design_assessment.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/qoder_route_audit.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/sample_logs_zh.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/successful_attack_case_bilingual.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/docs/v02_smoke_status.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/tools/build_taxonomy_asr_report.py",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "federated_asr_benchmark/tools/run_remaining20.py",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/ENTERPRISE_API_AND_DISTRIBUTION.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/PARALLEL_CLI_EVAL.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/docs/mvp_task_allocation.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/docs/project_positioning.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/docs/unified_sandbox_runner.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/tools/classify_three_agent_results.py",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/tools/correct_ras_ambiguous_matchers.py",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "harness/tools/curate_datasets.py",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/intake.yaml",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_ready/dataset_catalog.json",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_ready/evidence_inventory.jsonl",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_ready/source_inventory.csv",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_review/dataset_catalog.json",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_review/evidence_inventory.jsonl",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_review/manifests/pending/ambiguous_typed.pending.yaml",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase1_review/source_inventory.csv",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase2/canonical.jsonl",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase2/canonicalization_report.json",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase2/dataset_sources_clean.csv",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase2/membership_diff.json",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase2/quarantine.jsonl",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/phase2/stats.json",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/protocol/canonical_schema.yaml",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/protocol/evaluation_protocol_card.md",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/protocol/metric_registry.yaml",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/protocol/model_registry.json",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/protocol/taxonomy_registry.yaml",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    },
+    {
+      "path": "work/phase12_demo/raw/ambiguous_typed.jsonl",
+      "disposition": "removed",
+      "reason": "Obsolete one-off tool or historical documentation; generated phase demo outputs removed from source checkout."
+    }
+  ]
 }
