@@ -2,8 +2,6 @@
 
 以下所有命令在仓库根目录运行。当前验证平台：Windows PowerShell、Python 3.14。真实 benchmark 的解释器可能不同，见[配置](configuration.md)。
 
-V1 的 [PR #2](https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline/pull/2) 合并前，先执行 `git switch integrate-llm-agent-pipeline`。默认 `main` 尚未包含本轮整理；合并后使用 `main`。
-
 ## 1. 安装
 
 ```powershell

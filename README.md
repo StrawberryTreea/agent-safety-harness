@@ -54,8 +54,6 @@ flowchart TB
 
 Run from the repository root. Validated platform: Windows PowerShell and Python 3.14. Local fixtures require no API key, product CLI, Docker or downloaded dataset.
 
-V1 is currently on `integrate-llm-agent-pipeline` in [PR #2](https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline/pull/2). Until it is merged, run `git switch integrate-llm-agent-pipeline` after cloning and entering the repository below. After the merge, use `main`.
-
 ```powershell
 git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
 cd llm-safety-eval-research-pipeline

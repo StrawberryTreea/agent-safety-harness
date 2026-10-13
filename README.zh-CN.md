@@ -54,8 +54,6 @@ flowchart TB
 
 从仓库根目录运行。当前验收平台为 Windows PowerShell、Python 3.14；本地自测不需要 API key、产品 CLI、Docker 或下载数据集。
 
-V1 当前位于 `integrate-llm-agent-pipeline` 分支，对应 [PR #2](https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline/pull/2)。合并前，请在下面的 clone、cd 之后执行 `git switch integrate-llm-agent-pipeline`；合并后使用 `main`。
-
 ```powershell
 git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
 cd llm-safety-eval-research-pipeline
