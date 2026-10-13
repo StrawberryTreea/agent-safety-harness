@@ -193,7 +193,7 @@ class McpToolTests(unittest.TestCase):
         task.benchmark = "msb"
         task.metadata = {
             "ash_runtime": {
-                "contract_version": "ash_executable_v2",
+                "contract_version": "ash_executable_v1",
                 "dataset_version": "test",
                 "environment": {
                     "contract_version": "ash_native_environment_v1",

@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("exit_status_evaluator", ROOT / "eval_mvp_V2/multi_model_rule_eval_prompt_only.py")
+spec = importlib.util.spec_from_file_location("exit_status_evaluator", ROOT / "llm_eval/multi_model_rule_eval_prompt_only.py")
 evaluator = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = evaluator
 spec.loader.exec_module(evaluator)

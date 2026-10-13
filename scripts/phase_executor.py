@@ -38,36 +38,24 @@ def find_repo_root(explicit_root: Optional[Path] = None) -> Path:
             if candidate not in candidates:
                 candidates.append(candidate)
     for candidate in candidates:
-        canonical = candidate / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
-        if canonical.exists() or (candidate / "protocol/evaluation_tracks.json").exists() or ((candidate / "eval_mvp_V2").exists() and (candidate / "rule_eval_mvp").exists()):
+        if (candidate / "protocol/evaluation_tracks.json").exists():
             return candidate
     return Path.cwd().resolve()
 
 
 def build_paths(repo_root: Path) -> Dict[str, Path]:
     return {
-        "canonical_dataset": repo_root / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl",
-        "canonical_stats": repo_root / "output" / "doc" / "v2_stats.json",
+        "canonical_dataset": repo_root / "data" / "canonical.jsonl",
+        "canonical_output": repo_root / "data" / "canonical.jsonl",
+        "canonical_stats": repo_root / "data" / "stats.json",
         "source_intake": repo_root / "scripts" / "source_intake.py",
         "canonicalizer": repo_root / "scripts" / "canonicalize_datasets.py",
         "canonical_validator": repo_root / "scripts" / "canonical_validate.py",
         "phase3_preparer": repo_root / "scripts" / "prepare_phase3.py",
-        "source_extractor": repo_root / "extract_whitepaper_datasets.py",
-        "dataset_report_builder": repo_root / "build_v2_final_dataset_report.py",
-        "main_eval_script": repo_root / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py",
-        "smoke_subset": repo_root / "eval_mvp_V2" / "data" / "test_eval_100_dataset_type_coverage.jsonl",
+        "main_eval_script": repo_root / "llm_eval" / "multi_model_rule_eval_prompt_only.py",
+        "smoke_subset": repo_root / "work" / "phase3" / "smoke.jsonl",
         "phase3_run_config": repo_root / "work" / "phase3" / "run_config.yaml",
-        "legacy_output_root": repo_root / "rule_eval_mvp" / "output",
-        "delta_output_root": repo_root / "rule_eval_mvp" / "output_v2_delta",
-        "merged_output_root": repo_root / "rule_eval_mvp" / "output_v2_merged",
-        "authoritative_output_root": repo_root / "rule_eval_mvp" / "output_v2_final_authoritative",
-        "incremental_rerun_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "run_v2_incremental_eval.py",
-        "append_only_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "run_append_only_eval.py",
-        "append_results_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "append_new_dataset_results.py",
-        "merge_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "merge_v2_incremental_results.py",
-        "rebuild_merged_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "rebuild_merged_summaries.py",
-        "publish_script": repo_root / "rule_eval_mvp" / "incremental_tools" / "publish_v2_final_authoritative_results.py",
-        "deleted_ids": repo_root / "数据集" / "汇总" / "_processing_workspace" / "output" / "master_normalized_dataset_v2_deleted_ids.jsonl",
+        "evaluation_output_root": repo_root / "runs" / "llm",
     }
 
 
@@ -82,6 +70,12 @@ def configure_repository(repo_root: Path, protocol_dir: Optional[Path] = None) -
     REPO_ROOT = repo_root.resolve()
     PATHS = build_paths(REPO_ROOT)
     PROTOCOL_DIR = (protocol_dir or (REPO_ROOT / "protocol")).expanduser().resolve()
+    card = PROTOCOL_DIR / "evaluation_protocol_card.md"
+    if card.is_file():
+        from protocol_manager import _load_markdown_frontmatter
+        dataset_path = _load_markdown_frontmatter(card).get("dataset", {}).get("path")
+        if dataset_path:
+            PATHS["canonical_dataset"] = (REPO_ROOT / dataset_path).resolve()
 
 
 PHASE_METADATA: Dict[str, Dict[str, object]] = {
@@ -106,12 +100,12 @@ PHASE_METADATA: Dict[str, Dict[str, object]] = {
     "phase2": {
         "title": "Canonical Standardization",
         "summary": "Standardize membership and ensure canonical JSONL and stats stay consistent.",
-        "artifacts": ["master_normalized_dataset_v2_final.jsonl", "dataset_sources_clean.csv", "v2_stats.json", "membership_diff.json"],
+        "artifacts": ["canonical.jsonl", "dataset_sources_clean.csv", "stats.json", "membership_diff.json"],
     },
     "phase3": {
         "title": "Protocol Shaping",
         "summary": "Prepare prompt, scorer, and smoke subset.",
-        "artifacts": ["test_eval_100_dataset_type_coverage.jsonl", "run_config.yaml"],
+        "artifacts": ["smoke.jsonl", "run_config.yaml"],
     },
     "phase4": {
         "title": "Smoke Validation",
@@ -126,7 +120,7 @@ PHASE_METADATA: Dict[str, Dict[str, object]] = {
     "phase6": {
         "title": "Incremental Rerun",
         "summary": "Rerun API-error or append-only deltas without mutating legacy output.",
-        "artifacts": ["output_v2_delta/<model>/results.jsonl", "delta_run_summary.json"],
+        "artifacts": ["delta/<model>/results.jsonl", "delta_run_summary.json"],
     },
     "phase7": {
         "title": "Merge And Publish",
@@ -136,7 +130,7 @@ PHASE_METADATA: Dict[str, Dict[str, object]] = {
     "phase8": {
         "title": "Reporting",
         "summary": "Generate leaderboard, charts, DOCX, and whitepaper artifacts from authoritative outputs.",
-        "artifacts": ["leaderboard.csv", "V2_final_dataset_report.docx", "whitepaper drafts"],
+        "artifacts": ["leaderboard.csv", "dataset_report", "research_report"],
     },
     "phase9": {
         "title": "Agent Evaluation",
@@ -216,7 +210,7 @@ def phase_checks(phase: str, models: Optional[str], intake_config: Optional[Path
             checks.append(path_check("intake_config_exists", intake_config))
     if phase == "phase2":
         checks.append(path_check("canonical_dataset_exists", PATHS["canonical_dataset"], "warning"))
-    if phase in {"phase3", "phase4", "phase5", "phase7", "phase8"}:
+    if phase in {"phase3", "phase4", "phase5"}:
         checks.append(path_check("canonical_dataset_exists", PATHS["canonical_dataset"]))
     if phase == "phase3":
         checks.append(path_check("phase3_preparer_exists", PATHS["phase3_preparer"]))
@@ -224,28 +218,13 @@ def phase_checks(phase: str, models: Optional[str], intake_config: Optional[Path
     if phase == "phase4":
         checks.append(path_check("phase3_run_config_exists", PATHS["phase3_run_config"]))
         checks.append(path_check("smoke_subset_exists", PATHS["smoke_subset"]))
-    if phase in {"phase2", "phase7", "phase8"}:
+    if phase == "phase2":
         checks.append(path_check("canonical_stats_exists", PATHS["canonical_stats"], "warning"))
     if phase == "phase2":
         checks.append(path_check("canonicalizer_exists", PATHS["canonicalizer"]))
         checks.append(path_check("canonical_validator_exists", PATHS["canonical_validator"]))
     if phase in {"phase4", "phase5"}:
         checks.append(path_check("main_eval_script_exists", PATHS["main_eval_script"]))
-    if phase == "phase6":
-        checks.append(path_check("legacy_output_root_exists", PATHS["legacy_output_root"], "warning"))
-        checks.append(path_check("incremental_rerun_script_exists", PATHS["incremental_rerun_script"]))
-        checks.append(path_check("append_only_script_exists", PATHS["append_only_script"], "warning"))
-    if phase == "phase7":
-        checks.append(path_check("merge_script_exists", PATHS["merge_script"]))
-        checks.append(path_check("rebuild_merged_script_exists", PATHS["rebuild_merged_script"], "warning"))
-        checks.append(path_check("publish_script_exists", PATHS["publish_script"]))
-        checks.append(path_check("legacy_output_root_exists", PATHS["legacy_output_root"], "warning"))
-        checks.append(path_check("delta_output_root_exists", PATHS["delta_output_root"], "warning"))
-        checks.append(path_check("merged_output_root_exists", PATHS["merged_output_root"], "warning"))
-        checks.append(path_check("deleted_ids_exists", PATHS["deleted_ids"], "warning"))
-    if phase == "phase8":
-        checks.append(path_check("authoritative_output_root_exists", PATHS["authoritative_output_root"], "warning"))
-        checks.append(path_check("dataset_report_builder_exists", PATHS["dataset_report_builder"], "warning"))
     if phase == "phase9":
         checks.append(path_check("agent_harness_exists", REPO_ROOT / "harness/ash.py"))
         checks.append(path_check("product_executor_exists", REPO_ROOT / "federated_asr_benchmark/tools/run_product.py"))
@@ -273,12 +252,12 @@ def phase_commands(phase: str, models: Optional[str], manifest: Optional[Path]) 
         commands.append(
             f'python "{PATHS["canonicalizer"]}" '
             f'--catalog "{REPO_ROOT / "work" / "phase1" / "dataset_catalog.json"}" '
-            f'--output "{PATHS["canonical_dataset"]}" --stats "{PATHS["canonical_stats"]}" '
+            f'--output "{PATHS["canonical_output"]}" --stats "{PATHS["canonical_stats"]}" '
             f'--protocol-dir "{PROTOCOL_DIR}"'
         )
         commands.append(
             f'python "{PATHS["canonical_validator"]}" '
-            f'--canonical "{PATHS["canonical_dataset"]}" --stats "{PATHS["canonical_stats"]}" '
+            f'--canonical "{PATHS["canonical_output"]}" --stats "{PATHS["canonical_stats"]}" '
             f'--protocol-dir "{PROTOCOL_DIR}"'
         )
     elif phase == "phase3":
@@ -314,7 +293,7 @@ def phase_notes(phase: str) -> List[str]:
     notes: Dict[str, List[str]] = {
         "phase0": [
             "Freeze dataset identity, safety_taxonomy_8x19, rule_eval semantics, model versions, and comparability before evaluation.",
-            "For the LLM QA V2 rule_eval track, refusal is a failure and is counted separately. Agent outcomes follow their own contracts.",
+            "For LLM QA rule_eval, refusal is a failure and is counted separately. Agent outcomes follow their own contracts.",
             "Do not store API keys or other secrets in protocol artifacts.",
         ],
         "phase2": [
@@ -365,9 +344,7 @@ def build_phase_record(
         "artifacts": metadata["artifacts"],
         "checks": [asdict(check) for check in phase_checks(phase, models, intake_config)],
         "available_models": {
-            "legacy": list_model_dirs(PATHS["legacy_output_root"]),
-            "merged": list_model_dirs(PATHS["merged_output_root"]),
-            "authoritative": list_model_dirs(PATHS["authoritative_output_root"]),
+            "evaluated": list_model_dirs(PATHS["evaluation_output_root"]),
         },
         "notes": phase_notes(phase),
     }

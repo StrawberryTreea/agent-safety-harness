@@ -24,8 +24,12 @@ class StageSelectionsTest(unittest.TestCase):
     def test_generated_selections_are_complete_disjoint_and_known(self) -> None:
         index_rows = read_jsonl(PACKAGE_ROOT / "case_index.jsonl")
         known = {row["case_id"] for row in index_rows}
-        output_root = PACKAGE_ROOT / "selections" / "v0.1"
+        output_root = PACKAGE_ROOT / "selections"
         manifest = json.loads((output_root / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            manifest["source_index_sha256"],
+            hashlib.sha256((PACKAGE_ROOT / "case_index.jsonl").read_bytes()).hexdigest(),
+        )
 
         self.assertEqual(set(manifest["benchmarks"]), set(STRATIFICATION_FIELDS))
         for benchmark_id in STRATIFICATION_FIELDS:

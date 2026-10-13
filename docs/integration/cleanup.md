@@ -1,62 +1,27 @@
-# 协作者清理记录
+# V1 整理与删除记录
 
-日期：2026-10-13。目标：协作者从清楚的文档入口安装并运行，避免旧实验材料被误认为当前能力。
+日期：2026-10-13。整合后的项目从 V1（1.0.0）开始，不沿用旧项目版本。目标是让协作者能安装、运行、理解代码并判断实验资格。
 
-## 本轮改动
+## 结构与文档
 
-- 重写中英文 README、Harness/产品 README、资产地图、阶段与 adapter 状态说明。新增文档导航、上手、配置、协作与分发指南。
-- runtime 依赖统一在 requirements.txt；requirements-dev.txt 引用它，删除不一致的 environment.yml。
-- Phase6–8 标为 reserved，不再输出不存在的执行命令。LLM 没有启用模型或模型级异常时返回非零。
-- 增加 scripts/check_repo.py，统一检查本地文档链接、三套测试、safe/unsafe 示例和 LLM 自测/分析，CI 调用同一入口。
-- 删除旧 v1 整理器、一次性修补/个人固定队列/重复报告代码，以及旧成绩和状态文档；通用 runner、BYOK、v2 整理器和被调用的构建器保留。
-- 移除误提交的 work/phase12_demo 生成产物，避免拿旧 protocol/输出作为当前输入。活跃测试自己生成独立 fixture。
+- 旧 `eval_mvp_V2/` 收敛为 `llm_eval/`，统一数据/统计到 `data/`、结果到 `runs/`。
+- 中英文首页各有三张 Mermaid 图：评测与改进闭环、模块架构与评分边界、协作运行流程。两种语言表达同一套三张图。
+- 删除三张旧首页 PNG；用户原始概念图保留在架构文档。
+- 重写版本、协议、配置、资产地图、清理与验收说明，删除旧语料数量和生产发布路径绑定。
+- 默认协议绑定三条合成自测题，冻结实际数量及文件/评测器哈希。真实实验使用自己的冻结协议。
 
-删除文件可从 Git 历史恢复。迁移清单固定为 bff2ef 提交的历史快照，并记录删除 disposition；不再宣称所有迁移源文件仍在当前 checkout。
+## 删除与收敛
 
-## 删除清单
-
-| 文件 | 原因 |
+| 范围 | 处理 |
 |---|---|
-| `docs/phase1_phase2_phase3_handoff.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `environment.yml` | 旧环境版本与当前依赖/CI 不一致 |
-| `federated_asr_benchmark/docs/agent_security_evaluation_briefing_zh.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/codebuddy_candidate_qualification.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/current_status.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/dataset_taxonomy_asr_report_zh.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/design_assessment.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/qoder_route_audit.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/sample_logs_zh.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/successful_attack_case_bilingual.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/docs/v02_smoke_status.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `federated_asr_benchmark/tools/build_taxonomy_asr_report.py` | 一次性或重复的旧实验工具；保留活跃替代入口 |
-| `federated_asr_benchmark/tools/run_remaining20.py` | 一次性或重复的旧实验工具；保留活跃替代入口 |
-| `harness/ENTERPRISE_API_AND_DISTRIBUTION.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `harness/PARALLEL_CLI_EVAL.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `harness/docs/mvp_task_allocation.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `harness/docs/project_positioning.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `harness/docs/unified_sandbox_runner.md` | 过时状态、个人成绩或重复架构文档；用新正式指南替代 |
-| `harness/tools/classify_three_agent_results.py` | 一次性或重复的旧实验工具；保留活跃替代入口 |
-| `harness/tools/correct_ras_ambiguous_matchers.py` | 一次性或重复的旧实验工具；保留活跃替代入口 |
-| `harness/tools/curate_datasets.py` | 一次性或重复的旧实验工具；保留活跃替代入口 |
-| `work/phase12_demo/intake.yaml` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_ready/dataset_catalog.json` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_ready/evidence_inventory.jsonl` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_ready/source_inventory.csv` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_review/dataset_catalog.json` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_review/evidence_inventory.jsonl` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_review/manifests/pending/ambiguous_typed.pending.yaml` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase1_review/source_inventory.csv` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase2/canonical.jsonl` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase2/canonicalization_report.json` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase2/dataset_sources_clean.csv` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase2/membership_diff.json` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase2/quarantine.jsonl` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/phase2/stats.json` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/protocol/canonical_schema.yaml` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/protocol/evaluation_protocol_card.md` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/protocol/metric_registry.yaml` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/protocol/model_registry.json` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/protocol/taxonomy_registry.yaml` | 旧阶段 demo 的生成文件/实验配置 |
-| `work/phase12_demo/raw/ambiguous_typed.jsonl` | 旧阶段 demo 的生成文件/实验配置 |
+| 旧版本实验选择集、个人补测和定向重试队列 | 删除；保留 V1 smoke20/pilot100 及来源锁定 expansion 候选 |
+| 历史产品审计 JSON、迁移快照、一次性修复说明 | 删除；以当前 preflight 和运行证据为准 |
+| 旧 attack-only / executable 构建入口 | 删除 CLI；被评分器或测试使用的函数提取为 `attack_sources.py` 与 `task_compilation.py` |
+| 当前安全构建与验证器 | 用无历史版本后缀的模块名，更新导入、契约和测试 |
+| 失效模型名单与实验预设 | 删除；保留 provider 实现和外部配置模板 |
+| 不满足当前 schema 的旧示例 | 删除，避免协作者按失效样例建数据 |
+| 过期发布执行路径 | 删除；Phase 6–8 保留明确的未实现状态 |
 
-当前运行证据见[验证记录](validation.md)。历史审计 JSON 仍保留为来源证据，不能当成当前产品资格。
+通用执行器、评分器、adapter、runtime 锁、schema 和有实际调用的工具保留。第三方版本与原抽样种子用于复现，不随项目改名；来源候选不因改为 V1 就获得正式资格。
+
+删除内容可从 Git 历史恢复。[当前验收](validation.md)记录本轮可复现结果。

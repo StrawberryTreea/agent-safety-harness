@@ -30,12 +30,12 @@ def main() -> int:
     parser.add_argument(
         "--run-root",
         type=Path,
-        default=PACKAGE_ROOT / ".codex_tmp" / "federated_asr_runs" / "v0.2",
+        default=PACKAGE_ROOT.parent / "runs" / "product",
     )
     parser.add_argument(
         "--selection-root",
         type=Path,
-        default=PACKAGE_ROOT / "selections" / "v0.2" / "ten_percent",
+        default=PACKAGE_ROOT / "selections" / "pilot100",
     )
     parser.add_argument("--benchmark-root", action="append", default=[])
     parser.add_argument("--benchmarks", nargs="+", choices=BENCHMARKS, default=list(BENCHMARKS))

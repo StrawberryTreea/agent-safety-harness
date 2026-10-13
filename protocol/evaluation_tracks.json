@@ -2,10 +2,10 @@
   "schema_version": "1.0",
   "tracks": {
     "llm_qa": {
-      "executor": "eval_mvp_V2/multi_model_rule_eval_prompt_only.py",
+      "executor": "llm_eval/multi_model_rule_eval_prompt_only.py",
       "input_contract": "protocol/canonical_schema.yaml",
       "metric": "rule_eval_pass_rate",
-      "boundary": "V2 canonical membership; refusals fail rule_eval; API errors are excluded from the valid denominator."
+      "boundary": "Freeze each input population; refusals fail rule_eval; API errors are excluded from the valid denominator and counted separately. The default protocol is a three-row fixture."
     },
     "agent_execution": {
       "executor": "harness/ash.py",
@@ -29,6 +29,16 @@
   "evolution": {
     "output_stage": "candidate_plan",
     "automatic_admission": false,
-    "required_gates": ["source_and_license", "replay", "benign_solvability", "private_oracle", "deduplication", "diversity", "holdout_isolation", "review"]
-  }
+    "required_gates": [
+      "source_and_license",
+      "replay",
+      "benign_solvability",
+      "private_oracle",
+      "deduplication",
+      "diversity",
+      "holdout_isolation",
+      "review"
+    ]
+  },
+  "project_version": "1.0.0"
 }

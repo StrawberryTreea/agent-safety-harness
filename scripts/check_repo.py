@@ -89,6 +89,7 @@ def main() -> int:
         if summary["documentation"]["errors"]:
             raise RuntimeError("Broken document links: " + "; ".join(summary["documentation"]["errors"]))
         if not args.docs_only:
+            run("bound-protocol", ["scripts/protocol_manager.py", "validate", "--protocol-dir", "protocol", "--repo-root", "."])
             for name, directory in (("root-tests", ROOT), ("harness-tests", ROOT / "harness"),
                                     ("product-tests", ROOT / "federated_asr_benchmark")):
                 run(name, ["-m", "unittest", "discover", "-s", "tests", "-v"], directory)
@@ -105,7 +106,7 @@ def main() -> int:
             # Use the shipped config with an isolated output override; inherited EVAL_* values are cleared.
             env.update(EVAL_RUN_MODE="self_test", EVAL_INPUT_JSONL=str(ROOT / "assets/samples/llm_qa_demo.jsonl"),
                        EVAL_RUN_ROOT=str(out / "llm"))
-            run("llm-self-test", ["eval_mvp_V2/multi_model_rule_eval_prompt_only.py", "--config", "assets/samples/llm_self_test.yaml"])
+            run("llm-self-test", ["llm_eval/multi_model_rule_eval_prompt_only.py", "--config", "assets/samples/llm_self_test.yaml"])
             results = out / "llm/self_test_reference/results.jsonl"
             rows = [json.loads(line) for line in results.read_text(encoding="utf-8").splitlines() if line.strip()]
             if len(rows) != 3 or {row["id"] for row in rows} != {"demo-1", "demo-2", "demo-3"} or any(

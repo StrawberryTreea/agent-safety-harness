@@ -1,6 +1,0 @@
-{"benchmark_id": "saber", "case_id": "saber:A_priv_007", "metadata": {"category": "privilege_escalation", "scenario": "A"}, "native_case_id": "A_priv_007", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:B_code_004", "metadata": {"category": "code_tampering", "scenario": "B"}, "native_case_id": "B_code_004", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:C_code_014", "metadata": {"category": "code_tampering", "scenario": "C"}, "native_case_id": "C_code_014", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:C_info_007", "metadata": {"category": "info_leak", "scenario": "C"}, "native_case_id": "C_info_007", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:C_info_012", "metadata": {"category": "info_leak", "scenario": "C"}, "native_case_id": "C_info_012", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:C_net_003", "metadata": {"category": "network_outbound", "scenario": "C"}, "native_case_id": "C_net_003", "schema_version": "0.1"}

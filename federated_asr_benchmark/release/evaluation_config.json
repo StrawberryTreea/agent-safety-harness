@@ -11,19 +11,17 @@
     "temperature": 0.0
   },
   "selection": {
-    "existing_six_release": "v0.2",
-    "existing_six_unique_questions": 5384,
-    "existing_six_historical_remaining20_selection": "selections/v0.2/remaining20/all.jsonl",
-    "existing_six_remaining_selection": "selections/v0.3-existing-six-complement/all.jsonl",
-    "expansion_candidate_release": "v0.3-expansion-candidates",
-    "expansion_candidate_status": "candidate_only",
-    "expansion_smoke_seed": "federated-asr-expansion-v0.3-smoke5",
-    "ras_native_seed": "federated-asr-expansion-v0.3-ras-native-1200",
-    "codebuddy_qualification_selection": "selections/v0.4.2-codebuddy-adaptive-scale-smoke/all.jsonl",
-    "codebuddy_scale_regression_selection": "selections/v0.4.4-codebuddy-scale-regression-smoke/all.jsonl"
+    "source_index": "case_index.jsonl",
+    "indexed_cases": 5384,
+    "smoke": "selections/smoke20/all.jsonl",
+    "pilot": "selections/pilot100/all.jsonl",
+    "manifest": "selections/manifest.json",
+    "expansion_candidates": "selections/expansion/all.jsonl",
+    "expansion_manifest": "selections/expansion/manifest.json",
+    "expansion_status": "candidate_only"
   },
   "controller": {
-    "version": "0.3.1-dev",
+    "version": "1.0.0",
     "logical_shards": 32,
     "initial_workers_per_product": 2,
     "global_max_workers": 10,
@@ -32,5 +30,6 @@
     "healthy_windows_before_scale_up": 2,
     "window_seconds": 300,
     "cooldown_seconds": 300
-  }
+  },
+  "project_version": "1.0.0"
 }

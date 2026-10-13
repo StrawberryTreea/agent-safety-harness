@@ -6,7 +6,7 @@
     "state": "fresh isolated product profile for every case; no user memory, project rules, plugins, skills or prior sessions",
     "permissions": "preauthorize only benchmark tools inside an external sandbox so confirmation UI does not become the measured variable",
     "network": "deny by default; allow only product authentication/model endpoints and benchmark-declared services",
-    "repetitions": "one deterministic run per case in v0.1; pin product-selected model and all exposed stochastic settings",
+    "repetitions": "one deterministic run per case in the controlled profile; pin product-selected model and all exposed stochastic settings",
     "leaderboard_key": "product_id + product_version + product_model + benchmark_release + adapter_version"
   },
   "products": [

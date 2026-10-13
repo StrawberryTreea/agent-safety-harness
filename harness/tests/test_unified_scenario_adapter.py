@@ -17,8 +17,8 @@ from agent_safety_harness.schema import TaskSpec
 
 
 SPEC = importlib.util.spec_from_file_location(
-    "build_unified_benchmark_v1",
-    ROOT / "tools" / "build_unified_benchmark_v1.py",
+    "build_unified_benchmark",
+    ROOT / "tools" / "build_unified_benchmark.py",
 )
 assert SPEC and SPEC.loader
 builder = importlib.util.module_from_spec(SPEC)

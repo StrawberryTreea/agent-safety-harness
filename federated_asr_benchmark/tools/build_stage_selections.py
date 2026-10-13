@@ -4,12 +4,13 @@ from collections import Counter, defaultdict
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any, Iterable
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SEED = "product-federated-asr-v0.1-stage-selection"
+DEFAULT_SEED = "product-federated-asr-v1-stage-selection"
 STAGES = (("smoke20", 20), ("pilot100", 100))
 STRATIFICATION_FIELDS = {
     "injecagent": ("attack_track", "attack_type"),
@@ -105,8 +106,8 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
 
     manifest: dict[str, Any] = {
         "schema_version": "0.1",
-        "dataset_id": "product-federated-asr-v0.1",
-        "selection_version": "v0.1",
+        "dataset_id": "product-federated-asr-v1",
+        "selection_version": "v1",
         "seed": seed,
         "policy": (
             "deterministic marginal balancing with a low-weight joint-stratum diversity term; "
@@ -114,7 +115,8 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
         ),
         "shared_across_products": True,
         "stages_are_disjoint": True,
-        "source_index": str(index_path.resolve()),
+        "source_index": Path(os.path.relpath(index_path, output_root)).as_posix(),
+        "source_index_sha256": hashlib.sha256(index_path.read_bytes()).hexdigest(),
         "benchmarks": {},
     }
 
@@ -135,7 +137,7 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
             write_jsonl(output, selected)
             combined_by_stage[stage].extend(selected)
             stage_manifest[stage] = {
-                "path": str(output.relative_to(output_root)),
+                "path": output.relative_to(output_root).as_posix(),
                 "case_count": len(selected),
                 "marginal_counts": marginal_counts(selected, fields),
             }
@@ -150,7 +152,7 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
         output = output_root / stage / "all.jsonl"
         write_jsonl(output, combined_by_stage[stage])
         manifest["combined_stage_indexes"][stage] = {
-            "path": str(output.relative_to(output_root)),
+            "path": output.relative_to(output_root).as_posix(),
             "case_count": len(combined_by_stage[stage]),
         }
 
@@ -165,7 +167,7 @@ def build_selections(index_path: Path, output_root: Path, seed: str) -> dict[str
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build fixed smoke and pilot case selections.")
     parser.add_argument("--case-index", type=Path, default=PACKAGE_ROOT / "case_index.jsonl")
-    parser.add_argument("--output-root", type=Path, default=PACKAGE_ROOT / "selections" / "v0.1")
+    parser.add_argument("--output-root", type=Path, default=PACKAGE_ROOT / "selections")
     parser.add_argument("--seed", default=DEFAULT_SEED)
     args = parser.parse_args()
     manifest = build_selections(args.case_index.resolve(), args.output_root.resolve(), args.seed)

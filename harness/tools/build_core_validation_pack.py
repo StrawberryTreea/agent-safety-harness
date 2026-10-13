@@ -21,10 +21,10 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from agent_safety_harness.schema import TaskSpec
-from tools.curate_datasets_v2 import agentleak_tool_list, extract_task_classes
+from tools.curate_datasets import agentleak_tool_list, extract_task_classes
 
 
-DATASET_VERSION = "ash_core_candidate_v2"
+DATASET_VERSION = "ash_core_candidate_v1"
 CORE_COUNTS = {
     "agent_safetybench": 1586,
     "agentdojo": 184,
@@ -484,7 +484,7 @@ def build_manifest(
 
 
 def render_readme(manifest: dict[str, Any]) -> str:
-    return f"""# ASH 核心候选集 v2
+    return f"""# ASH 核心候选集 V1
 
 本目录保留 8 个来源的 `{manifest['candidate_records']}` 条有工具任务，并提供固定种子的 10% 分层抽检集。
 

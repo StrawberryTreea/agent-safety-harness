@@ -33,7 +33,7 @@ if (-not $Python) {
 }
 if (-not $ManifestPath) {
     $exportedManifest = Join-Path $Root 'release-manifest.json'
-    $developmentManifest = Join-Path $Root '.codex_tmp/release-dev-v0.3/manifest.json'
+    $developmentManifest = Join-Path $Root 'runs/release-dev/manifest.json'
     $ManifestPath = if (Test-Path -LiteralPath $exportedManifest) {
         $exportedManifest
     } else {
@@ -50,14 +50,20 @@ function Invoke-Python {
 }
 
 function Assert-Release {
+    param([switch]$Required)
     if ($ManifestPath -and (Test-Path -LiteralPath $ManifestPath)) {
         Invoke-Python (Join-Path $Root 'tools/release_manifest.py') 'verify' '--root' $Root '--manifest' $ManifestPath
+    } elseif ($Required) {
+        throw "Release manifest not found: $ManifestPath. Supply -ManifestPath."
     }
 }
 
 function Assert-SourceLocks {
     param([Parameter(Mandatory = $true)][string]$SourceManifest)
-    if ($DataRoot -and (Test-Path -LiteralPath $SourceManifest)) {
+    if ($DataRoot) {
+        if (-not (Test-Path -LiteralPath $SourceManifest)) {
+            throw "Source lock manifest not found: $SourceManifest"
+        }
         Invoke-Python (Join-Path $Root 'tools/verify_sources.py') '--data-root' $DataRoot '--manifest' $SourceManifest
     }
 }
@@ -72,7 +78,7 @@ switch ($Action) {
     'Bootstrap' {
         Assert-Release
         if (-not $DataRoot) { throw 'Bootstrap requires -DataRoot.' }
-        Assert-SourceLocks (Join-Path $Root 'selections/v0.3-expansion-candidates/manifest.json')
+        Assert-SourceLocks (Join-Path $Root 'selections/expansion/manifest.json')
         $pythonDetails = & $Python -c "import json,sys; print(json.dumps({'executable':sys.executable,'version':'.'.join(map(str,sys.version_info[:3]))}))"
         if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect the bootstrap Python interpreter.' }
         $pythonInfo = $pythonDetails | ConvertFrom-Json
@@ -139,11 +145,11 @@ switch ($Action) {
         & $uv pip sync --python (Join-Path $agentPoisonEnvironment 'Scripts/python.exe') --torch-backend cu128 (Join-Path $Root 'requirements-agentpoison.lock')
         if ($LASTEXITCODE -ne 0) { throw 'Failed to synchronize AgentPoison runtime.' }
     }
-    'Verify' { Assert-Release }
+    'Verify' { Assert-Release -Required }
     'Preflight' {
         Assert-Release
         if (-not $DataRoot) { throw 'Preflight requires -DataRoot.' }
-        Assert-SourceLocks (Join-Path $Root 'selections/v0.3-expansion-candidates/manifest.json')
+        Assert-SourceLocks (Join-Path $Root 'selections/expansion/manifest.json')
         Invoke-Python (Join-Path $Root 'tools/preflight.py') '--data-root' $DataRoot
     }
     'Smoke' {
@@ -173,7 +179,7 @@ switch ($Action) {
         Invoke-Python @arguments
     }
     'Adaptive' {
-        Assert-Release
+        Assert-Release -Required
         Assert-LiveConfirmation
         if (-not $CampaignDir -or -not $CampaignId -or -not $CaseIndex -or -not $RunRoot) {
             throw 'Adaptive requires -CampaignDir, -CampaignId, -CaseIndex, and -RunRoot.'
@@ -199,7 +205,7 @@ switch ($Action) {
         Invoke-Python @arguments
     }
     'Export' {
-        Assert-Release
+        Assert-Release -Required
         if (-not $Destination) { throw 'Export requires -Destination.' }
         Invoke-Python (Join-Path $Root 'tools/release_manifest.py') 'export' '--root' $Root '--manifest' $ManifestPath '--destination' $Destination
     }

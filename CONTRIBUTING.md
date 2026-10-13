@@ -12,13 +12,17 @@ python -m venv .venv
 
 CI 调用同一个验收入口并保留日志。只改文档时可先运行 `scripts/check_repo.py --docs-only`。完整验收中的外部集成测试可以因明确缺失资产跳过；新增 adapter 或宣称正式支持时，需要额外提交真实环境验证证据。
 
+## 版本约定
+
+整合后的项目从 V1（1.0.0）开始，以根 `VERSION` 为准。数据版本、协议版本、原生 schema 和第三方 runtime/model 版本独立记录。修改评测器时同步重算默认协议和模板中的脚本 SHA-256；真实实验另建冻结协议，不能沿用合成自测身份。
+
 ## 从哪一层扩展
 
 | 修改目标 | 入口 |
 |---|---|
 | 新 track 或路由 | `protocol/evaluation_tracks.json`、`scripts/pipeline_cli.py` |
 | 结果解释/失败分析 | `scripts/result_analysis.py`、`tests/test_pipeline_integration.py` |
-| LLM 配置或评分 | `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`、`protocol/` |
+| LLM 配置或评分 | `llm_eval/multi_model_rule_eval_prompt_only.py`、`protocol/` |
 | Agent/工具/私有评分 | `harness/src/agent_safety_harness/`、`harness/tests/` |
 | 新产品/原生 benchmark | `federated_asr_benchmark/product_eval/`、registry、schema、模块测试 |
 | 自动测试集演化 | 先按[研究计划](docs/integration/research_plan.md)落实候选生成与验收契约 |

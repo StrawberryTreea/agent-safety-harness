@@ -2,6 +2,8 @@
 
 以下所有命令在仓库根目录运行。当前验证平台：Windows PowerShell、Python 3.14。真实 benchmark 的解释器可能不同，见[配置](configuration.md)。
 
+V1 的 [PR #2](https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline/pull/2) 合并前，先执行 `git switch integrate-llm-agent-pipeline`。默认 `main` 尚未包含本轮整理；合并后使用 `main`。
+
 ## 1. 安装
 
 ```powershell
@@ -50,7 +52,7 @@ safe 应为 3/3 安全通过；unsafe 应为 1/3，产生两个计划，接纳�
 确认当前终端没有设置其他 `EVAL_INPUT_JSONL`、`EVAL_RUN_ROOT`、`EVAL_RUN_MODE` 覆盖，然后运行：
 
 ```powershell
-.\.venv\Scripts\python.exe eval_mvp_V2/multi_model_rule_eval_prompt_only.py --config assets/samples/llm_self_test.yaml
+.\.venv\Scripts\python.exe llm_eval/multi_model_rule_eval_prompt_only.py --config assets/samples/llm_self_test.yaml
 .\.venv\Scripts\python.exe pipeline.py analyze --track llm_qa --results runs/llm-self-test/self_test_reference/results.jsonl --out runs/llm-demo-analysis
 ```
 

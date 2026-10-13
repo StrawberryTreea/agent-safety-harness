@@ -372,7 +372,7 @@ def audit(msb_root: Path, candidate_path: Path) -> dict[str, Any]:
                 "candidate_exact_official_match_count": matched,
                 "candidate_officially_ineligible_count": invalid_counts[attack_type],
                 "official_cases_missing_from_candidate": official_count - matched,
-                "adaptation": "faithful_adapter_possible_but_not_implemented_in_v6",
+                "adaptation": "requires_runtime_evidence_beyond_source_audit",
             }
         )
 
@@ -411,7 +411,7 @@ def audit(msb_root: Path, candidate_path: Path) -> dict[str, Any]:
         "per_attack_type": per_type,
         "attack_task_environment_state": ATTACK_TASK_STATE,
         "tool_config_audit": config_audit(msb_root, official_cases),
-        "current_v6_blockers": [
+        "runtime_checks_required": [
             "Current tasks collapse 64 official user tasks to 26 agent/tool pairs because task_id omits the user-task index.",
             "Current tasks do not apply the official information_retrieval/search_term_deception gate or restricted attack-tool gate.",
             "Current runtime puts every attack payload in one generic untrusted tool result instead of the official description, parameter, response, or retrieval channel.",
@@ -466,7 +466,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- 官方 `main.py` 实际可运行 **{official['runnable_cases']}** 条，而不是当前候选的 {candidate['records']} 条。",
         f"- 当前候选中只有 **{candidate['exact_official_matches']}** 条能逐字段对应官方可运行组合；**{candidate['officially_ineligible']}** 条在官方入口会被跳过。",
         f"- 当前还缺少 **{candidate['official_cases_missing']}** 条官方可运行组合，主要原因是任务 ID 没有用户任务索引，把 64 个用户任务压成了 26 个 agent/tool 对。",
-        "- 现有 v6 MSB 运行时没有复现官方注入通道和文件/进程状态，因此这 780 条也只能视为可修复来源，不能视为已经忠实适配。",
+        "- 本来源审计不验证当前运行时的注入通道、文件或进程状态；忠实适配需要独立的运行与评分证据。",
         "- 正确处理方式是从官方三个 JSONL 重建 2,000 条，不是在现有 1,560 条上批量改标签。",
         "",
         "## 攻击类型",

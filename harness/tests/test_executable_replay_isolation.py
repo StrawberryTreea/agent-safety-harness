@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "tools"))
 
 from agent_safety_harness.schema import TaskSpec
-from validate_ash_executable_v3 import run_replay
+from validate_executable_tasks import run_replay
 
 
 class ExecutableReplayIsolationTests(unittest.TestCase):
@@ -51,7 +51,7 @@ class ExecutableReplayIsolationTests(unittest.TestCase):
             },
             "metadata": {
                 "ash_runtime": {
-                    "contract_version": "ash_executable_v2",
+                    "contract_version": "ash_executable_v1",
                     "dataset_version": "test",
                     "source_benchmark": "test",
                     "environment": {

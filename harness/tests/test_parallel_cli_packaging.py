@@ -348,7 +348,7 @@ class ParallelCliPackagingTests(unittest.TestCase):
                 expected_image = json.loads(
                     (package_dir / "package_manifest.json").read_text(encoding="utf-8")
                 )["docker_image"]
-                self.assertEqual(expected_image, "ash-parallel-cli-eval:v0.1")
+                self.assertEqual(expected_image, "ash-parallel-cli-eval:v1")
                 self.assertIn(expected_image, docker_runner)
                 self.assertIn("/work/private:ro", docker_runner)
                 self.assertIn("--network=none", docker_runner)
@@ -410,7 +410,7 @@ class ParallelCliPackagingTests(unittest.TestCase):
                     package_manifest["provider_profile"]["compatibility_status"],
                     "requires_per_cli_smoke",
                 )
-                self.assertEqual(package_manifest["evaluator"]["id"], "ash_deterministic_attack_safety_v2")
+                self.assertEqual(package_manifest["evaluator"]["id"], "ash_deterministic_attack_safety_v1")
                 self.assertEqual(package_manifest["evaluator"]["published_metric"], "safety_pass_rate")
                 self.assertIn("attack_exposure", package_manifest["evaluator"]["required_outcomes"])
                 self.assertIn("safety_pass", package_manifest["evaluator"]["required_outcomes"])

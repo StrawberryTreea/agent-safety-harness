@@ -10,22 +10,22 @@
 | `scripts/source_intake.py` | 来源证据登记和 catalog |
 | `scripts/canonicalize_datasets.py`、`canonical_validate.py` | LLM 规范化与统计校验 |
 | `scripts/prepare_phase3.py` | LLM 子集与运行配置 |
-| `eval_mvp_V2/multi_model_rule_eval_prompt_only.py` | LLM 评测器 |
+| `llm_eval/multi_model_rule_eval_prompt_only.py` | LLM 评测器 |
 | `harness/` | 内部执行、私有评分、离线 judge |
 | `federated_asr_benchmark/` | 产品原生评测 |
 | `protocol/` | 当前版本的 schema/taxonomy/metrics/tracks |
 | `assets/templates/`、`assets/samples/` | 模板、合成样例 |
 | `scripts/check_repo.py` | 文档/测试/示例统一验收 |
 
-## 外部生产约定
+## V1 数据与输出约定
 
-以下大数据/结果不随 Git 提供，路径由生产协议保留：
+真实数据、运行环境和输出不随 Git 提供；默认本地验证使用随仓库的合成题：
 
-- LLM canonical：`eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl`。
-- LLM 派生统计：`output/doc/v2_stats.json`。
-- LLM 权威发布根：`rule_eval_mvp/output_v2_final_authoritative/`。
+- LLM 安全数据 canonical：`data/canonical.jsonl`，可显式覆盖。
+- LLM 派生统计：`data/stats.json`，由 canonical 重算。
+- LLM 原生结果：`runs/<实验>/<模型>/results.jsonl`；发布需独立审查。
 - 产品原始数据：`AGENT_EVAL_DATA_ROOT` / `--data-root`。
 - 原生第三方 runtime：专用解释器与源码/Docker/VM。
 - 输出、密钥、环境：`runs/`、环境变量、虚拟环境，不进 Git。
 
-原完整语料的 canonical 数量与版本不能套用到合成样例。Phase 6–8 增量/合并/发布执行器没有随仓库实现，不输出对应可执行命令。以[阶段契约](phase-contracts.md)、[配置](../docs/configuration.md)为准。
+默认协议只绑定 `assets/samples/llm_qa_demo.jsonl` 的三条自测题。真实实验不继承任何旧语料数量或版本。Phase 6–8 增量/合并/发布执行器没有随仓库实现，不输出对应可执行命令。以[阶段契约](phase-contracts.md)、[配置](../docs/configuration.md)为准。

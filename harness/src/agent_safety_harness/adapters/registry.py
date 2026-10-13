@@ -5,12 +5,12 @@ from typing import Any
 from ..schema import TaskSpec
 from .base import BenchmarkAdapter, BenchmarkRuntime
 from .agent_safetybench import AgentSafetyBenchAdapter
-from .executable_v2 import ExecutableTaskAdapter, is_executable_v2
+from .executable import ExecutableTaskAdapter, is_executable
 from .unified_scenario import UnifiedScenarioAdapter, is_unified_scenario
 
 
 _UNIFIED_ADAPTER = UnifiedScenarioAdapter()
-_EXECUTABLE_V2_ADAPTER = ExecutableTaskAdapter()
+_EXECUTABLE_ADAPTER = ExecutableTaskAdapter()
 _ADAPTERS: tuple[BenchmarkAdapter, ...] = (AgentSafetyBenchAdapter(),)
 
 OFFICIAL_EXECUTION_BENCHMARKS = frozenset(
@@ -36,8 +36,8 @@ OFFICIAL_EXECUTION_BENCHMARKS = frozenset(
 
 
 def adapter_for_task(task: TaskSpec) -> BenchmarkAdapter | None:
-    if is_executable_v2(task):
-        return _EXECUTABLE_V2_ADAPTER
+    if is_executable(task):
+        return _EXECUTABLE_ADAPTER
     if is_unified_scenario(task):
         return _UNIFIED_ADAPTER
     benchmark = task.benchmark.casefold()

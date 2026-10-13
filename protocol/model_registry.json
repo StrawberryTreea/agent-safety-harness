@@ -1,104 +1,12 @@
 {
   "models": [
     {
-      "model_id": "deepseek_v4_pro",
-      "display_name": "DeepSeek-V4-Pro",
-      "provider": "openai_compatible",
-      "endpoint": "https://api.deepseek.com",
-      "model_version": "deepseek-v4-pro",
+      "model_id": "self_test_reference",
+      "provider": "self_test",
+      "endpoint": "local_reference_answer",
+      "model_version": "v1_fixture",
       "run_enabled": true,
-      "provenance": "User-confirmed prior evaluation; evaluator configuration found locally.",
-      "notes": "Result artifact location still needs to be registered before publication."
-    },
-    {
-      "model_id": "kimi_k2_6_full",
-      "display_name": "Kimi K2.6",
-      "provider": "openai_compatible",
-      "endpoint": "https://api.moonshot.ai/v1",
-      "model_version": "kimi-k2.6",
-      "run_enabled": true,
-      "provenance": "User-confirmed prior evaluation; evaluator configuration found locally.",
-      "notes": "Result artifact location still needs to be registered before publication."
-    },
-    {
-      "model_id": "doubao_seed_2_0_pro_full",
-      "display_name": "Doubao Seed 2.0 Pro",
-      "provider": "openai_compatible",
-      "endpoint": "https://ark.cn-beijing.volces.com/api/v3",
-      "model_version": "doubao-seed-2-0-pro-260215",
-      "run_enabled": true,
-      "provenance": "User-confirmed prior evaluation; evaluator configuration found locally.",
-      "notes": "Result artifact location still needs to be registered before publication."
-    },
-    {
-      "model_id": "qwen3_6_max_preview",
-      "display_name": "Qwen3.6-Max-Preview",
-      "provider": "openai_compatible",
-      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-      "model_version": "qwen3.6-max-preview",
-      "run_enabled": true,
-      "model_documentation_url": "https://www.qianwenai.com/models/qwen3.6-max-preview",
-      "api_documentation_url": "https://help.aliyun.com/zh/model-studio/compatibility-of-openai-with-dashscope",
-      "provenance": "Model identifier and vendor-documented OpenAI-compatible endpoint verified; historical result artifact not found locally.",
-      "notes": "Result artifact location must be registered before publication."
-    },
-    {
-      "model_id": "mimo_v2_5_pro",
-      "display_name": "MiMo v2.5 Pro",
-      "provider": "openai_compatible",
-      "endpoint": "https://api.xiaomimimo.com/v1",
-      "endpoint_options": {
-        "pay_as_you_go_openai": "https://api.xiaomimimo.com/v1",
-        "pay_as_you_go_anthropic": "https://api.xiaomimimo.com/anthropic",
-        "token_plan_cn_openai": "https://token-plan-cn.xiaomimimo.com/v1",
-        "token_plan_cn_anthropic": "https://token-plan-cn.xiaomimimo.com/anthropic"
-      },
-      "historical_endpoint_verified": false,
-      "model_version": "mimo-v2.5-pro",
-      "run_enabled": true,
-      "model_documentation_url": "https://mimo.xiaomi.com/mimo-v2-5-pro",
-      "api_platform_url": "https://platform.xiaomimimo.com/",
-      "credential_management_url": "https://platform.xiaomimimo.com/#/console/api-keys",
-      "token_plan_management_url": "https://platform.xiaomimimo.com/#/console/plan-manage",
-      "provenance": "Model identifier and official pay-as-you-go and Token Plan endpoints documented from Xiaomi MiMo API instructions supplied by the project team.",
-      "notes": "Confirm which endpoint option was used by the historical evaluation and register its result artifact before publication."
-    },
-    {
-      "model_id": "ling_2_6_1t_antling_official",
-      "display_name": "Ling-2.6-1T",
-      "provider": "openai_compatible",
-      "endpoint": "https://api.ant-ling.com/v1",
-      "model_version": "Ling-2.6-1T",
-      "run_enabled": true,
-      "inference_parameters": {
-        "temperature": 0,
-        "top_p": 1
-      },
-      "provenance": "Evaluator configuration and full local result artifacts verified.",
-      "notes": "Credentials remain external."
-    },
-    {
-      "model_id": "tencent_hy3_preview",
-      "display_name": "Tencent Hy3-preview",
-      "provider": "openai_compatible",
-      "endpoint": "https://tokenhub.tencentmaas.com/v1",
-      "model_version": "hy3-preview",
-      "run_enabled": true,
-      "api_documentation_url": "https://cloud.tencent.com/document/product/1823/132252",
-      "provenance": "Model identifier and TokenHub OpenAI-compatible endpoint verified in Tencent Cloud documentation; historical result artifact not found locally.",
-      "notes": "Result artifact location must be registered before publication."
-    },
-    {
-      "model_id": "ernie_5_1",
-      "display_name": "ERNIE 5.1",
-      "provider": "openai_compatible",
-      "endpoint": "https://qianfan.bj.baidubce.com/v2",
-      "model_version": "ernie-5.1",
-      "run_enabled": true,
-      "model_documentation_url": "https://console.bce.baidu.com/qianfan/modelcenter/model/buildIn/detail/am-d94f2a76cccd",
-      "api_documentation_url": "https://cloud.baidu.com/doc/qianfan-docs/s/Wm8r4sw29",
-      "provenance": "Model identifier and Baidu Qianfan v2 chat endpoint verified in official documentation; historical result artifact not found locally.",
-      "notes": "Result artifact location must be registered before publication."
+      "notes": "Copies the answer key; no model inference."
     }
   ]
 }

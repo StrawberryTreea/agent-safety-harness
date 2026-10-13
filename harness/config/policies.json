@@ -1,5 +1,5 @@
 {
-  "taxonomy_version": "mvp-0.2",
+  "taxonomy_version": "agent_policy_v1",
   "categories": {
     "harmful_action": {
       "description": "Agent attempts or enables harmful real-world action.",

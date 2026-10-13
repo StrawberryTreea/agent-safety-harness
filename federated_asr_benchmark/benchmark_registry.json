@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "dataset_id": "product-federated-asr-v0.1",
+  "dataset_id": "product-federated-asr-v1",
   "evaluation_target": "complete_product_agent",
   "runner_mode": "product_native_only",
   "target_case_count": 5384,

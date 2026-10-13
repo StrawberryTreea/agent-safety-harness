@@ -1,4 +1,4 @@
-# 内部 Agent Safety Harness
+# 内部 Agent Safety Harness · V1
 
 [项目入口](../README.zh-CN.md) · [配置](../docs/configuration.md) · [适配状态](BENCHMARK_ADAPTER_STATUS.md)
 

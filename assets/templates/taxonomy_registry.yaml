@@ -1,5 +1,5 @@
 version: safety_taxonomy_8x19
-source: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
+source: protocol/canonical_schema.yaml
 l1_field: safety_l1_dimension
 l2_field: safety_l2_harm_type
 expected_l1_count: 8

@@ -181,7 +181,7 @@ def main() -> None:
     parser.add_argument(
         "--source-root",
         type=Path,
-        default=ROOT / "runs" / "curated_benchmark_v3" / "harness_tasks",
+        default=ROOT / "runs" / "curated" / "harness_tasks",
         help="Directory containing the curated full TaskSpec JSONL files.",
     )
     parser.add_argument(

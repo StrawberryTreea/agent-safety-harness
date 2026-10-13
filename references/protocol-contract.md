@@ -13,16 +13,13 @@ A protocol directory contains exactly these required artifacts:
 
 Do not store API keys, tokens, passwords, or other secrets in these files.
 
-## External canonical V2 defaults
+## V1 defaults and real experiment identity
 
-These defaults describe the external full V2 corpus. Its data and stats are not bundled in this checkout; synthetic examples are not members and do not inherit its total.
+The project release is 1.0.0 (`VERSION`). The shipped protocol freezes the three-row `assets/samples/llm_qa_demo.jsonl` reference fixture and `llm_eval/multi_model_rule_eval_prompt_only.py` by SHA-256. No API call or safety claim is made. The configured 8-by-19 taxonomy does not label this fixture.
 
-- Dataset path: `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl`
-- Dataset total: `668820`
-- ID field: `id`
-- Taxonomy version: `safety_taxonomy_8x19`
-- Metric version: `rule_eval`
-- Evaluation script: `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
+For a real experiment, copy a protocol to a new working directory and replace its input path, dataset version, count, hash, model identities and goal. Pin prompt/scorer versions and the evaluator hash. Do not inherit the fixture's count or hash. Labeled safety data follows the thirteen-field canonical schema, defaulting to `data/canonical.jsonl` and `data/stats.json`; minimal evaluator fixtures follow their own input contract.
+
+Protocol versions, dataset releases, native schema revisions and third-party tool/model versions are separate from the V1 project release. Immutable sampling seeds describe membership provenance and are not project versions.
 
 ## Frozen scoring semantics
 
@@ -59,7 +56,7 @@ Treat model-registry changes as conditional: unchanged models remain comparable 
 Initialize a working protocol directory:
 
 ```powershell
-python scripts/protocol_manager.py init --output-dir protocol
+python scripts/protocol_manager.py init --output-dir work/my-protocol
 ```
 
 Validate it after replacing placeholders:
@@ -73,7 +70,7 @@ With `--repo-root`, validation recomputes the canonical JSONL SHA-256 and line t
 Compare two valid protocol directories:
 
 ```powershell
-python scripts/protocol_manager.py compare --base protocol-v1 --candidate protocol-v2 --format json
+python scripts/protocol_manager.py compare --base work/baseline-protocol --candidate work/candidate-protocol --format json
 ```
 
 Validation errors and incompatible comparisons return a non-zero exit code.

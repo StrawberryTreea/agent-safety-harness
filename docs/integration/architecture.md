@@ -1,4 +1,4 @@
-# LLM 与 Agent 自动化评测及测试集演化
+# V1 架构：LLM 与 Agent 自动化评测及测试集演化
 
 本仓库作为长期代码与研究设计的主仓库。原有 LLM 数据治理和评测协议、内部 Agent harness、完整产品与原生 benchmark 的适配层共用一个入口和分析层。执行与评分继续由已有模块负责。
 
@@ -52,13 +52,13 @@ flowchart TD
 | 模块 | 现有入口 | 责任与边界 |
 |---|---|---|
 | 数据治理 | `scripts/source_intake.py`、`canonicalize_datasets.py`、`canonical_validate.py` | 来源证据、规范化、统计核验；现有 canonical 契约用于 LLM QA |
-| LLM QA | `eval_mvp_V2/multi_model_rule_eval_prompt_only.py` | V2 rule_eval；成功 API 调用下的拒答算主指标失败，API error 单独处理 |
+| LLM QA | `llm_eval/multi_model_rule_eval_prompt_only.py` | 规则评测；成功 API 调用下的拒答算主指标失败，API error 单独处理 |
 | 内部 Agent | `harness/ash.py capture/score/report` | source-derived TaskSpec → TraceEvent → ResultSpec；公开运行与私有评分分开 |
 | 完整产品 | `federated_asr_benchmark/tools/run_product.py`、`run_product_batch.py` | CLI、benchmark 原生工具和 scorer；保留官方 ASR 分子、分母和排除理由 |
 | 离线轨迹 | `harness/ash.py judge` | 已有轨迹的 judge 任务；不计入 Agent 执行人口 |
 | 统一入口 | `pipeline.py inventory/plan/smoke/analyze` | 列出依赖、输出 argv 执行计划、本地执行验证与结果分析 |
 | 闭环交接 | `scripts/result_analysis.py` | 失败观察、异常列表、候选测试计划和验收证据槽位 |
-| 阶段路由 | `scripts/intent_router.py`、`phase_executor.py` | Phase9 接入 Agent，Phase10 分析与候选演化；旧阶段继续服务 LLM 流程 |
+| 阶段路由 | `scripts/intent_router.py`、`phase_executor.py` | Phase9 接入 Agent，Phase10 分析与候选演化；数据阶段服务 LLM 流程 |
 
 当前完整产品实验 profile 固定了模型、CLI 与 judge policy。迁移保留这些约束；新增 provider 或通用 profile 应版本化配置并重新验证可比性。
 
@@ -91,10 +91,10 @@ Agent 攻击测试允许仅有确定性 `safety_violation` 规则。这样的记
 
 八个验收槽位：来源与许可、可重放、良性可解性、私有评分规则、去重、多样性、留出集隔离、人工或已验证审核。当前全部为 pending；生成器、验收执行器与测试集版本发布尚待实现。
 
-## 迁移与运行资产
+## V1 版本与运行资产
 
-迁移清单见 [migration_manifest.json](migration_manifest.json)。迁移包括代码、配置、测试、索引、选择集和示例，排除了原始 benchmark 大数据、官方第三方源码、环境和历史 runs。原图随仓库保存。
+整合后统一为 V1（1.0.0），根 `VERSION` 是项目版本入口。保留代码、配置、测试、来源索引与当前选择集；删除旧首页 PNG、历史实验选择集和过期审计快照。原始概念图随仓库保存，清理说明见 [cleanup.md](cleanup.md)。
 
 外部数据通过 `AGENT_EVAL_DATA_ROOT` 或 `--data-root` 指定；专用解释器可通过 `AGENTDOJO_PYTHON`、`AGENTDYN_PYTHON`、`AGENTPOISON_PYTHON` 指定。`build_case_index.py --data-root ... --output-dir ...` 可以在任意外部数据根重新构建固定索引，manifest 使用相对数据根的路径。Agent 执行计划支持 `--agents-config` 和 `--models-config`，传递给原生 capture 入口。
 
-LLM V2 的 canonical、stats 与 authoritative output 路径继续有效，但大型真实数据和生产发布工具并未随本仓库全部提供。Agent precheck 不再以这些静态 LLM 文件为前提。
+默认 LLM 协议绑定三条合成题；真实实验另行绑定数据版本、数量、哈希与模型。canonical 数据与统计默认在 `data/`，运行结果在 `runs/`。项目版本、数据版本、协议版本和第三方版本分别记录。Phase 6–8 发布执行器尚未实现。

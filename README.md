@@ -1,52 +1,60 @@
-# LLM and Agent Safety Evaluation Pipeline
+# LLM and Agent Safety Evaluation Platform · V1
 
 [中文说明](README.zh-CN.md) · [Documentation](docs/README.md) · [Contributing](CONTRIBUTING.md)
 
-This is the primary repository for our LLM and Agent safety evaluation project. It combines data/protocol tooling, an internal Agent harness, product-native benchmark adapters and offline trace judging. The intended feedback loop is evaluation → failure analysis → new tests → a versioned test set → evaluation.
+This is the primary project repository. The integrated platform starts at **V1 (1.0.0)**, combining LLM evaluation, internal Agent execution, full-product native evaluation and offline trace judging. Failure evidence informs new tests and subsequent improvements.
 
-**Implemented:** native evaluation entry points, local capture/private scoring/reporting, result analysis and unaccepted candidate plans. **Planned:** automatic task generation, acceptance execution, test-set publication and Agent/model improvement.
+**Implemented:** native entry points, public execution with separate private scoring, result analysis and unaccepted candidate plans. **Planned:** task generation, acceptance execution, dataset release and automatic Agent/model improvement.
 
-## Project workflow
+## Figure 1: evaluation and improvement loop
 
-Solid arrows show existing execution and analysis paths. Dashed arrows and yellow nodes show the planned feedback loop. Each track retains its native metrics; candidate plans do not enter the test set automatically.
+Solid arrows describe current execution and analysis. Dashed arrows describe future work. Each track keeps its native metrics and denominator.
 
 ```mermaid
 flowchart TB
-    Inputs["Tasks, configuration, versions and existing traces"]
-    Inputs --> QA
-    Inputs --> Execution
-    Inputs --> Product
-    Inputs --> Judge
-    subgraph Tracks["Four independent evaluation tracks"]
-        QA["llm_qa<br/>LLM rule evaluation"]
-        Execution["agent_execution<br/>Public task execution and trace capture"]
-        Private["Separate private rule scoring"]
-        Product["agent_product<br/>Full product with native environment / scorer"]
-        Judge["trace_judge<br/>Offline trace assessment"]
-        Execution --> Private
+    Input["Freeze tasks, targets and protocol"] --> Tracks
+    subgraph Tracks["Four tracks with separate metrics"]
+        QA["LLM rule evaluation"]
+        Agent["Internal Agent execution and private scoring"]
+        Product["Full product and native scorer"]
+        Judge["Offline trace judging"]
     end
-    QA --> Results["Native results per track<br/>Preserve metric direction and denominator"]
-    Private --> Results
-    Product --> Results
-    Judge --> Results
-    Results --> Analyze["pipeline.py analyze<br/>Result analysis and evidence lineage"]
-    Analyze --> Reports["Observations, grouped statistics and reports"]
-    Analyze --> Invalid["Separate invalid / unknown records<br/>Investigation and reruns remain pending"]
-    Analyze --> Failures["Valid failure observations<br/>Root cause remains unconfirmed"]
-    Failures --> Plans["Candidate test plans<br/>admitted=false"]
-    Plans -.-> Generate["Planned: instantiate tasks and attacks"]
-    Generate -.-> Gates["Planned: execute eight acceptance gates"]
-    Gates -.-> Version["Planned: publish a versioned test set"]
-    Version -.-> NextRound["Next round: evaluate with the new test set"]
-    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5,color:#24292f
-    class Generate,Gates,Version,NextRound planned
+    Tracks --> Analysis["Analyze metrics, failures, invalids and evidence"]
+    Analysis --> Plans["Candidate test plans<br/>admitted=false"]
+    Plans -.-> Generate["Planned: task and attack generation"]
+    Generate -.-> Gates["Planned: eight acceptance gates and dataset release"]
+    Gates -.-> Next["Next round: freeze updated tasks and re-evaluate"]
+    Analysis -.-> Improve["Research: Agent / model improvement<br/>Frozen holdout validation"]
+    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5
+    class Generate,Gates,Improve,Next planned
 ```
 
-Real LLM/product runs require credentials, external assets and the corresponding environments. See [Detailed architecture](docs/integration/architecture.md) for the separate Agent/model improvement and holdout-validation research path.
+See [architecture](docs/integration/architecture.md) for the original concept and implementation mapping.
+
+## Figure 2: module architecture and scoring boundary
+
+`plan` prints commands. Native executors perform evaluation. Private rules are used in a separate scoring stage.
+
+```mermaid
+flowchart TB
+    CLI["pipeline.py<br/>inventory / plan / smoke / analyze"] --> QA["llm_eval/<br/>LLM rule evaluation"]
+    CLI --> Harness["harness/<br/>Public task execution and trace capture"]
+    CLI --> Product["federated_asr_benchmark/<br/>Product and native environment adapters"]
+    CLI --> Judge["harness/ judge<br/>Offline trace judging"]
+    Harness --> Score["Separate scoring stage"]
+    Private["Isolated private rules<br/>Never sent to the evaluated Agent"] --> Score
+    QA --> Results["runs/<br/>Native results, traces and manifests"]
+    Score --> Results
+    Product --> Results
+    Judge --> Results
+    Results --> Analyze["scripts/result_analysis.py<br/>Grouped analysis and candidate plans"]
+```
 
 ## Quick start
 
-Validated platform: Windows PowerShell with Python 3.14. The local examples require no API key, product CLI, Docker or downloaded dataset. Run from the repository root:
+Run from the repository root. Validated platform: Windows PowerShell and Python 3.14. Local fixtures require no API key, product CLI, Docker or downloaded dataset.
+
+V1 is currently on `integrate-llm-agent-pipeline` in [PR #2](https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline/pull/2). Until it is merged, run `git switch integrate-llm-agent-pipeline` after cloning and entering the repository below. After the merge, use `main`.
 
 ```powershell
 git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
@@ -56,69 +64,63 @@ python -m venv .venv
 .\.venv\Scripts\python.exe scripts/check_repo.py
 ```
 
-The check validates local Markdown links, runs all three test suites, executes safe/unsafe Agent fixtures, and runs/analyzes a three-row LLM reference self-test. It prints the path to a unique `runs/check-.../summary.json` with logs. Missing named external assets cause explicit integration-test skips; inspect them before claiming benchmark qualification.
+Acceptance verifies the default protocol's bound count/hashes, Markdown links, three test suites, safe/unsafe Agent fixtures and a three-row LLM reference self-test. It writes a unique `runs/check-.../summary.json` and logs. Integration tests explicitly skip when named external assets are absent.
 
 | Fixture | Expected result |
 |---|---|
 | `safe_stub` | 3/3 safety passes, no candidate plans |
 | `unsafe_stub` | 1/3 safety passes, 2 unaccepted candidate plans |
-| LLM reference self-test | 3/3 rule passes; returns the answer key without calling a model |
+| LLM reference self-test | 3/3 rule passes; copies the answer key without model inference |
 
-These results verify plumbing, not model or product safety. [Run individual examples](docs/getting_started.md).
+These results verify local execution. Real safety claims require configured models/data and verified environments, coverage and scorers. See [getting started](docs/getting_started.md) and [validation](docs/integration/validation.md).
 
-### Collaborator run sequence
+## Figure 3: collaborator run sequence
 
 ```mermaid
 flowchart TB
-    subgraph Local["Step 1: install and verify locally"]
-        direction LR
-        Install["Create a virtual environment<br/>Install dependencies"] --> Check["check_repo.py<br/>Docs, tests and fixtures"]
-        Check --> Evidence["Read summary.json and logs<br/>Inspect passes and skips"]
-    end
-    subgraph Real["Step 2: choose a track and run"]
-        direction LR
-        Choose["Choose a track<br/>Prepare inputs, config and runtime"] --> Plan["inventory / plan<br/>Inspect commands; no execution"]
-        Plan --> Native["Call the native executor<br/>Use a new run directory"]
-        Native --> Analyze["analyze<br/>Review results, denominators and candidates"]
-    end
-    Local --> Real
+    Install["Install root dependencies"] --> Check["check_repo.py<br/>Protocol, links, tests and fixtures"]
+    Check --> Choose["Choose a track<br/>Prepare data and configuration"]
+    Choose --> Plan["inventory / plan<br/>Inspect entry points and dependencies"]
+    Plan --> Execute["Call the native executor<br/>Save a separate run"]
+    Execute --> Analyze["analyze<br/>Review denominators, failures and evidence"]
+    Analyze --> Review["Review candidates and qualification<br/>Record changes for the next round"]
 ```
 
 ## Choose a track
 
-| Track | Native executor | Metric |
+| Track | Native executor | Boundary |
 |---|---|---|
-| `llm_qa` | `eval_mvp_V2/multi_model_rule_eval_prompt_only.py` | V2 rule_eval; refusals fail; API errors are separate |
-| `agent_execution` | `harness/ash.py capture/score/report` | Internal/source-derived tasks with private rules |
-| `agent_product` | `federated_asr_benchmark/tools/run_product.py` | Native ASR; `success` means attack success |
-| `trace_judge` | `harness/ash.py judge` | Offline trace assessment; separate from execution |
+| `llm_qa` | `llm_eval/multi_model_rule_eval_prompt_only.py` | Rule pass rate; refusals fail; API errors counted separately |
+| `agent_execution` | `harness/ash.py capture/score/report` | Source-derived tasks; private rules score captured traces |
+| `agent_product` | `federated_asr_benchmark/tools/run_product.py` | Native ASR; `success` means attack success; lower is better |
+| `trace_judge` | `harness/ash.py judge` | Offline assessment, separate from execution results |
 
 ```powershell
 .\.venv\Scripts\python.exe pipeline.py inventory
 .\.venv\Scripts\python.exe pipeline.py plan --track llm_qa --config assets/samples/llm_self_test.yaml
 ```
 
-`plan` prints argv, working directories and prerequisites; it does not execute. `analyze --track ... --results ... --out ...` preserves native metrics and lineage. It produces observations, failures, invalids and candidate plans; `admitted=false` until eight acceptance gates have evidence. Never pool tracks, turn unknown/invalid into passes, or mix case and retrieval-event denominators.
+`plan` does not execute. `analyze --track ... --results ... --out ...` produces observations, failures, invalids and candidate plans. Plans have `admitted=false` and eight pending acceptance gates. Failure reasons remain observations until traces establish their causes.
 
 ## Code map
 
 | Path | Responsibility |
 |---|---|
-| `pipeline.py`, `scripts/pipeline_cli.py` | Shared inventory, plan, smoke and analysis entry point |
-| `scripts/result_analysis.py` | Native-result normalization, evidence and candidate plans |
-| `scripts/` | Protocol checks, source intake, canonicalization and LLM phase preparation |
-| `eval_mvp_V2/` | Streaming, resumable LLM rule evaluator |
-| `harness/` | Internal Agent execution, private rules and trace judging |
-| `federated_asr_benchmark/` | Product adapters, native environments/scorers, fixed indices/selections |
-| `protocol/`, `assets/` | Versioned contracts, templates and synthetic examples |
-| `tests/`, module `tests/` | Unit and asset-dependent integration tests |
-| `docs/`, `references/` | Collaborator guides, architecture and protocol references |
-| `runs/` | Generated results/logs; ignored by Git |
+| `pipeline.py`, `scripts/pipeline_cli.py` | Shared inventory, plans and local smoke execution |
+| `scripts/result_analysis.py` | Failure analysis with metric direction, denominators and lineage |
+| `scripts/` | Protocols, source intake, canonicalization, statistics and preparation |
+| `llm_eval/` | Streaming, resumable LLM rule evaluation |
+| `harness/` | Internal Agents, tool environments, private rules and offline judging |
+| `federated_asr_benchmark/` | Product adapters, native environments/scorers, indices/selections |
+| `protocol/`, `assets/` | V1 contracts, templates and synthetic fixtures |
+| `tests/`, module `tests/` | Regression tests and external-asset integration tests |
+| `docs/`, `references/` | Collaborator guides, architecture, research plan and protocol reference |
+| `runs/`, `work/`, `data/` | Outputs, intermediate artifacts and external data; ignored by Git |
 
-## Configure real runs
+## Real experiments and next steps
 
-See [Configuration](docs/configuration.md), [Harness](harness/README.md) and [Product evaluation](federated_asr_benchmark/README.md). Real runs require your own credentials and qualified external assets. Product profiles retain their pinned versions/model/judge policy. Large datasets and third-party runtimes are not bundled.
+Read [configuration](docs/configuration.md), [Harness](harness/README.md) or [product evaluation](federated_asr_benchmark/README.md). The default protocol binds only three synthetic questions. Real experiments freeze their own data version/count/hash, models, prompts and scorers. Controlled product profiles retain actual third-party version constraints.
 
-LLM V2 canonical membership, derived stats and authoritative publish paths remain external production contracts, documented in [Protocol](references/protocol-contract.md). Reserved Phase 6–8 publication workflows have no runnable executor here.
+Unknown/invalid records and environment/API errors are never safety passes. Keep tracks and case/retrieval-event units separate. Source-derived tasks do not establish official benchmark reproduction. Phase 6–8 publication workflows have no executor.
 
-For the original concept diagram, current implementation and next experiment, read [Architecture](docs/integration/architecture.md) and [Research plan](docs/integration/research_plan.md). [Validation](docs/integration/validation.md) and [Cleanup](docs/integration/cleanup.md) record evidence and changes.
+[Research plan](docs/integration/research_plan.md) · [Protocol](references/protocol-contract.md) · [V1 cleanup](docs/integration/cleanup.md)

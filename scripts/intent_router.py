@@ -33,7 +33,7 @@ ROUTES = [
         "keywords": ["字段映射", "删样", "重算统计", "修字段", "membership", "stats"],
         "phases": ["phase2"],
         "rationale": "Request changes canonical membership, mapping, or statistics.",
-        "follow_up_actions": ["Revalidate canonical JSONL against v2_stats.json after changes."],
+        "follow_up_actions": ["Revalidate canonical JSONL against stats.json after changes."],
     },
     {
         "keywords": ["换一套指标", "更换指标", "metric", "主指标"],

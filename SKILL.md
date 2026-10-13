@@ -16,7 +16,7 @@ Start with [README](README.md), [documentation navigation](docs/README.md), `pro
 ## Contracts
 
 - Tracks retain separate populations and metric directions/units; unknown and invalid are not passes.
-- LLM V2 canonical/stats/publish paths are external production contracts, described in [protocol](references/protocol-contract.md). Synthetic examples are not canonical data.
+- Project V1 starts at 1.0.0. The default protocol binds three synthetic reference questions. Freeze independent dataset, model and scorer identities for real runs; see [protocol](references/protocol-contract.md).
 - Internal Agent tasks are source-derived; mapping or mock evidence does not prove official reproduction or product qualification.
 - Public runtime tasks cannot expose private oracles.
 - Failure reasons are observed signals, with root cause unconfirmed until verified.
@@ -24,4 +24,4 @@ Start with [README](README.md), [documentation navigation](docs/README.md), `pro
 - Generation, acceptance execution, dataset publication and automatic Agent improvement remain future implementation work.
 - Preserve existing controlled product profile constraints; use a versioned profile with new evidence for changes.
 
-[Phase contracts](references/phase-contracts.md) describe the optional legacy router. Phase6–8 are reserved and emit no runnable commands. Do not claim production publish capabilities based on those phase names.
+[Phase contracts](references/phase-contracts.md) describe the optional phase router. Phase6–8 are reserved and emit no runnable commands. Do not claim production publish capabilities based on those phase names.

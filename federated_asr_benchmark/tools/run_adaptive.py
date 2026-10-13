@@ -655,7 +655,7 @@ def worker_main(args: argparse.Namespace) -> int:
             }
         )
         write_json_atomic(worker_path, state)
-        request = PACKAGE_ROOT / "examples" / "requests" / "v0.2" / f"{lease.product}_{lease.benchmark_id}.json"
+        request = PACKAGE_ROOT / "examples" / "requests" / f"{lease.product}_{lease.benchmark_id}.json"
         command = [
             sys.executable,
             str(RUN_ONE),

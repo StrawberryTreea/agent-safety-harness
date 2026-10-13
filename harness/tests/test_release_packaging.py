@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -9,7 +10,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_ROOT = ROOT / "runs" / "curated_benchmark_v3" / "harness_tasks"
+SOURCE_ROOT = Path(os.environ.get("AGENT_EVAL_CURATED_TASKS_ROOT") or ROOT / "runs" / "curated" / "harness_tasks")
+SOURCE_ALL = SOURCE_ROOT / "all_computer_agent_safety.tasks.jsonl"
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -22,8 +24,10 @@ def is_judge(record: dict) -> bool:
 
 
 class ReleasePackagingTests(unittest.TestCase):
-    @unittest.skipUnless(SOURCE_ROOT.exists(), "curated source dataset is not available")
+    @unittest.skipUnless(SOURCE_ALL.is_file(), "curated source dataset is not available; set AGENT_EVAL_CURATED_TASKS_ROOT")
     def test_validation_and_full_release_contract(self) -> None:
+        source = read_jsonl(SOURCE_ALL)
+        self.assertGreaterEqual(len(source), 50, "packaging validation requires at least 50 curated tasks")
         with tempfile.TemporaryDirectory() as tmp:
             out_root = Path(tmp) / "datasets"
             subprocess.run(
@@ -52,21 +56,24 @@ class ReleasePackagingTests(unittest.TestCase):
             full_manifest = json.loads((out_root / "full" / "manifest.json").read_text(encoding="utf-8"))
 
             self.assertEqual(len(validation), 50)
-            self.assertEqual(len(full), 18657)
+            self.assertEqual(full, source)
             self.assertEqual(len({record["task_id"] for record in validation}), 50)
-            self.assertEqual(len({record["task_id"] for record in full}), 18657)
-            self.assertEqual(validation_manifest["execution_records"], 47)
-            self.assertEqual(validation_manifest["judge_records"], 3)
-            self.assertEqual(full_manifest["execution_records"], 18136)
-            self.assertEqual(full_manifest["judge_records"], 521)
-            self.assertEqual(len(validation_manifest["by_benchmark"]), 17)
-            self.assertEqual(len(full_manifest["by_benchmark"]), 17)
+            source_ids = {record["task_id"] for record in source}
+            self.assertEqual(len(source_ids), len(full))
+            self.assertTrue({record["task_id"] for record in validation}.issubset(source_ids))
+            for records, manifest in ((validation, validation_manifest), (full, full_manifest)):
+                judge_count = sum(is_judge(record) for record in records)
+                self.assertEqual(manifest["execution_records"], len(records) - judge_count)
+                self.assertEqual(manifest["judge_records"], judge_count)
+                self.assertEqual(set(manifest["by_benchmark"]), {record["benchmark"] for record in records})
             self.assertTrue(validation_manifest["validation"]["valid"])
             self.assertTrue(full_manifest["validation"]["valid"])
-            self.assertTrue(any(is_judge(record) for record in validation))
-            self.assertTrue(any(not is_judge(record) for record in validation))
-            self.assertFalse(Path(validation_manifest["source"]).is_absolute())
-            self.assertFalse(Path(full_manifest["source"]).is_absolute())
+            if any(is_judge(record) for record in source):
+                self.assertTrue(any(is_judge(record) for record in validation))
+            if any(not is_judge(record) for record in source):
+                self.assertTrue(any(not is_judge(record) for record in validation))
+            self.assertEqual(Path(validation_manifest["source"]).name, SOURCE_ALL.name)
+            self.assertEqual(Path(full_manifest["source"]).name, SOURCE_ALL.name)
 
 
 if __name__ == "__main__":

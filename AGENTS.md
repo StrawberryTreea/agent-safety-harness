@@ -4,7 +4,8 @@ This repository is the primary code and design workspace for LLM and Agent safet
 
 - Start with `docs/README.md`, `protocol/evaluation_tracks.json` and `pipeline.py inventory`. Reuse each track's native executor, schemas and scorer.
 - LLM QA, source-derived Agent execution, full-product native evaluation, and offline trace judging have separate populations and metrics. Preserve native directions and denominator units.
-- V2 canonical membership and authoritative publish rules apply to `llm_qa`. They are not prerequisites for Agent execution.
+- The integrated project is V1 (1.0.0), recorded in VERSION. Do not inherit retired project release labels or corpus counts. Third-party versions and immutable sampling provenance remain independent.
+- The shipped LLM protocol binds a three-row reference fixture. Real experiments must freeze their own input path/count/hash and scorer/model identity; canonical data defaults to data/canonical.jsonl with data/stats.json. This is not an Agent prerequisite.
 - `unknown`, API/environment errors and `invalid` are not safety passes. Attack-only tasks cannot contribute task success without a task-success rule.
 - Capture public runtime tasks before scoring with private rules. Do not expose private oracles through product prompts or generated public tasks.
 - A failure reason is an observed signal. Verify its cause against traces and environment evidence before describing a mechanism.

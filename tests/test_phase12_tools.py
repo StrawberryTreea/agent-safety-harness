@@ -33,7 +33,8 @@ class Phase12ToolTests(unittest.TestCase):
         card = protocol_dir / "evaluation_protocol_card.md"
         text = card.read_text(encoding="utf-8")
         text = text.replace("<describe the concrete evaluation goal>", "Evaluate test safety benchmark")
-        text = text.replace('"<model_id>"', "test_model")
+        text = text.replace("<model_id>", "test_model")
+        text = text.replace("assets/samples/llm_qa_demo.jsonl", "data/canonical.jsonl")
         card.write_text(text, encoding="utf-8")
         registry = {
             "models": [
@@ -280,8 +281,8 @@ class Phase12ToolTests(unittest.TestCase):
         )
         self.assertEqual(intake.returncode, 0, intake.stderr or intake.stdout)
 
-        canonical = self.root / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
-        stats = self.root / "output" / "doc" / "v2_stats.json"
+        canonical = self.root / "data" / "canonical.jsonl"
+        stats = self.root / "output" / "doc" / "stats.json"
         canonicalize = self.run_script(
             str(SCRIPTS / "canonicalize_datasets.py"),
             "--catalog",
@@ -368,8 +369,8 @@ class Phase12ToolTests(unittest.TestCase):
             json.dumps({"prompt": "mutated", "label": "REFUSE", "l1": l1, "l2": l2}, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
-        canonical = self.root / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
-        stats = self.root / "output" / "doc" / "v2_stats.json"
+        canonical = self.root / "data" / "canonical.jsonl"
+        stats = self.root / "output" / "doc" / "stats.json"
         canonicalize = self.run_script(
             str(SCRIPTS / "canonicalize_datasets.py"),
             "--catalog",
@@ -391,7 +392,7 @@ class Phase12ToolTests(unittest.TestCase):
     def test_prepare_phase3_writes_smoke_subset_and_run_config(self) -> None:
         protocol_dir = self.create_protocol()
         l1, l2 = self.taxonomy_pair(protocol_dir)
-        canonical = self.root / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
+        canonical = self.root / "data" / "canonical.jsonl"
         canonical.parent.mkdir(parents=True)
         records = []
         for index in range(1, 9):
@@ -412,9 +413,9 @@ class Phase12ToolTests(unittest.TestCase):
             encoding="utf-8",
         )
         digest = hashlib.sha256(canonical.read_bytes()).hexdigest().upper()
-        eval_script = self.root / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py"
+        eval_script = self.root / "llm_eval" / "multi_model_rule_eval_prompt_only.py"
         eval_script.parent.mkdir(parents=True, exist_ok=True)
-        eval_script.write_text((ROOT / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py").read_text(encoding="utf-8"), encoding="utf-8")
+        eval_script.write_text((ROOT / "llm_eval" / "multi_model_rule_eval_prompt_only.py").read_text(encoding="utf-8"), encoding="utf-8")
         eval_digest = hashlib.sha256(eval_script.read_bytes()).hexdigest().upper()
         card = protocol_dir / "evaluation_protocol_card.md"
         text = card.read_text(encoding="utf-8")
@@ -428,7 +429,7 @@ class Phase12ToolTests(unittest.TestCase):
         card.write_text(text, encoding="utf-8")
 
         output_dir = self.root / "work" / "phase3"
-        smoke_output = self.root / "eval_mvp_V2" / "data" / "test_eval_100_dataset_type_coverage.jsonl"
+        smoke_output = self.root / "work" / "phase3" / "smoke.jsonl"
         run_config = output_dir / "run_config.yaml"
         completed = self.run_script(
             str(SCRIPTS / "prepare_phase3.py"),
@@ -455,7 +456,7 @@ class Phase12ToolTests(unittest.TestCase):
         self.assertEqual(len({record["id"] for record in subset}), 5)
         config = yaml.safe_load(run_config.read_text(encoding="utf-8"))
         self.assertEqual(config["phase"], "phase3")
-        self.assertEqual(config["evaluator_config"]["input_jsonl"], "eval_mvp_V2/data/test_eval_100_dataset_type_coverage.jsonl")
+        self.assertEqual(config["evaluator_config"]["input_jsonl"], "work/phase3/smoke.jsonl")
         self.assertEqual(config["evaluator_config"]["run_mode"], "self_test")
         self.assertEqual(config["fields"]["prompt"], "test_text")
         report = json.loads((output_dir / "phase3_report.json").read_text(encoding="utf-8"))
@@ -463,7 +464,7 @@ class Phase12ToolTests(unittest.TestCase):
         self.assertIn("dataset_name", report["smoke_coverage"])
 
     def test_evaluator_accepts_external_run_config(self) -> None:
-        evaluator_path = ROOT / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py"
+        evaluator_path = ROOT / "llm_eval" / "multi_model_rule_eval_prompt_only.py"
         spec = importlib.util.spec_from_file_location("phase3_eval_config_test", evaluator_path)
         self.assertIsNotNone(spec)
         self.assertIsNotNone(spec.loader)
@@ -475,8 +476,8 @@ class Phase12ToolTests(unittest.TestCase):
             module.apply_external_config(
                 {
                     "evaluator_config": {
-                        "input_jsonl": "eval_mvp_V2/data/test_eval_100_dataset_type_coverage.jsonl",
-                        "run_root": "rule_eval_mvp/output_smoke",
+                        "input_jsonl": "work/phase3/smoke.jsonl",
+                        "run_root": "runs/llm-smoke",
                         "run_mode": "self_test",
                     },
                     "fields": {
@@ -486,8 +487,8 @@ class Phase12ToolTests(unittest.TestCase):
                     },
                 }
             )
-            self.assertEqual(module.CONFIG["INPUT_JSONL"], "eval_mvp_V2/data/test_eval_100_dataset_type_coverage.jsonl")
-            self.assertEqual(module.CONFIG["RUN_ROOT"], "rule_eval_mvp/output_smoke")
+            self.assertEqual(module.CONFIG["INPUT_JSONL"], "work/phase3/smoke.jsonl")
+            self.assertEqual(module.CONFIG["RUN_ROOT"], "runs/llm-smoke")
             self.assertEqual(module.CONFIG["RUN_MODE"], "self_test")
             self.assertEqual(module.CONFIG["ID_FIELD"], "canonical_id")
             self.assertEqual(module.CONFIG["PROMPT_FIELD"], "prompt_text")

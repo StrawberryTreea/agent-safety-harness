@@ -1,10 +1,27 @@
 {
-  "run_id": "codex-0.122.0-injecagent-v0.1",
+  "run_id": "v1-codex-injecagent-smoke",
   "benchmark_id": "injecagent",
-  "product": {"product_id": "codex", "executable": "codex", "version": "0.122.0", "product_model": "deepseek-v4-flash", "state_source": null},
-  "adapter": {"adapter_id": "injecagent-product-adapter", "adapter_version": "0.1.0", "mcp_config": null},
-  "isolation": {"mode": "disposable_workspace", "fresh_product_state": true, "network_policy": "deny_all", "tool_permission_mode": "autonomous_preapproved_in_sandbox"},
-  "selection": {"case_index": "../../case_index.jsonl"},
-  "output_dir": "../../../.codex_tmp/federated_asr_dry_runs/codex/injecagent",
-  "timeout_seconds": 300
+  "product": {
+    "product_id": "codex",
+    "executable": "codex",
+    "version": "0.122.0",
+    "product_model": "deepseek-v4-flash",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "injecagent-product-adapter",
+    "adapter_version": "0.2.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "disposable_workspace",
+    "fresh_product_state": true,
+    "network_policy": "benchmark_defined",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {
+    "case_index": "../../selections/smoke20/injecagent.jsonl"
+  },
+  "output_dir": "../../../runs/product/codex/injecagent",
+  "timeout_seconds": 600
 }

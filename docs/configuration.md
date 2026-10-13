@@ -4,7 +4,7 @@
 
 ## LLM QA
 
-入口：`eval_mvp_V2/multi_model_rule_eval_prompt_only.py --config <yaml或json>`。示例：[llm_self_test.yaml](../assets/samples/llm_self_test.yaml)。模型列表放 `evaluator_config.models`（或 `config.MODELS`），不能放顶层 `models`。
+入口：`llm_eval/multi_model_rule_eval_prompt_only.py --config <yaml或json>`。示例：[llm_self_test.yaml](../assets/samples/llm_self_test.yaml)。模型列表放 `evaluator_config.models`（或 `config.MODELS`），不能放顶层 `models`。
 
 真实 API 配置示例，保存为 `work/my-llm.yaml`，先替换 endpoint、model、输入路径：
 
@@ -29,19 +29,21 @@ evaluator_config:
 
 ```powershell
 $env:EVAL_API_KEY = '<your-key>'
-.\.venv\Scripts\python.exe eval_mvp_V2/multi_model_rule_eval_prompt_only.py --config work/my-llm.yaml
+.\.venv\Scripts\python.exe llm_eval/multi_model_rule_eval_prompt_only.py --config work/my-llm.yaml
 ```
 
 base_url 不带 `/chat/completions`。支持的 provider 与超时、重试、token 参数以评测器顶部 CONFIG 为准。`EVAL_INPUT_JSONL`/`EVAL_RUN_ROOT`/`EVAL_RUN_MODE` 等环境覆盖优先于文件，换实验前检查。示例输入仅三条；正式实验的小子集应先独立导出并冻结。费用按所用 provider 的报价和 usage 单独核算。每条 API error 保留为未评分，不因程序结束就视作覆盖完成。无匹配启用模型返回 2；模型级异常返回非零。
 
-V2 的 canonical 真源、统计与权威发布路径是外部完整语料协议，见[协议契约](../references/protocol-contract.md)。合成示例不属于该语料，也不生成正式 leaderboard。
+V1 默认协议绑定三条合成自测题。真实安全数据使用 `data/canonical.jsonl` 与 `data/stats.json` 或显式配置路径，必须重算数量/哈希并更新协议。十三字段 canonical schema 用于有安全标签的数据；三条自测题只有最小评测字段，不应补造安全标签。见[协议契约](../references/protocol-contract.md)。
 
 ## 内部 Agent 与离线 judge
 
 - [agents.json](../harness/config/agents.json)：CLI 命令及非交互参数，`--agent cli:<id>`。
 - [models.json](../harness/config/models.json)：API provider、base_url、model、api_key_env、超时，`--agent model:<id>`。
-- [policies.json](../harness/config/policies.json)：工具/运行策略。
+- [policies.json](../harness/config/policies.json)：内部安全类别参考；工具权限和私有评分规则由实际任务与执行配置定义。
 - 使用 `--agents-config` / `--models-config` 指向实验副本，不改共享配置来隐式改变已有实验。
+
+TaskSpec 分发打包器 `harness/tools/package_release_datasets.py` 默认读取 `harness/runs/curated/harness_tasks/`，也可用 `--source-root` 指定当前整理输出。打包集成测试通过 `AGENT_EVAL_CURATED_TASKS_ROOT` 读取同类外部输入，要求至少 50 条；没有输入时明确跳过，不绑定旧实验行数。
 
 执行过程、工具 mock/工作区证据和私有规则见 [Harness](../harness/README.md)。内部 CLI 配置可以有 harness 提示包装，不能自动称为完整产品默认系统行为。
 

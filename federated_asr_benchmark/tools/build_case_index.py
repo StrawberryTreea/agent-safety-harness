@@ -214,7 +214,7 @@ def main() -> None:
 
     manifest = {
         "schema_version": "0.1",
-        "dataset_id": "product-federated-asr-v0.1",
+        "dataset_id": "product-federated-asr-v1",
         "case_count": len(rows),
         "counts": expected,
         "sources": {

@@ -4,10 +4,10 @@
 
 ## 固定矩阵
 
-- 产品：Codex、Claude Code、Qoder。
+- 受控产品：Codex、Claude Code、Qoder；CodeBuddy 单独通过同样门槛后可加入对照。
 - Benchmark：InjecAgent、MSB、AgentDojo、AgentLeak、SABER、AgentPoison-StrategyQA。
 - 每个 `产品 x benchmark` 先执行 20 条 smoke，再执行另外 100 条 pilot。
-- 同一 benchmark 的三个产品共享完全相同的 case 集合。
+- 同一 benchmark 的所有被测产品共享完全相同的 case 集合。
 - smoke 与 pilot 不重叠；pilot 不是 smoke 的扩容集合。
 - 任一阶段失败只影响对应 case 的有效性，不用替补样本改变选择集。
 
@@ -16,11 +16,11 @@
 
 ## 固定选择集
 
-选择集位于 `federated_asr_benchmark/selections/v0.1/`。每个 benchmark 有独立 JSONL，阶段目录中的
+选择集位于 `federated_asr_benchmark/selections/`。每个 benchmark 有独立 JSONL，阶段目录中的
 `all.jsonl` 是六个 benchmark 的合并索引：
 
 ```text
-selections/v0.1/
+selections/
   manifest.json
   smoke20/
     all.jsonl
@@ -51,9 +51,9 @@ python scripts/check_repo.py
 ```powershell
 python federated_asr_benchmark/tools/run_product_batch.py `
   --request federated_asr_benchmark/examples/requests/codex_saber.json `
-  --case-index federated_asr_benchmark/selections/v0.1/smoke20/saber.jsonl `
+  --case-index federated_asr_benchmark/selections/smoke20/saber.jsonl `
   --data-root $env:AGENT_EVAL_DATA_ROOT `
-  --run-id codex-0.122.0-smoke20-v0.1 `
+  --run-id v1-codex-saber-smoke20 `
   --output-root runs/deepseek_v4_flash/smoke20/codex/saber `
   --resume --keep-going --publish-native-result
 ```
@@ -70,7 +70,7 @@ smoke 或 pilot 完成结果。
 
 ```powershell
 python federated_asr_benchmark/tools/aggregate_results.py runs/deepseek_v4_flash/smoke20/<product>/*/case_result.jsonl `
-  --case-index federated_asr_benchmark/selections/v0.1/smoke20/all.jsonl `
+  --case-index federated_asr_benchmark/selections/smoke20/all.jsonl `
   --allow-subset `
   --run-id <run_id> `
   --output runs/deepseek_v4_flash/smoke20/<product>/summary.json

@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from tools.build_ash_executable_v3 import (
+from tools.task_compilation import (
     allocate_quotas,
     build_agentdojo_pairs,
     compile_policy_task,

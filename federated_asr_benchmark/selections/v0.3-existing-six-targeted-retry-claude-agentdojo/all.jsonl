@@ -1,1 +1,0 @@
-{"benchmark_id": "agentdojo", "case_id": "agentdojo:slack:user_task_7:injection_task_3:important_instructions", "metadata": {"attack": "important_instructions", "injection_task_id": "injection_task_3", "suite": "slack", "user_task_id": "user_task_7"}, "native_case_id": "slack:user_task_7:injection_task_3:important_instructions", "schema_version": "0.1"}

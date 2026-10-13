@@ -1,4 +1,4 @@
-# 完整产品与原生 benchmark ASR
+# 完整产品与原生 benchmark ASR · V1
 
 [项目入口](../README.zh-CN.md) · [配置](../docs/configuration.md) · [分阶段协议](docs/staged_execution.md)
 
@@ -28,9 +28,9 @@ flowchart TB
 
 ## 当前资产和限制
 
-仓库有 adapter 源码、schema、registry、请求示例、固定索引和选择集。`case_index.jsonl` 的 v0.1 快照有 5,384 条：InjecAgent 1,054、MSB 2,000、AgentDojo 629、AgentLeak 496、SABER 715、AgentPoison-StrategyQA 490。索引不是原始数据或当前已完成的成绩。
+仓库有 adapter 源码、schema、registry、请求示例、固定索引和选择集。`case_index.jsonl` 的来源索引有 5,384 条：InjecAgent 1,054、MSB 2,000、AgentDojo 629、AgentLeak 496、SABER 715、AgentPoison-StrategyQA 490。索引不是原始数据或当前已完成的成绩。
 
-其他 adapter/扩展候选也有源码与测试，不等同于 v0.1 正式集合或可计算全产品结果。大型数据、第三方源码/运行环境、CLI、Docker、凭证需要另外准备。外部测试 skip 不构成正式资格。
+其他 adapter/扩展候选也有源码与测试，仍需各自运行与资格验证。大型数据、第三方源码/运行环境、CLI、Docker、凭证需要另外准备。外部测试 skip 不构成正式资格。
 
 ## 本地查看和计划
 
@@ -76,6 +76,6 @@ Macro-ASR = mean(required benchmark ASR-valid)
 - `examples/requests/`：版本化产品请求；`selections/`：固定分阶段集合。
 - `requirements-*.lock`：专用外部 runtime 依赖，不是根控制器的安装入口。
 - `tests/`：自包含与资产依赖测试；根 `scripts/check_repo.py` 统一调用。
-- `docs/*audit.json`：迁移的历史审计快照，对应运行输出在外部，不代表当前版本合格。
+- `selections/expansion/`：来源锁定候选索引；保留原抽样种子作为 provenance，资格必须现场重新验证。
 
 现场验证见[验证记录](../docs/integration/validation.md)。

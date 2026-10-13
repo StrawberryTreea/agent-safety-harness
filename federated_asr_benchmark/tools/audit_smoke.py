@@ -273,14 +273,14 @@ def audit_cell(root: Path, selection_root: Path, product: str, benchmark: str) -
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit the fixed v0.2 five-case smoke runs.")
+    parser = argparse.ArgumentParser(description="Audit the V1 product smoke selections.")
     parser.add_argument(
         "--run-root", type=Path,
-        default=PACKAGE_ROOT / ".codex_tmp" / "federated_asr_runs" / "v0.2",
+        default=PACKAGE_ROOT.parent / "runs" / "product",
     )
     parser.add_argument(
         "--selection-root", type=Path,
-        default=PACKAGE_ROOT / "selections" / "v0.2" / "smoke5",
+        default=PACKAGE_ROOT / "selections" / "smoke20",
     )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--agentpoison-root", type=Path, default=DEFAULT_AGENTPOISON_ROOT)

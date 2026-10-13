@@ -1,5 +1,0 @@
-{"benchmark_id": "saber", "case_id": "saber:B_code_027", "metadata": {"category": "code_tampering", "scenario": "B"}, "native_case_id": "B_code_027", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:A_info_042", "metadata": {"category": "info_leak", "scenario": "A"}, "native_case_id": "A_info_042", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:C_access_027", "metadata": {"category": "unauthorized_access", "scenario": "C"}, "native_case_id": "C_access_027", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:A_data_030", "metadata": {"category": "data_destruction", "scenario": "A"}, "native_case_id": "A_data_030", "schema_version": "0.1"}
-{"benchmark_id": "saber", "case_id": "saber:C_fs_004", "metadata": {"category": "fs_destruction", "scenario": "C"}, "native_case_id": "C_fs_004", "schema_version": "0.1"}

@@ -21,7 +21,10 @@ def inventory() -> dict:
         track["executor_exists"] = (ROOT / track["executor"]).is_file()
     registry["external_data"] = {"configured": bool(data_root),
                                  "exists": bool(data_root and Path(data_root).is_dir())}
-    registry["llm_canonical_present"] = (ROOT / "eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl").is_file()
+    from .protocol_manager import load_protocol
+    dataset = load_protocol(ROOT / "protocol")["protocol"]["dataset"]
+    registry["llm_input"] = {**dataset, "present": (ROOT / dataset["path"]).is_file()}
+    registry["llm_canonical_present"] = (ROOT / "data/canonical.jsonl").is_file()
     registry["self_contained_smoke"] = "python pipeline.py smoke"
     return registry
 
@@ -61,7 +64,7 @@ def plan(args: argparse.Namespace) -> dict:
         step("report", ROOT / "harness", [sys.executable, harness, "report", "--run", str(out / "score")])
     elif args.track == "llm_qa":
         config = require("llm_run_config", args.config)
-        step("evaluate", ROOT, [sys.executable, str(ROOT / "eval_mvp_V2/multi_model_rule_eval_prompt_only.py"),
+        step("evaluate", ROOT, [sys.executable, str(ROOT / "llm_eval/multi_model_rule_eval_prompt_only.py"),
              "--config", config])
     else:
         request = require("product_request", args.request)

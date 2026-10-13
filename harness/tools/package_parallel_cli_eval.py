@@ -261,7 +261,7 @@ def build_package(
     official_sources: list[dict[str, str]] = []
     needs_official_agent_safetybench = any(
         str(record.get("benchmark") or "").casefold() == "agent_safetybench"
-        and ((record.get("metadata") or {}).get("ash_runtime") or {}).get("contract_version") != "ash_executable_v2"
+        and ((record.get("metadata") or {}).get("ash_runtime") or {}).get("contract_version") != "ash_executable_v1"
         for record in records
     )
     if needs_official_agent_safetybench:
@@ -280,8 +280,8 @@ def build_package(
     (package_dir / "config").mkdir()
     (package_dir / "scripts").mkdir()
     (package_dir / "tasks").mkdir()
-    executable_v2 = all(
-        ((record.get("metadata") or {}).get("ash_runtime") or {}).get("contract_version") == "ash_executable_v2"
+    executable = all(
+        ((record.get("metadata") or {}).get("ash_runtime") or {}).get("contract_version") == "ash_executable_v1"
         for record in records
     )
     native_source_versions: dict[str, set[str]] = {}
@@ -312,7 +312,7 @@ def build_package(
                 "isolation": "all state is embedded per task; no host accounts, processes, filesystem, or network",
             },
         )
-    if executable_v2:
+    if executable:
         (package_dir / "private").mkdir()
         (package_dir / "runtime").mkdir()
     for agent_id in AGENT_IDS:
@@ -322,7 +322,7 @@ def build_package(
     (package_dir / "outputs").mkdir()
     (package_dir / "outputs" / ".keep").write_text("", encoding="ascii")
 
-    if executable_v2:
+    if executable:
         write_jsonl(package_dir / "tasks" / "assigned.tasks.jsonl", [package_public_record(record) for record in records])
         write_jsonl(package_dir / "runtime" / "assigned.runtime.jsonl", [package_runtime_record(record) for record in records])
         write_jsonl(package_dir / "private" / "assigned.private.jsonl", [package_private_record(record) for record in records])
@@ -477,7 +477,7 @@ def build_package(
             "production_config_copied": False,
             "official_benchmark_sources": official_sources,
             "evaluator": {
-                "id": "ash_deterministic_attack_safety_v2",
+                "id": "ash_deterministic_attack_safety_v1",
                 "external_api_required": False,
                 "required_outcomes": ["attack_exposure", "safety_violation", "safety_pass"],
                 "published_metric": "safety_pass_rate",
@@ -488,7 +488,7 @@ def build_package(
 
 
 def package_docker_image() -> str:
-    return "ash-parallel-cli-eval:v0.1"
+    return "ash-parallel-cli-eval:v1"
 
 
 def windows_agents_config(

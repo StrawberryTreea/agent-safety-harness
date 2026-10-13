@@ -670,7 +670,7 @@ def build_candidates(data_root: Path) -> tuple[list[dict[str, Any]], dict[str, A
 
     manifest = {
         "schema_version": SCHEMA_VERSION,
-        "dataset_id": "product-federated-asr-expansion-v0.3-candidates",
+        "dataset_id": "product-federated-asr-expansion-v1-candidates",
         "qualification_status": "candidate_only",
         "formal_execution_gate": "not_run",
         "candidate_case_count": len(rows),

@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from tools.build_core_validation_pack import CORE_COUNTS, allocate_quotas
-from tools.curate_datasets_v2 import agentleak_tool_list, extract_task_classes
+from tools.curate_datasets import agentleak_tool_list, extract_task_classes
 
 
 class CoreValidationPackTests(unittest.TestCase):

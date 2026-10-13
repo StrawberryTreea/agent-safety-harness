@@ -17,6 +17,6 @@
 | 完整产品评测 | [产品模块](../federated_asr_benchmark/README.md)、[分阶段选择集](../federated_asr_benchmark/docs/staged_execution.md) |
 | LLM 数据与协议 | [资产地图](../references/repo-asset-map.md)、[阶段契约](../references/phase-contracts.md)、[协议契约](../references/protocol-contract.md) |
 | 下一轮闭环实验 | [研究计划](integration/research_plan.md) |
-| 查看验证与迁移历史 | [验证记录](integration/validation.md)、[迁移快照](integration/migration_manifest.json)、[清理记录](integration/cleanup.md) |
+| 查看 V1 验收与清理 | [验证记录](integration/validation.md)、[清理记录](integration/cleanup.md) |
 
-`migration_manifest.json` 和保留的产品 audit JSON 是历史快照，不能作为当前数据可用、产品合格或正式成绩的证明。以当前配置和现场 preflight/运行结果为准。
+项目版本记录在根 `VERSION`。旧实验快照与失效入口已清理；以当前配置、preflight 和运行证据判断资格。

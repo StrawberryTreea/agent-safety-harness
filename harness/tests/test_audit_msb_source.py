@@ -13,7 +13,7 @@ from tools.replay_msb_official_metrics import replay
 
 
 MSB_ROOT = ROOT.parent / "数据集" / "评测数据" / "MSB-main"
-CANDIDATE = ROOT / "runs" / "ash_security_v6" / "tasks" / "security.tasks.jsonl"
+CANDIDATE = ROOT / "runs" / "ash_security_v1" / "tasks" / "security.tasks.jsonl"
 
 
 @unittest.skipUnless(MSB_ROOT.exists(), "optional MSB source dataset is not vendored")
