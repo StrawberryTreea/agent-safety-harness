@@ -6,6 +6,12 @@ This is the primary project repository. The integrated platform starts at **V1 (
 
 **Implemented:** native entry points, public execution with separate private scoring, result analysis and unaccepted candidate plans. **Not implemented:** general experiment scheduling, replay diagnosis, automatic test-set evolution, LLM / Agent improvement, promotion and rollback.
 
+## Original design reference
+
+![Original evaluation and evolution concept (Chinese): test data, environments, Agent execution, scoring, analysis and test-data feedback](assets/figures/evaluation-evolution-concept.png)
+
+This original concept illustrates the evaluation and test-data evolution loop. See the Harness diagram and status table below for current implementation status and the LLM / Agent target-evolution loop.
+
 ## Figure 1: dual-loop evaluation and evolution Harness
 
 Every node states its status: **Implemented** has a code entry point; **Partial** has protocols and configuration; **Not implemented** is a proposed module with a dashed border. Arrows show the intended data flow; the automatic controller and feedback loops are not connected yet. Each of the four tracks keeps its native metrics and denominator.
