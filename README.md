@@ -11,7 +11,7 @@ This is the primary project repository. The integrated platform starts at **V1 (
 Every node states its status: **Implemented** has a code entry point; **Partial** has protocols and configuration; **Not implemented** is a proposed module with a dashed border. Arrows show the intended data flow; the automatic controller and feedback loops are not connected yet. Each of the four tracks keeps its native metrics and denominator.
 
 ```mermaid
-%%{init: {"flowchart": {"wrappingWidth": 340}}}%%
+%%{init: {"layout": "dagre", "flowchart": {"defaultRenderer": "dagre", "wrappingWidth": 340}}}%%
 flowchart TB
     Inputs["Partial: freeze round inputs<br/>Protocols/configs exist; automatic snapshots do not"]
     Controller["Not implemented: experiment controller<br/>Scheduling, budgets, recovery, versions"]
@@ -39,15 +39,16 @@ flowchart TB
         Improve --> Validate --> Promote
     end
 
-    Diagnosis --> TestLoop
-    Diagnosis --> TargetLoop
+    Diagnosis --> Generate
+    Diagnosis --> Improve
     Dataset --> Next["Not implemented: automatic next round<br/>Freeze task and target versions again"]
     Promote --> Next
+    Next -->|Re-evaluate in the next round| Inputs
     classDef planned stroke-dasharray:5 5
     class Controller,Diagnosis,Generate,Admission,Dataset,Improve,Validate,Promote,Next planned
 ```
 
-The diagram unfolds one round: the bottom node returns to the top for re-evaluation. Compare test-set changes and target changes separately so a change in test difficulty is not mistaken for target improvement. Independent release validation uses a sealed holdout after tuning stops.
+The return arrow connects "automatic next round" to "freeze round inputs": freeze task and target versions again, then let the controller start evaluation, closing both loops. Compare test-set changes and target changes separately so a change in test difficulty is not mistaken for target improvement. Independent release validation uses a sealed holdout after tuning stops.
 
 ### Implementation status and entry points
 

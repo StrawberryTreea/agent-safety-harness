@@ -20,7 +20,7 @@
 节点标明“已实现”“部分实现”或“未实现”；虚线边框表示尚未实现的自动模块。箭头表示目标架构的数据流，自动闭环尚待实现。已实现指当前代码入口与本地链路，真实模型和产品仍需配置数据、目标、环境并验证运行资格。
 
 ```mermaid
-%%{init: {"flowchart": {"wrappingWidth": 340}}}%%
+%%{init: {"layout": "dagre", "flowchart": {"defaultRenderer": "dagre", "wrappingWidth": 340}}}%%
 flowchart TB
     Inputs["部分实现：本轮输入冻结<br/>已有协议与配置；自动快照未实现"]
     Controller["未实现：实验控制器<br/>任务队列、预算、调度、断点恢复"]
@@ -53,7 +53,7 @@ flowchart TB
         Dataset["未实现：测试集版本发布<br/>进入下一版演化池"]
         Generate --> Admit --> Dataset
     end
-    Diagnosis --> TestLoop
+    Diagnosis --> Generate
 
     subgraph TargetLoop["反馈回路 B：LLM / Agent 进化"]
         Optimize["未实现：候选改进器<br/>提示、策略、工具、代码或训练插件"]
@@ -62,17 +62,18 @@ flowchart TB
         Promote["未实现：版本晋升与回滚<br/>安全、能力、有效率与成本门槛"]
         Optimize --> Compare -->|开发验证通过| Release -->|发布验证通过| Promote
     end
-    Diagnosis --> TargetLoop
+    Diagnosis --> Optimize
     Next["未实现：自动进入下一轮<br/>重新锁定任务与目标快照"]
     Dataset --> Next
     Promote --> Next
+    Next -->|下一轮重新评测| Inputs
     classDef planned stroke-dasharray:5 5
     class Controller,Recovery,Diagnosis,Generate,Admit,Dataset,Optimize,Compare,Release,Promote,Next planned
 ```
 
 控制器让两个回路调用同一套评测链。每次调用都生成独立任务清单、运行目录、结果与决策记录；四条轨道分别统计原生指标和分母。版本注册与运行账本覆盖整张图，记录任务、目标、环境、评分器及生成谱系。
 
-图按单轮展开：底部“自动进入下一轮”回到顶部，由控制器重新开始评测。开发验证未通过的目标保留为拒绝记录，允许的失败反馈可继续用于开发阶段优化；运行问题的重派由控制器负责。
+返回箭头将“自动进入下一轮”连回“本轮输入冻结”：重新锁定任务与目标快照，再由控制器启动评测，形成两个闭环。开发验证未通过的目标保留为拒绝记录，允许的失败反馈可继续用于开发阶段优化；运行问题的重派由控制器负责。
 
 发布验证失败时保留上一版目标、拒绝本次晋升；本次封存留出集的逐题结果不进入当前优化回路。
 

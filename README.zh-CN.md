@@ -11,7 +11,7 @@
 节点直接标注实现状态：**已实现**有现有代码入口；**部分实现**具备协议与配置；**未实现**为设计模块，使用虚线边框。箭头表示目标架构的数据流，自动控制器与两个反馈回路尚未串联。四条轨道分别统计原生指标和分母。
 
 ```mermaid
-%%{init: {"flowchart": {"wrappingWidth": 340}}}%%
+%%{init: {"layout": "dagre", "flowchart": {"defaultRenderer": "dagre", "wrappingWidth": 340}}}%%
 flowchart TB
     Inputs["部分实现：本轮输入冻结<br/>已有协议与配置；自动快照未实现"]
     Controller["未实现：实验控制器<br/>调度、预算、恢复、版本记录"]
@@ -39,15 +39,16 @@ flowchart TB
         Improve --> Validate --> Promote
     end
 
-    Diagnosis --> TestLoop
-    Diagnosis --> TargetLoop
+    Diagnosis --> Generate
+    Diagnosis --> Improve
     Dataset --> Next["未实现：自动进入下一轮<br/>重新锁定任务与目标版本"]
     Promote --> Next
+    Next -->|下一轮重新评测| Inputs
     classDef planned stroke-dasharray:5 5
     class Controller,Diagnosis,Generate,Admission,Dataset,Improve,Validate,Promote,Next planned
 ```
 
-图按单轮展开：底部“下一轮”回到顶部重新评测。测试集和目标的变化分别对照，避免把测试难度变化当成目标改进；独立发布验证在停止调优后使用封存留出集。
+返回箭头将“自动进入下一轮”连回“本轮输入冻结”：重新锁定任务与目标版本，再由控制器启动评测，形成两个闭环。测试集和目标的变化分别对照，避免把测试难度变化当成目标改进；独立发布验证在停止调优后使用封存留出集。
 
 ### 实现状态与代码入口
 
