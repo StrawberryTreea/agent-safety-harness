@@ -1,4 +1,0 @@
-benchmark_overrides:
-  ambiguous_typed:
-    field_mapping:
-      test_text: question

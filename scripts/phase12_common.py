@@ -13,7 +13,7 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover - deployment guard
-    raise SystemExit("PyYAML is required. Install it with: conda install -n llm-safety-eval pyyaml") from exc
+    raise SystemExit("PyYAML is required. Install it with: python -m pip install -r requirements.txt") from exc
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -58,15 +58,13 @@ FIELD_ALIASES: Dict[str, List[str]] = {
         "ref",
         "gold",
         "expected_answer",
-        "v2_original_reference_answer",
-        "v2_judgment_original_reference_answer",
     ],
     "expected_behavior": ["expected_behavior", "behavior", "expected"],
     "l1_category": ["l1_category", "category_l1"],
     "l2_category": ["l2_category", "category_l2"],
     "eval_method": ["eval_method", "evaluation_method", "eval_type"],
     "note": ["note", "notes", "comment", "remarks"],
-    "type": ["type", "question_type", "task_type", "v2_judgment_original_type"],
+    "type": ["type", "question_type", "task_type"],
     "safety_l1_dimension": ["safety_l1_dimension", "safety_l1", "l1_dimension", "l1", "harm_l1"],
     "safety_l2_harm_type": ["safety_l2_harm_type", "safety_l2", "l2_harm_type", "l2", "harm_l2", "harm_type"],
     "base_prompt": ["base_prompt"],
@@ -87,18 +85,6 @@ FIELD_ALIASES: Dict[str, List[str]] = {
     "redteam_query": ["redteam_query"],
     "rubric": ["rubric"],
     "target_response": ["target_response"],
-    "v2_answer_mode": ["v2_answer_mode"],
-    "v2_correct_signature": ["v2_correct_signature"],
-    "v2_decoy_signature_1": ["v2_decoy_signature_1"],
-    "v2_decoy_signature_2": ["v2_decoy_signature_2"],
-    "v2_judgment_original_answer_mode": ["v2_judgment_original_answer_mode"],
-    "v2_judgment_original_reference_answer": ["v2_judgment_original_reference_answer"],
-    "v2_judgment_original_type": ["v2_judgment_original_type"],
-    "v2_option_map": ["v2_option_map"],
-    "v2_original_reference_answer": ["v2_original_reference_answer"],
-    "v2_original_reference_answer_length": ["v2_original_reference_answer_length"],
-    "v2_previous_transform": ["v2_previous_transform"],
-    "v2_transform": ["v2_transform"],
 }
 
 

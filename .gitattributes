@@ -1,0 +1,4 @@
+* text=auto
+# These files are bound by raw-byte SHA-256 in the evaluation protocol.
+*.jsonl text eol=lf
+llm_eval/multi_model_rule_eval_prompt_only.py text eol=lf

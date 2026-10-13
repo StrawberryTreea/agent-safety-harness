@@ -1,6 +1,5 @@
-delta_root: rule_eval_mvp/output_v2_delta
-merged_root: rule_eval_mvp/output_v2_merged
-authoritative_root: rule_eval_mvp/output_v2_final_authoritative
-require_manifest: true
-require_distribution_report: true
-require_total_match_with_canonical: true
+# Manual release planning template. No publication executor is bundled.
+project_version: 1.0.0
+status: planned
+release_manifest: "<reviewed-manifest-path>"
+destination: "<reviewed-destination>"

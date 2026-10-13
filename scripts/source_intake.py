@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover - deployment guard
-    raise SystemExit("PyYAML is required. Install it with: conda install -n llm-safety-eval pyyaml") from exc
+    raise SystemExit("PyYAML is required. Install it with: python -m pip install -r requirements.txt") from exc
 
 from phase12_common import (
     benchmark_id_for_path,

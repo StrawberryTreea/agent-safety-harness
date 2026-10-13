@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "profile_id": "deepseek_v4_flash",
+      "model": "deepseek-v4-flash",
+      "openai_base_url": "https://api.deepseek.com/v1",
+      "anthropic_base_url": "https://api.deepseek.com/anthropic"
+    }
+  ]
+}

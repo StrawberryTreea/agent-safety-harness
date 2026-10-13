@@ -1,406 +1,124 @@
-# LLM Safety Eval Research Pipeline
+# LLM and Agent Safety Evaluation Platform · V1
 
-[中文说明 / Chinese README](./README.zh-CN.md)
+[中文说明](README.zh-CN.md) · [Documentation](docs/README.md) · [Contributing](CONTRIBUTING.md)
 
-This repository is a project-local Codex skill for turning a large-model safety evaluation project into a reusable, auditable, and partially executable workflow.
+This is the primary project repository. The integrated platform starts at **V1 (1.0.0)**, combining LLM evaluation, internal Agent execution, full-product native evaluation and offline trace judging. Failure evidence informs new tests and subsequent improvements.
 
-The repository includes the main rule-evaluation script but does not include the 1.50 GB canonical dataset, complete multi-model outputs, or publish artifacts. The protocol pins the dataset path, total, and SHA-256 instead.
+**Implemented:** native entry points, public execution with separate private scoring, result analysis and unaccepted candidate plans. **Planned:** task generation, acceptance execution, dataset release and automatic Agent/model improvement.
 
-It is not a new evaluation framework that replaces the original project runtime. Its role is to sit on top of an existing safety-eval codebase and provide:
+## Figure 1: evaluation and improvement loop
 
-- an intent router that maps user requests to protocol phases,
-- a phase executor that performs prechecks and emits executable command hints,
-- a reusable protocol layer for data, metrics, taxonomy, publishing, and reporting,
-- a template layer for manifests, registries, and release checklists,
-- a truth-model that prevents reports and whitepapers from becoming the source of record.
+Solid arrows describe current execution and analysis. Dashed arrows describe future work. Each track keeps its native metrics and denominator.
 
-The current version is bound to one concrete repository layout and one concrete V2 publish pipeline. It is designed to reuse existing local scripts and artifact conventions rather than invent a parallel orchestration stack.
-
-## What This Skill Solves
-
-![Intent routing overview](assets/figures/intent-routing.png)
-
-Large-model safety evaluation projects usually accumulate:
-
-- canonical datasets,
-- evolving taxonomy and metric definitions,
-- one-off rerun scripts,
-- ad hoc leaderboard refreshes,
-- whitepaper and report generation,
-- manual consistency checks between data, results, and prose.
-
-Over time, the workflow becomes hard to route and harder to audit. The main problem is often not the absence of code, but the absence of an operational protocol layer:
-
-- when a user says "update leaderboard", what phase should run,
-- what must be checked before publishing,
-- which files are authoritative,
-- which scripts should be called,
-- what artifacts must be emitted after the run,
-- what conditions should stop the workflow.
-
-This skill addresses that layer.
-
-## Scope
-
-This skill is intended for requests like:
-
-- adding or normalizing a new benchmark,
-- updating taxonomy or metric definitions,
-- preparing smoke subsets and run configs,
-- running or rerunning evaluations,
-- rerunning API-error cases only,
-- append-only evaluation on new datasets,
-- merging old and delta results,
-- publishing authoritative final outputs,
-- refreshing leaderboards and whitepapers,
-- generating auditable manifest and release artifacts.
-
-This skill is not intended to:
-
-- replace the original evaluation scripts,
-- hide project-specific assumptions,
-- automatically infer truth from report prose,
-- generalize to arbitrary repositories without path binding,
-- fully automate every runtime mutation in the current version.
-
-## Truth Model
-
-![Truth model and publish boundary](assets/figures/truth-model.png)
-
-The skill is built around a strict source-of-truth hierarchy.
-
-### Canonical Inputs
-
-- `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl`
-  The canonical dataset truth source.
-- `output/doc/v2_stats.json`
-  A derived stats snapshot that must remain consistent with the canonical JSONL.
-
-### Authoritative Outputs
-
-- `rule_eval_mvp/output_v2_final_authoritative/`
-  The only authoritative publish root for final leaderboard and report consumption.
-
-### Derived Artifacts
-
-- whitepapers,
-- summary markdown,
-- DOCX reports,
-- distribution reports,
-- leaderboard prose,
-- charts and narrative writeups.
-
-Derived artifacts may explain results, but they must never define them.
-
-## Operating Principles
-
-1. Canonical dataset first.
-2. Reports are derived artifacts, never truth sources.
-3. Authoritative publish must come from merged clean results only.
-4. Canonical counts must be recomputed from the dataset, not copied from prose.
-5. Metric and taxonomy changes must be explicitly locked before evaluation and publication.
-6. Incremental reruns must not silently mutate legacy outputs.
-
-## Repository Layout
-
-```text
-.
-├── SKILL.md
-├── README.md
-├── .gitignore
-├── protocol/
-│   ├── evaluation_protocol_card.md
-│   ├── metric_registry.yaml
-│   ├── model_registry.json
-│   └── taxonomy_registry.yaml
-├── eval_mvp_V2/
-│   └── multi_model_rule_eval_prompt_only.py
-├── agents/
-│   └── openai.yaml
-├── references/
-│   ├── phase-contracts.md
-│   ├── protocol-contract.md
-│   └── repo-asset-map.md
-├── scripts/
-│   ├── intent_router.py
-│   ├── phase_executor.py
-│   └── protocol_manager.py
-└── assets/
-    └── templates/
-        ├── evaluation_protocol_card.md
-        ├── metric_registry.yaml
-        ├── model_registry.json
-        ├── publish_config.yaml
-        ├── release_checklist.md
-        ├── release_manifest.yaml
-        ├── run_config.yaml
-        └── taxonomy_registry.yaml
-    └── samples/
-        ├── canonical_dataset.sample.jsonl
-        └── release_manifest.sample.yaml
+```mermaid
+flowchart TB
+    Input["Freeze tasks, targets and protocol"] --> Tracks
+    subgraph Tracks["Four tracks with separate metrics"]
+        QA["LLM rule evaluation"]
+        Agent["Internal Agent execution and private scoring"]
+        Product["Full product and native scorer"]
+        Judge["Offline trace judging"]
+    end
+    Tracks --> Analysis["Analyze metrics, failures, invalids and evidence"]
+    Analysis --> Plans["Candidate test plans<br/>admitted=false"]
+    Plans -.-> Generate["Planned: task and attack generation"]
+    Generate -.-> Gates["Planned: eight acceptance gates and dataset release"]
+    Gates -.-> Next["Next round: freeze updated tasks and re-evaluate"]
+    Analysis -.-> Improve["Research: Agent / model improvement<br/>Frozen holdout validation"]
+    classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5
+    class Generate,Gates,Improve,Next planned
 ```
 
-## Core Components
+See [architecture](docs/integration/architecture.md) for the original concept and implementation mapping.
 
-### `SKILL.md`
+## Figure 2: module architecture and scoring boundary
 
-The actual Codex skill definition. It explains when the skill should be triggered, what protocol it enforces, which references to read, and which scripts to call.
+`plan` prints commands. Native executors perform evaluation. Private rules are used in a separate scoring stage.
 
-### `references/`
+```mermaid
+flowchart TB
+    CLI["pipeline.py<br/>inventory / plan / smoke / analyze"] --> QA["llm_eval/<br/>LLM rule evaluation"]
+    CLI --> Harness["harness/<br/>Public task execution and trace capture"]
+    CLI --> Product["federated_asr_benchmark/<br/>Product and native environment adapters"]
+    CLI --> Judge["harness/ judge<br/>Offline trace judging"]
+    Harness --> Score["Separate scoring stage"]
+    Private["Isolated private rules<br/>Never sent to the evaluated Agent"] --> Score
+    QA --> Results["runs/<br/>Native results, traces and manifests"]
+    Score --> Results
+    Product --> Results
+    Judge --> Results
+    Results --> Analyze["scripts/result_analysis.py<br/>Grouped analysis and candidate plans"]
+```
 
-Compact operational references loaded on demand.
+## Quick start
 
-- `phase-contracts.md`
-  Short phase-by-phase contracts.
-- `repo-asset-map.md`
-  Repository asset reuse map and binding hints.
-- `protocol-contract.md`
-  Phase 0 artifact, 8-by-19 taxonomy, rule-eval scoring, and comparability contract.
-
-### `scripts/`
-
-Minimal executable prototype layer.
-
-- `intent_router.py`
-  Converts natural-language user requests into protocol phases.
-- `phase_executor.py`
-  Runs phase prechecks, lists available model roots, and emits command hints bound to the existing project scripts.
-- `protocol_manager.py`
-  Initializes, validates, and compares Phase 0 protocol directories with non-zero failure status.
-
-### `assets/templates/`
-
-Reusable governance and release artifacts. These are meant to be copied and filled, not reinvented.
-
-### `assets/samples/`
-
-Synthetic examples only. These show expected schema shape without exposing the real benchmark, canonical dataset, or model outputs.
-
-## Phase System
-
-![Ten-phase workflow](assets/figures/phase-flow.png)
-
-The workflow is organized into ten phases.
-
-| Phase | Name | Purpose |
-| --- | --- | --- |
-| `phase0` | Protocol Setup | Lock taxonomy, metrics, models, and comparability rules |
-| `phase1` | Source Intake | Collect benchmark sources and whitepaper evidence |
-| `phase2` | Canonical Standardization | Normalize membership and keep canonical JSONL and stats aligned |
-| `phase3` | Protocol Shaping | Define prompts, scorers, and smoke subsets |
-| `phase4` | Smoke Validation | Validate protocol on a small subset |
-| `phase5` | Full Evaluation | Run the main evaluation over the canonical dataset |
-| `phase6` | Incremental Rerun | Rerun API-error or append-only deltas |
-| `phase7` | Merge And Publish | Merge old and delta runs, clean to canonical IDs, publish authoritative results |
-| `phase8` | Reporting | Generate leaderboard, charts, DOCX, and whitepaper artifacts |
-| `phase9` | Agent Safety Extension | Extend the protocol to trajectory-level agent safety |
-
-## Intent Routing
-
-The router is keyword-based by design. It is not trying to infer intent from deep semantics; it is trying to operationally map common research requests into the correct phase set.
-
-Examples:
-
-- `补一个新 benchmark` -> `phase1 + phase2`
-- `只重跑 API error` -> `phase6`
-- `更新 leaderboard` -> `phase7 + phase8`
-- `生成白皮书` -> `phase7 + phase8`
-- `换一套指标` -> `phase0 + phase3 + phase5 + phase8`
-- `换一套风险维度` -> `phase0 + phase2 + phase3 + phase8`
-
-If no strong signal is found, the router defaults to `phase0` so the request can be scoped at the protocol layer before execution.
-
-Phase 0 has an executable protocol manager that freezes `safety_taxonomy_8x19`, `rule_eval`, canonical dataset identity, model versions, and comparability. It supports `init`, `validate`, and `compare`.
-
-## Phase Execution Model
-
-The current executor is intentionally conservative.
-
-For each phase, it can:
-
-- check whether required paths and scripts exist,
-- surface which model directories are actually available,
-- emit notes about invariants and execution risks,
-- emit command hints that match the current script interfaces.
-
-The current executor does not yet:
-
-- mutate upstream config files automatically,
-- launch end-to-end multi-phase runs without supervision,
-- write back results into external systems,
-- infer missing user parameters such as append-only dataset paths.
-
-## Existing Script Bindings
-
-The repository now includes the implemented evaluator:
-
-- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py`
-
-The following names remain planned executor interfaces without implementations:
-
-- `extract_whitepaper_datasets.py`
-- `build_v2_final_dataset_report.py`
-- `rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py`
-- `rule_eval_mvp/incremental_tools/run_append_only_eval.py`
-- `rule_eval_mvp/incremental_tools/append_new_dataset_results.py`
-- `rule_eval_mvp/incremental_tools/merge_v2_incremental_results.py`
-- `rule_eval_mvp/incremental_tools/rebuild_merged_summaries.py`
-- `rule_eval_mvp/incremental_tools/publish_v2_final_authoritative_results.py`
-
-The Phase 0 metric registry covers overall, dataset, normalized safety L1/L2, and question-type slices. The main evaluator directly emits L1 and question-type summaries; L2 currently comes from a posthoc L1/L2 summary and needs a maintained Phase 8 producer.
-
-## Templates And Registry Files
-
-The `assets/templates/` directory provides the minimum artifact layer needed to make the workflow auditable.
-
-### `evaluation_protocol_card.md`
-
-Use this to freeze the run protocol, scope, assumptions, metric mode, model set, and comparability statements.
-
-### `model_registry.json`
-
-Use this to declare model identifiers, result paths, and model-level runtime metadata.
-
-### `taxonomy_registry.yaml`
-
-Use this to declare the active taxonomy version and label structure.
-
-### `metric_registry.yaml`
-
-Use this to declare the current metric version, scoring semantics, and primary metric choices.
-
-### `run_config.yaml`
-
-Use this to externalize the minimal run-layer configuration when comparing or documenting executions.
-
-### `publish_config.yaml`
-
-Use this to declare publish roots, selected models, and release-time rules.
-
-### `release_manifest.yaml`
-
-Use this as the machine-readable release record. It includes:
-
-- release id,
-- canonical dataset path and total,
-- taxonomy and metric version,
-- source result roots,
-- published result path,
-- validation fields like missing ids, extra ids, and deleted-id cleanup status.
-
-### `release_checklist.md`
-
-Use this for human release review before publishing external-facing results.
-
-## Recommended Usage
-
-### 1. Route the request
+Run from the repository root. Validated platform: Windows PowerShell and Python 3.14. Local fixtures require no API key, product CLI, Docker or downloaded dataset.
 
 ```powershell
-python scripts/intent_router.py --request "更新 leaderboard" --format json
+git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
+cd llm-safety-eval-research-pipeline
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe scripts/check_repo.py
 ```
 
-### 2. Run protocol checks or command emission
+Acceptance verifies the default protocol's bound count/hashes, Markdown links, three test suites, safe/unsafe Agent fixtures and a three-row LLM reference self-test. It writes a unique `runs/check-.../summary.json` and logs. Integration tests explicitly skip when named external assets are absent.
+
+| Fixture | Expected result |
+|---|---|
+| `safe_stub` | 3/3 safety passes, no candidate plans |
+| `unsafe_stub` | 1/3 safety passes, 2 unaccepted candidate plans |
+| LLM reference self-test | 3/3 rule passes; copies the answer key without model inference |
+
+These results verify local execution. Real safety claims require configured models/data and verified environments, coverage and scorers. See [getting started](docs/getting_started.md) and [validation](docs/integration/validation.md).
+
+## Figure 3: collaborator run sequence
+
+```mermaid
+flowchart TB
+    Install["Install root dependencies"] --> Check["check_repo.py<br/>Protocol, links, tests and fixtures"]
+    Check --> Choose["Choose a track<br/>Prepare data and configuration"]
+    Choose --> Plan["inventory / plan<br/>Inspect entry points and dependencies"]
+    Plan --> Execute["Call the native executor<br/>Save a separate run"]
+    Execute --> Analyze["analyze<br/>Review denominators, failures and evidence"]
+    Analyze --> Review["Review candidates and qualification<br/>Record changes for the next round"]
+```
+
+## Choose a track
+
+| Track | Native executor | Boundary |
+|---|---|---|
+| `llm_qa` | `llm_eval/multi_model_rule_eval_prompt_only.py` | Rule pass rate; refusals fail; API errors counted separately |
+| `agent_execution` | `harness/ash.py capture/score/report` | Source-derived tasks; private rules score captured traces |
+| `agent_product` | `federated_asr_benchmark/tools/run_product.py` | Native ASR; `success` means attack success; lower is better |
+| `trace_judge` | `harness/ash.py judge` | Offline assessment, separate from execution results |
 
 ```powershell
-python scripts/phase_executor.py --request "更新 leaderboard" --emit-commands --format json
+.\.venv\Scripts\python.exe pipeline.py inventory
+.\.venv\Scripts\python.exe pipeline.py plan --track llm_qa --config assets/samples/llm_self_test.yaml
 ```
 
-### 3. Inspect a specific phase directly
+`plan` does not execute. `analyze --track ... --results ... --out ...` produces observations, failures, invalids and candidate plans. Plans have `admitted=false` and eight pending acceptance gates. Failure reasons remain observations until traces establish their causes.
 
-```powershell
-python scripts/phase_executor.py --phase phase7 --models doubao_seed_2_0_pro_full --emit-commands --format json
-```
+## Code map
 
-## Typical Workflow Examples
+| Path | Responsibility |
+|---|---|
+| `pipeline.py`, `scripts/pipeline_cli.py` | Shared inventory, plans and local smoke execution |
+| `scripts/result_analysis.py` | Failure analysis with metric direction, denominators and lineage |
+| `scripts/` | Protocols, source intake, canonicalization, statistics and preparation |
+| `llm_eval/` | Streaming, resumable LLM rule evaluation |
+| `harness/` | Internal Agents, tool environments, private rules and offline judging |
+| `federated_asr_benchmark/` | Product adapters, native environments/scorers, indices/selections |
+| `protocol/`, `assets/` | V1 contracts, templates and synthetic fixtures |
+| `tests/`, module `tests/` | Regression tests and external-asset integration tests |
+| `docs/`, `references/` | Collaborator guides, architecture, research plan and protocol reference |
+| `runs/`, `work/`, `data/` | Outputs, intermediate artifacts and external data; ignored by Git |
 
-### Case 1: Refresh leaderboard from existing delta results
+## Real experiments and next steps
 
-1. Route request to `phase7 + phase8`.
-2. Run `phase_executor.py --phase phase7 --emit-commands`.
-3. Check canonical dataset, stats, deleted ids, merge script, publish script.
-4. Execute merge, rebuild summaries, and publish.
-5. Use authoritative output only for leaderboard and report regeneration.
+Read [configuration](docs/configuration.md), [Harness](harness/README.md) or [product evaluation](federated_asr_benchmark/README.md). The default protocol binds only three synthetic questions. Real experiments freeze their own data version/count/hash, models, prompts and scorers. Controlled product profiles retain actual third-party version constraints.
 
-### Case 2: Rerun API-error cases only
+Unknown/invalid records and environment/API errors are never safety passes. Keep tracks and case/retrieval-event units separate. Source-derived tasks do not establish official benchmark reproduction. Phase 6–8 publication workflows have no executor.
 
-1. Route request to `phase6`.
-2. Validate legacy output and incremental rerun script existence.
-3. Emit `run_v2_incremental_eval.py` command with canonical dataset and delta output root.
-4. Merge and publish only after rerun completion if external-facing outputs need updating.
-
-### Case 3: Change metric definition
-
-1. Route request to `phase0 + phase3 + phase5 + phase8`.
-2. Update `metric_registry.yaml`.
-3. Freeze comparability statement in `evaluation_protocol_card.md`.
-4. Revalidate smoke subset and scorer assumptions.
-5. Re-run affected evaluations before regenerating reporting artifacts.
-
-## Guards And Failure Policy
-
-The current skill encodes several hard boundaries even before a full guard engine is implemented.
-
-Fatal boundaries:
-
-- stop on canonical-total mismatches,
-- stop if publish tries to bypass merged clean results,
-- stop if report numbers cannot be traced back to canonical or authoritative artifacts.
-
-Warning boundaries:
-
-- do not silently continue when protocol changed but smoke validation was not refreshed,
-- do not assume append-only execution paths if the new dataset path is missing,
-- do not treat stale stats snapshots as harmless.
-
-## Current Limitations
-
-This repository already contains a usable first prototype, but it is still a first prototype.
-
-Current limitations:
-
-- routing is keyword-driven rather than configuration-driven,
-- guards are encoded as code checks and notes, not yet as a standalone machine-readable guard registry,
-- executor emits commands but does not yet orchestrate full multi-phase `--run`,
-- Phase 0 templates can be initialized automatically but model and task fields still require manual completion,
-- V2 remains the default protocol while the host repository path is configurable with `--repo-root`.
-
-## Roadmap
-
-Natural next upgrades:
-
-- introduce a machine-readable guard schema,
-- add a real `--run` mode to `phase_executor.py`,
-- support template materialization into a target working directory,
-- externalize routing rules into a config file,
-- add audit log emission,
-- support V3 or domain-specific variants without breaking current invariants.
-
-## Validation Status
-
-This repository has already been locally validated as a standalone skill repository.
-
-Validated items:
-
-- skill structure passes `quick_validate.py`,
-- `intent_router.py` routes Chinese and English requests,
-- `phase_executor.py` emits working phase-7 checks and command hints,
-- UTF-8 console output handling was patched for Windows use.
-
-## Who This Is For
-
-This repository is most useful for:
-
-- researchers managing evolving safety benchmarks,
-- teams with multiple local scripts but no protocol layer,
-- projects that need auditable publish and reporting boundaries,
-- Codex-based automation where intent routing and truth control matter as much as raw execution.
-
-## Development Notes
-
-- Keep `SKILL.md` as the canonical skill entrypoint for Codex.
-- Keep `README.md` human-oriented and repository-oriented.
-- Prefer updating templates and references rather than bloating `SKILL.md`.
-- If new project scripts replace old executors, update both `SKILL.md` and `scripts/phase_executor.py`.
-- Do not commit runtime caches or generated result directories into this repository.
-- Do not commit the real canonical dataset or full result packages into this repository. If examples are needed, keep them synthetic and minimal.
+[Research plan](docs/integration/research_plan.md) · [Protocol](references/protocol-contract.md) · [V1 cleanup](docs/integration/cleanup.md)

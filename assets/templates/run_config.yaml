@@ -1,10 +1,17 @@
-input_jsonl: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
-run_root: rule_eval_mvp/output
-run_mode: api
-resume: true
-aggregate_latest_by_id: true
-rerun_api_errors: true
-num_shards: 1
-shard_index: 0
-decoded_output_policy: treat_as_failure
-store_raw_output: truncated
+evaluator_config:
+  input_jsonl: data/canonical.jsonl
+  run_root: runs/llm-experiment
+  run_mode: api
+  resume: true
+  aggregate_latest_by_id: true
+  rerun_api_errors: true
+  models:
+    - name: my_model
+      provider: openai_compatible
+      enabled: true
+      api_key_env: EVAL_API_KEY
+      base_url: https://api.example.com/v1
+      model: replace-with-pinned-model-id
+      max_workers: 1
+      rpm: 30
+      tpm: 10000

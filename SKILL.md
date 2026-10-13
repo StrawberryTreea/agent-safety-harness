@@ -1,138 +1,27 @@
 ---
 name: llm-safety-eval-research-pipeline
-description: Route, validate, and operationalize this repository's large-model safety evaluation workflow. Use when work involves this project's canonical dataset, taxonomy or metric changes, benchmark intake, smoke or full evaluation, API-error reruns, V2 merge and authoritative publish, leaderboard refresh, whitepaper generation, or any request that must reuse local safety-eval scripts and artifact conventions instead of inventing a parallel process.
+description: Route this repository's LLM and Agent safety evaluation, protocol, data governance, native execution and failure-analysis work using existing contracts.
 ---
 
-# LLM Safety Eval Research Pipeline
+# Repository workflow
 
-Treat this skill as the protocol and execution layer for a V2 safety-evaluation repository selected explicitly with `--repo-root` or discovered from the current working tree.
+Start with [README](README.md), [documentation navigation](docs/README.md), `protocol/evaluation_tracks.json` and `python pipeline.py inventory`.
 
-Do not invent a parallel eval stack. Reuse the current repository's canonical dataset, incremental tools, publish roots, and report assets. The skill's job is to:
+1. Select llm_qa, agent_execution, agent_product or trace_judge. Reuse its executor, schema and scorer.
+2. Read [configuration](docs/configuration.md) and the native module guide. Freeze data, target, environment, scorer and metric versions.
+3. Use `pipeline.py plan` to inspect argv and requirements. It does not execute or establish runtime qualification.
+4. Execute the native track, preserve traces/private scoring and output lineage, then use `pipeline.py analyze`.
+5. Run `python scripts/check_repo.py` before handing changes to collaborators. Report skips and qualification gaps.
 
-- route a user request into the right phase or phase set,
-- enforce truth-model and publish invariants,
-- bind phases to existing local scripts and directories,
-- emit reusable registry, manifest, and checklist artifacts.
+## Contracts
 
-## Operating Rules
+- Tracks retain separate populations and metric directions/units; unknown and invalid are not passes.
+- Project V1 starts at 1.0.0. The default protocol binds three synthetic reference questions. Freeze independent dataset, model and scorer identities for real runs; see [protocol](references/protocol-contract.md).
+- Internal Agent tasks are source-derived; mapping or mock evidence does not prove official reproduction or product qualification.
+- Public runtime tasks cannot expose private oracles.
+- Failure reasons are observed signals, with root cause unconfirmed until verified.
+- Candidate plans are unaccepted. Eight acceptance gates require provenance/license, replay, benign solvability, private rules, deduplication, diversity, holdout isolation and review evidence.
+- Generation, acceptance execution, dataset publication and automatic Agent improvement remain future implementation work.
+- Preserve existing controlled product profile constraints; use a versioned profile with new evidence for changes.
 
-1. Treat `eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl` as the canonical dataset truth source.
-2. Treat `output/doc/v2_stats.json` as a derived stats snapshot that must stay consistent with the canonical JSONL.
-3. Treat `rule_eval_mvp/output_v2_final_authoritative/` as the only authoritative publish root for final leaderboard and report consumption.
-4. Treat whitepapers, summaries, DOCX files, and prose as derived artifacts only.
-5. Prefer the repository's existing scripts and output contracts before writing new orchestration code.
-6. Freeze `safety_taxonomy_8x19`, `rule_eval`, model versions, dataset identity, and comparability in Phase 0 before evaluation.
-
-## Workflow
-
-### 1. Route The Request
-
-Run `scripts/intent_router.py` when the user request is ambiguous, phase-coupled, or names only an outcome such as:
-
-- "补一个新 benchmark"
-- "只重跑 API error"
-- "更新 leaderboard"
-- "生成白皮书"
-- "换一套指标"
-
-If the request already names a phase-like operation precisely, you may skip the router and enter the phase directly.
-
-### 2. Load The Right Reference Depth
-
-- For repo asset locations and path semantics, read `references/repo-asset-map.md`.
-- For phase input/output/check contracts, read `references/phase-contracts.md`.
-- For Phase 0 artifact schemas, scoring semantics, and compatibility rules, read `references/protocol-contract.md`.
-- For the full framework specification, consult `C:\Users\xiaoz\Desktop\2026.03大模型安全测评\大模型安全评测自动化科研Skill框架.md`.
-- For production artifacts, start from `assets/templates/` instead of writing registry or manifest files from scratch.
-
-### 3. Run Prechecks Before Execution
-
-Run `scripts/phase_executor.py` in `--check-only` or `--emit-commands` mode before making claims about what can be published.
-
-Use prechecks to answer questions like:
-
-- does the canonical dataset exist,
-- does the stats snapshot exist,
-- does the requested publish root exist,
-- which model directories are actually available in `output/`, `output_v2_merged/`, or `output_v2_final_authoritative/`.
-
-### 4. Bind To Existing Local Scripts
-
-Use the existing repository scripts as the primary executors:
-
-- `scripts/protocol_manager.py` for Phase 0 initialization, validation, and comparison
-- `eval_mvp_V2/multi_model_rule_eval_prompt_only.py` as the implemented main evaluator
-
-Treat the following names as planned interfaces until their implementations exist:
-
-- `extract_whitepaper_datasets.py`
-- `build_v2_final_dataset_report.py`
-- `rule_eval_mvp/incremental_tools/run_v2_incremental_eval.py`
-- `rule_eval_mvp/incremental_tools/run_append_only_eval.py`
-- `rule_eval_mvp/incremental_tools/append_new_dataset_results.py`
-- `rule_eval_mvp/incremental_tools/merge_v2_incremental_results.py`
-- `rule_eval_mvp/incremental_tools/rebuild_merged_summaries.py`
-- `rule_eval_mvp/incremental_tools/publish_v2_final_authoritative_results.py`
-
-Do not replace them with a new pipeline unless the task is explicitly to refactor the runtime architecture.
-
-### 5. Emit Standardized Artifacts
-
-When a phase changes protocol, publish state, or reporting state, emit or update the smallest applicable artifacts from `assets/templates/`. For Phase 0, initialize and validate them with `scripts/protocol_manager.py`.
-
-- `evaluation_protocol_card.md`
-- `model_registry.json`
-- `taxonomy_registry.yaml`
-- `metric_registry.yaml`
-- `run_config.yaml`
-- `publish_config.yaml`
-- `release_manifest.yaml`
-- `release_checklist.md`
-
-## Phase Routing Summary
-
-- `Phase 0`: protocol setup, taxonomy or metric changes
-- `Phase 1`: source intake, whitepaper extraction, benchmark inventory
-- `Phase 2`: canonical standardization, membership or stats repair
-- `Phase 3`: prompt or scorer shaping, smoke subset design
-- `Phase 4`: smoke validation
-- `Phase 5`: full evaluation
-- `Phase 6`: incremental rerun or append-only evaluation
-- `Phase 7`: merge, clean, authoritative publish, manifest
-- `Phase 8`: leaderboard, charts, whitepaper, report consistency
-- `Phase 9`: agent-safety extension anchored to current taxonomy
-
-## Quick Commands
-
-Initialize and validate Phase 0 protocol artifacts:
-
-```powershell
-python scripts/protocol_manager.py init --output-dir protocol
-python scripts/protocol_manager.py validate --protocol-dir protocol --repo-root D:\path\to\evaluation-repo --format json
-```
-
-Route a request:
-
-```powershell
-python .codex/skills/llm-safety-eval-research-pipeline/scripts/intent_router.py --request "更新 leaderboard"
-```
-
-Generate phase checks and command hints:
-
-```powershell
-python .codex/skills/llm-safety-eval-research-pipeline/scripts/phase_executor.py --request "更新 leaderboard" --emit-commands
-```
-
-Check a specific publish phase directly:
-
-```powershell
-python .codex/skills/llm-safety-eval-research-pipeline/scripts/phase_executor.py --phase phase7 --models doubao_seed_2_0_pro_full --emit-commands
-```
-
-## Failure Policy
-
-- Stop when Phase 0 protocol artifacts are missing, contain placeholders or secrets, disagree on versions, or violate frozen scoring semantics.
-- Stop on canonical-total mismatches.
-- Stop if publish tries to bypass merged clean results.
-- Stop if report numbers cannot be traced back to canonical or authoritative artifacts.
-- Warn, but do not silently proceed, when the request implies a protocol change without a refreshed smoke phase.
+[Phase contracts](references/phase-contracts.md) describe the optional phase router. Phase6–8 are reserved and emit no runnable commands. Do not claim production publish capabilities based on those phase names.

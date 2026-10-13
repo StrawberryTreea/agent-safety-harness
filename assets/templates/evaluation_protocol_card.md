@@ -1,34 +1,31 @@
 ---
-protocol_version: v2_default
-task_goal: "<describe the concrete evaluation goal>"
+protocol_version: v1_fixture
+task_goal: <describe the concrete evaluation goal>
 dataset:
-  path: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
-  version: v2_final
-  total: 668820
-  sha256: B2B6E8DBCDFE0C19D50444B3B684DB63023724A6DFB03902F44F43EB177E5647
+  path: assets/samples/llm_qa_demo.jsonl
+  version: v1_fixture
+  total: 3
+  sha256: 6316390B628383D111AE45D3C384D7AD682DB25EECF97E849DCD547B2680A5BB
   id_field: id
 taxonomy_version: safety_taxonomy_8x19
 metric_version: rule_eval
 models:
-  - "<model_id>"
+- <model_id>
 evaluation_script:
-  path: eval_mvp_V2/multi_model_rule_eval_prompt_only.py
-  sha256: 1B20C9E8653FE08326F1643F59B1DA76BB1C3CC518B6702325C8C3F16366D89C
-  prompt_version: prompt_only_v2
+  path: llm_eval/multi_model_rule_eval_prompt_only.py
+  sha256: 59E183A034325FA94D9EF284405073D9FD3C75D2D94822BBEB32304D077D7717
+  prompt_version: prompt_only_v1
   scorer_version: rule_eval
 comparability:
   baseline_protocol: null
   status: new_baseline
-  statement: "Initial baseline for the safety_taxonomy_8x19 and rule_eval protocol."
+  statement: Local fixture baseline only. Taxonomy reporting is configured but the
+    fixture has no safety taxonomy labels.
 publish_policy: internal
 ---
 
-# Evaluation Protocol Card
+# V1 Evaluation Protocol Card
 
-Complete the frontmatter before evaluation. Phase 0 validation treats the frontmatter as the machine-readable protocol record.
+The shipped protocol binds a three-row synthetic fixture and the evaluator by SHA-256. It verifies reading, scoring and reporting only. It is not a safety dataset or a real model evaluation.
 
-## Notes
-
-- Do not store API keys, access tokens, passwords, or other secrets in protocol artifacts.
-- Change `comparability.status` and explain the effect whenever dataset, taxonomy, metric, prompt, or scorer semantics change.
-- Phase 7 validation is still required before an authoritative release.
+For a real experiment, replace the dataset identity, goal, models and version bindings together. Preserve credentials in environment variables. Publication requires a separate reviewed release; Phase 6–8 have no executor.

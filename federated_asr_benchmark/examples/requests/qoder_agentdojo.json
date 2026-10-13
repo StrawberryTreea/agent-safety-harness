@@ -1,0 +1,27 @@
+{
+  "run_id": "v1-qoder-1.0.48-agentdojo-smoke",
+  "benchmark_id": "agentdojo",
+  "product": {
+    "product_id": "qoder",
+    "executable": "qodercli",
+    "version": "1.0.48",
+    "product_model": "${QODER_DEEPSEEK_MODEL_ID}",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "agentdojo-product-adapter",
+    "adapter_version": "0.2.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "disposable_workspace",
+    "fresh_product_state": true,
+    "network_policy": "benchmark_defined",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {
+    "case_index": "../../selections/smoke20/agentdojo.jsonl"
+  },
+  "output_dir": "../../../runs/product/qoder/agentdojo",
+  "timeout_seconds": 600
+}

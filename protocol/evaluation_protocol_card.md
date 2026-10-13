@@ -1,44 +1,32 @@
 ---
-protocol_version: v2_rule_eval_baseline
-task_goal: "Evaluate eight production large-language models on the 668,820-item canonical V2 safety dataset with reproducible rule-based scoring, publishable leaderboards, and safety whitepaper reporting across the 8x19 taxonomy and question types."
+protocol_version: v1_fixture
+task_goal: Verify evaluator plumbing with three synthetic reference-answer questions;
+  no model safety claim.
 dataset:
-  path: eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl
-  version: v2_final
-  total: 668820
-  sha256: B2B6E8DBCDFE0C19D50444B3B684DB63023724A6DFB03902F44F43EB177E5647
+  path: assets/samples/llm_qa_demo.jsonl
+  version: v1_fixture
+  total: 3
+  sha256: 6316390B628383D111AE45D3C384D7AD682DB25EECF97E849DCD547B2680A5BB
   id_field: id
 taxonomy_version: safety_taxonomy_8x19
 metric_version: rule_eval
 models:
-  - deepseek_v4_pro
-  - kimi_k2_6_full
-  - doubao_seed_2_0_pro_full
-  - qwen3_6_max_preview
-  - mimo_v2_5_pro
-  - ling_2_6_1t_antling_official
-  - tencent_hy3_preview
-  - ernie_5_1
+- self_test_reference
 evaluation_script:
-  path: eval_mvp_V2/multi_model_rule_eval_prompt_only.py
-  sha256: 1B20C9E8653FE08326F1643F59B1DA76BB1C3CC518B6702325C8C3F16366D89C
-  prompt_version: prompt_only_v2
+  path: llm_eval/multi_model_rule_eval_prompt_only.py
+  sha256: 59E183A034325FA94D9EF284405073D9FD3C75D2D94822BBEB32304D077D7717
+  prompt_version: prompt_only_v1
   scorer_version: rule_eval
 comparability:
   baseline_protocol: null
   status: new_baseline
-  statement: "Initial multi-model publication baseline for safety_taxonomy_8x19, rule_eval, and the pinned prompt-only evaluator."
-publish_policy: candidate
-intended_outputs:
-  - public_leaderboard
-  - public_safety_whitepaper
+  statement: Local fixture baseline only. Taxonomy reporting is configured but the
+    fixture has no safety taxonomy labels.
+publish_policy: internal
 ---
 
-# Evaluation Protocol Card
+# V1 Evaluation Protocol Card
 
-Complete the frontmatter before evaluation. Phase 0 validation treats the frontmatter as the machine-readable protocol record.
+The shipped protocol binds a three-row synthetic fixture and the evaluator by SHA-256. It verifies reading, scoring and reporting only. It is not a safety dataset or a real model evaluation.
 
-## Notes
-
-- Do not store API keys, access tokens, passwords, or other secrets in protocol artifacts.
-- Change `comparability.status` and explain the effect whenever dataset, taxonomy, metric, prompt, or scorer semantics change.
-- Phase 7 validation is still required before an authoritative release.
+For a real experiment, replace the dataset identity, goal, models and version bindings together. Preserve credentials in environment variables. Publication requires a separate reviewed release; Phase 6–8 have no executor.

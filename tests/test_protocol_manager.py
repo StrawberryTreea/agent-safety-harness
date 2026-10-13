@@ -29,8 +29,8 @@ class ProtocolManagerTests(unittest.TestCase):
 
         card = protocol_dir / "evaluation_protocol_card.md"
         text = card.read_text(encoding="utf-8")
-        text = text.replace("<describe the concrete evaluation goal>", "Evaluate V2 safety benchmark models")
-        text = text.replace('"<model_id>"', "test_model")
+        text = text.replace("<describe the concrete evaluation goal>", "Evaluate test safety benchmark models")
+        text = text.replace("<model_id>", "test_model")
         card.write_text(text, encoding="utf-8")
 
         registry = {
@@ -101,9 +101,10 @@ class ProtocolManagerTests(unittest.TestCase):
     def test_repo_root_verification_accepts_matching_files(self) -> None:
         protocol_dir = self.create_protocol()
         host = self.root / "host"
-        data_path = host / "eval_mvp_V2" / "data" / "master_normalized_dataset_v2_final.jsonl"
-        script_path = host / "eval_mvp_V2" / "multi_model_rule_eval_prompt_only.py"
+        data_path = host / "assets" / "samples" / "llm_qa_demo.jsonl"
+        script_path = host / "llm_eval" / "multi_model_rule_eval_prompt_only.py"
         data_path.parent.mkdir(parents=True)
+        script_path.parent.mkdir(parents=True)
         data_bytes = b'{"id":"one"}\n{"id":"two"}\n'
         script_bytes = b"print('synthetic evaluator')\n"
         data_path.write_bytes(data_bytes)
@@ -111,13 +112,13 @@ class ProtocolManagerTests(unittest.TestCase):
 
         card = protocol_dir / "evaluation_protocol_card.md"
         text = card.read_text(encoding="utf-8")
-        text = text.replace("total: 668820", "total: 2")
+        text = text.replace("total: 3", "total: 2")
         text = text.replace(
-            "B2B6E8DBCDFE0C19D50444B3B684DB63023724A6DFB03902F44F43EB177E5647",
+            protocol_manager.load_protocol(protocol_dir)["protocol"]["dataset"]["sha256"],
             hashlib.sha256(data_bytes).hexdigest().upper(),
         )
         text = text.replace(
-            "1B20C9E8653FE08326F1643F59B1DA76BB1C3CC518B6702325C8C3F16366D89C",
+            protocol_manager.load_protocol(protocol_dir)["protocol"]["evaluation_script"]["sha256"],
             hashlib.sha256(script_bytes).hexdigest().upper(),
         )
         card.write_text(text, encoding="utf-8")
@@ -138,7 +139,7 @@ class ProtocolManagerTests(unittest.TestCase):
         candidate = self.create_protocol("candidate")
         card = candidate / "evaluation_protocol_card.md"
         text = card.read_text(encoding="utf-8").replace(
-            "B2B6E8DBCDFE0C19D50444B3B684DB63023724A6DFB03902F44F43EB177E5647",
+            protocol_manager.load_protocol(candidate)["protocol"]["dataset"]["sha256"],
             "A" * 64,
         )
         card.write_text(text, encoding="utf-8")

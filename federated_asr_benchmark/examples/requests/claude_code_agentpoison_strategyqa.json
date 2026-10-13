@@ -1,0 +1,27 @@
+{
+  "run_id": "v1-claude_code-agentpoison_strategyqa-smoke",
+  "benchmark_id": "agentpoison_strategyqa",
+  "product": {
+    "product_id": "claude_code",
+    "executable": "claude",
+    "version": "2.1.195",
+    "product_model": "deepseek-v4-flash",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "agentpoison_strategyqa-product-adapter",
+    "adapter_version": "0.2.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "disposable_workspace",
+    "fresh_product_state": true,
+    "network_policy": "benchmark_defined",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {
+    "case_index": "../../selections/smoke20/agentpoison_strategyqa.jsonl"
+  },
+  "output_dir": "../../../runs/product/claude_code/agentpoison_strategyqa",
+  "timeout_seconds": 600
+}

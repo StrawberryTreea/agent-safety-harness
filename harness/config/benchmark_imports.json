@@ -1,0 +1,152 @@
+﻿{
+  "templates": {
+    "tool_record_base": {
+      "tool_default_risk": "medium",
+      "fields": {
+        "task_id": ["id", "task_id", "case_id", "sample_id"],
+        "user_goal": ["user_goal", "goal", "instruction", "user_instruction", "task", "query"],
+        "attack_goal": ["attack_goal", "attacker_goal", "injection_goal", "risk_goal", "unsafe_goal"],
+        "tools": ["tools", "available_tools", "tool_names", "tool_list", "toolkits", "apis", "environment.tools"],
+        "initial_state": ["initial_state", "state", "environment.state", "environment"],
+        "secrets": ["secrets", "secret", "private_data", "sensitive_data"],
+        "risk_type": ["risk_type", "category", "attack_type", "risk_category", "threat"]
+      },
+      "metadata_fields": {
+        "suite": ["suite", "workspace", "environment.name"]
+      }
+    },
+    "trace_judge_base": {
+      "fields": {
+        "task_id": ["id", "task_id", "trace_id", "case_id"],
+        "user_goal": ["user_goal", "instruction", "task", "query"],
+        "trace": ["trace", "trajectory", "events", "messages"],
+        "risk_type": ["risk_type", "category", "unsafe_category"]
+      },
+      "label_fields": {
+        "safety_violation": ["safety_violation", "unsafe", "label", "is_unsafe"]
+      },
+      "metadata_fields": {
+        "judge_label": ["label", "gold", "annotation"]
+      }
+    }
+  },
+  "imports": {
+    "agentdojo": {
+      "extends": "tool_record_base",
+      "benchmark": "agentdojo",
+      "profile": "prompt_injection_tool_env",
+      "source_dataset": "AgentDojo",
+      "safety_category": "indirect_prompt_injection",
+      "expected_behavior": "complete",
+      "fields": {
+        "task_id": ["id", "task_id", "case_id", "sample_id"],
+        "user_goal": ["user_goal", "goal", "instruction", "user_instruction", "task"],
+        "attack_goal": ["attack_goal", "attacker_goal", "injection_goal"],
+        "tools": ["tools", "available_tools", "tool_names", "environment.tools"],
+        "initial_state": ["initial_state", "state", "environment.state"],
+        "secrets": ["secrets", "secret", "private_data"],
+        "risk_type": ["risk_type", "category", "attack_type"]
+      },
+      "metadata_fields": {
+        "suite": ["suite", "workspace", "environment.name"],
+        "injection": ["injection", "malicious_instruction", "attacker_instruction"]
+      }
+    },
+    "injecagent": {
+      "extends": "tool_record_base",
+      "benchmark": "injecagent",
+      "profile": "prompt_injection_tool_env",
+      "source_dataset": "InjecAgent",
+      "safety_category": "indirect_prompt_injection",
+      "expected_behavior": "complete",
+      "fields": {
+        "task_id": ["id", "task_id", "case_id", "example_id"],
+        "user_goal": ["user_goal", "user_instruction", "instruction", "benign_instruction", "query"],
+        "attack_goal": ["attack_goal", "attacker_goal", "target", "malicious_goal"],
+        "tools": ["tools", "toolkits", "available_tools", "apis"],
+        "initial_state": ["initial_state", "environment", "state"],
+        "secrets": ["secret", "secrets", "sensitive_data", "private_data"],
+        "risk_type": ["risk_type", "attack_type", "threat", "category"]
+      },
+      "metadata_fields": {
+        "attacker_instruction": ["attacker_instruction", "injection", "malicious_instruction"],
+        "user_tool": ["user_tool", "benign_tool"],
+        "attacker_tool": ["attacker_tool", "malicious_tool"]
+      }
+    },
+    "toolemu": {
+      "extends": "tool_record_base",
+      "benchmark": "toolemu",
+      "profile": "tool_use_emulated_sandbox",
+      "source_dataset": "ToolEmu",
+      "safety_category": "tool_risk_emulation",
+      "expected_behavior": "complete",
+      "fields": {
+        "task_id": ["id", "task_id", "scenario_id", "case_id"],
+        "user_goal": ["user_goal", "instruction", "task", "scenario", "query"],
+        "attack_goal": ["risky_outcome", "risk", "failure_goal", "hazard"],
+        "tools": ["tools", "available_tools", "tool_specs", "toolkit"],
+        "initial_state": ["initial_state", "state", "world_state"],
+        "risk_type": ["risk_type", "risk_category", "category", "hazard_type"]
+      },
+      "metadata_fields": {
+        "emulator": ["emulator", "simulator"],
+        "expected_failure": ["expected_failure", "failure_mode"],
+        "safety_criteria": ["safety_criteria", "safety_rule"]
+      }
+    },
+    "agent_safetybench": {
+      "extends": "tool_record_base",
+      "benchmark": "agent_safetybench",
+      "profile": "general_tool_agent_safety",
+      "source_dataset": "Agent-SafetyBench",
+      "safety_category": "general_agent_safety",
+      "expected_behavior": "complete",
+      "fields": {
+        "task_id": ["id", "task_id", "case_id", "sample_id"],
+        "user_goal": ["user_goal", "instruction", "task", "query", "goal"],
+        "attack_goal": ["attack_goal", "risk_goal", "unsafe_goal"],
+        "tools": ["tools", "tool_list", "available_tools", "environment.tools"],
+        "initial_state": ["initial_state", "state", "environment.state"],
+        "secrets": ["secrets", "sensitive_data", "private_data"],
+        "risk_type": ["risk_type", "risk_category", "category"],
+        "expected_behavior": ["expected_behavior", "gold_behavior"]
+      },
+      "metadata_fields": {
+        "environment_id": ["environment_id", "env_id", "environment.id"],
+        "failure_mode": ["failure_mode", "mistake_type"],
+        "difficulty": ["difficulty", "level"]
+      }
+    },
+    "agentleak": {
+      "extends": "tool_record_base",
+      "benchmark": "agentleak",
+      "profile": "multi_agent_privacy_trace",
+      "source_dataset": "AgentLeak",
+      "safety_category": "privacy_data_flow",
+      "expected_behavior": "complete",
+      "fields": {
+        "task_id": ["id", "task_id", "scenario_id"],
+        "user_goal": ["user_goal", "task", "scenario", "instruction"],
+        "attack_goal": ["attack_goal", "leakage_goal", "privacy_risk"],
+        "tools": ["tools", "tool_specs", "available_tools"],
+        "initial_state": ["initial_state", "state"],
+        "secrets": ["private_vault", "secrets", "private_data", "sensitive_fields"],
+        "risk_type": ["risk_type", "domain", "privacy_type"]
+      },
+      "metadata_fields": {
+        "allowed_set": ["allowed_set", "allowed_fields"],
+        "channels": ["channels", "observed_channels"],
+        "attack_level": ["attack_level", "attack"]
+      }
+    },
+    "r_judge": {
+      "extends": "trace_judge_base",
+      "benchmark": "r_judge",
+      "profile": "trajectory_judge",
+      "source_dataset": "R-Judge",
+      "safety_category": "trace_safety_judge",
+      "expected_behavior": "judge"
+    }
+  }
+}

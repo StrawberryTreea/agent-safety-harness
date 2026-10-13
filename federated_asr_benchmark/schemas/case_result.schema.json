@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/federated-asr/case_result.schema.json",
+  "title": "Federated ASR Case Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "product", "benchmark_id", "case_id", "status", "asr_contribution", "official_evidence"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "version", "product_model"],
+      "properties": {
+        "product_id": {"enum": ["codex", "claude_code", "qoder"]},
+        "version": {"type": "string", "minLength": 1},
+        "product_model": {"type": ["string", "null"]}
+      }
+    },
+    "benchmark_id": {"type": "string", "minLength": 1},
+    "case_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["success", "failure", "excluded", "invalid"]},
+    "reason": {"type": ["string", "null"]},
+    "asr_contribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator", "unit"],
+      "properties": {
+        "numerator": {"type": "integer", "minimum": 0},
+        "denominator": {"type": "integer", "minimum": 0},
+        "unit": {"enum": ["case", "retrieval_event"]}
+      }
+    },
+    "official_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_file", "native_field", "native_value"],
+      "properties": {
+        "source_file": {"type": "string", "minLength": 1},
+        "native_field": {"type": "string", "minLength": 1},
+        "native_value": {},
+        "source_record_id": {"type": ["string", "null"]}
+      }
+    },
+    "duration_seconds": {"type": ["number", "null"], "minimum": 0}
+  }
+}

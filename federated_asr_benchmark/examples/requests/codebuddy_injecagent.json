@@ -1,0 +1,27 @@
+{
+  "run_id": "v1-codebuddy-injecagent-smoke",
+  "benchmark_id": "injecagent",
+  "product": {
+    "product_id": "codebuddy",
+    "executable": ".runtime/codebuddycli-2.133.1/node_modules/@tencent-ai/codebuddy-code/bin/codebuddy",
+    "version": "2.133.1",
+    "product_model": "deepseek-v4-flash",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "injecagent-product-adapter",
+    "adapter_version": "0.3.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "disposable_workspace",
+    "fresh_product_state": true,
+    "network_policy": "benchmark_defined",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {
+    "case_index": "../../selections/smoke20/injecagent.jsonl"
+  },
+  "output_dir": "../../../runs/product/codebuddy/injecagent",
+  "timeout_seconds": 600
+}

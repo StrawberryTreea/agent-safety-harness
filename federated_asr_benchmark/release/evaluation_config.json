@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "release_status": "development_candidate_only",
+  "evaluation_target": "complete_product_agent",
+  "judge_profile": {
+    "profile_id": "deepseek_v4_flash",
+    "type": "openai",
+    "model": "deepseek-v4-flash",
+    "base_url": "https://api.deepseek.com",
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "temperature": 0.0
+  },
+  "selection": {
+    "source_index": "case_index.jsonl",
+    "indexed_cases": 5384,
+    "smoke": "selections/smoke20/all.jsonl",
+    "pilot": "selections/pilot100/all.jsonl",
+    "manifest": "selections/manifest.json",
+    "expansion_candidates": "selections/expansion/all.jsonl",
+    "expansion_manifest": "selections/expansion/manifest.json",
+    "expansion_status": "candidate_only"
+  },
+  "controller": {
+    "version": "1.0.0",
+    "logical_shards": 32,
+    "initial_workers_per_product": 2,
+    "global_max_workers": 10,
+    "light_benchmark_max_workers": 4,
+    "agentdojo_saber_max_workers": 3,
+    "healthy_windows_before_scale_up": 2,
+    "window_seconds": 300,
+    "cooldown_seconds": 300
+  },
+  "project_version": "1.0.0"
+}

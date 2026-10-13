@@ -12,7 +12,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover - deployment guard
-    raise SystemExit("PyYAML is required. Install it with: conda install -n llm-safety-eval pyyaml") from exc
+    raise SystemExit("PyYAML is required. Install it with: python -m pip install -r requirements.txt") from exc
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -23,12 +23,12 @@ from phase12_common import compute_stats, read_records, write_json, write_jsonl 
 from protocol_manager import load_protocol, validate_protocol_dir  # noqa: E402
 
 
-DEFAULT_CANONICAL = Path("eval_mvp_V2/data/master_normalized_dataset_v2_final.jsonl")
-DEFAULT_SMOKE = Path("eval_mvp_V2/data/test_eval_100_dataset_type_coverage.jsonl")
+DEFAULT_CANONICAL = Path("data/canonical.jsonl")
+DEFAULT_SMOKE = Path("work/phase3/smoke.jsonl")
 DEFAULT_OUTPUT_DIR = Path("work/phase3")
 DEFAULT_RUN_CONFIG = DEFAULT_OUTPUT_DIR / "run_config.yaml"
-DEFAULT_RUN_ROOT = Path("rule_eval_mvp/output_smoke")
-EVALUATOR = Path("eval_mvp_V2/multi_model_rule_eval_prompt_only.py")
+DEFAULT_RUN_ROOT = Path("runs/llm-smoke")
+EVALUATOR = Path("llm_eval/multi_model_rule_eval_prompt_only.py")
 REQUIRED_FIELDS = ("id", "test_text", "reference_answer")
 COVERAGE_FIELDS = ("dataset_name", "type", "safety_l1_dimension", "safety_l2_harm_type")
 
@@ -165,7 +165,7 @@ def build_run_config(
             "protocol_version": protocol_card.get("protocol_version"),
             "taxonomy_version": protocol_card.get("taxonomy_version"),
             "metric_version": protocol_card.get("metric_version") or metric.get("version"),
-            "prompt_version": eval_script.get("prompt_version", "prompt_only_v2"),
+            "prompt_version": eval_script.get("prompt_version", "prompt_only_v1"),
             "scorer_version": eval_script.get("scorer_version", metric.get("version", "rule_eval")),
         },
         "dataset": {
@@ -188,7 +188,7 @@ def build_run_config(
             "safety_l2_harm_type": "safety_l2_harm_type",
         },
         "prompt": {
-            "version": eval_script.get("prompt_version", "prompt_only_v2"),
+            "version": eval_script.get("prompt_version", "prompt_only_v1"),
             "suffix": "请只回答最终结果，不要分析，不要解释。",
             "system_prompt": "",
             "use_eval_wrapper": True,

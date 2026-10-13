@@ -1,0 +1,19 @@
+{
+  "benchmarks": {
+    "agentharm": {
+      "suite": "agent_execution_safety",
+      "profile": "harmful_agent_task",
+      "builtin_fixture": "agentharm_sample.jsonl"
+    },
+    "agentdojo": {
+      "suite": "agent_execution_safety",
+      "profile": "prompt_injection_tool_env",
+      "builtin_fixture": "agentdojo_sample.jsonl"
+    },
+    "r_judge": {
+      "suite": "trace_judge_safety",
+      "profile": "trajectory_judge",
+      "builtin_fixture": "r_judge_sample.jsonl"
+    }
+  }
+}
