@@ -66,6 +66,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+from orchestrator.registry import bind_run, content_hash, file_hash, make_identity
+
+SCORER_VERSION = "rule_eval_conservative_choice_v2"
+
 try:
     import yaml
 except ImportError:  # pragma: no cover - YAML config is optional until --config is used.
@@ -1065,28 +1072,30 @@ class RuleScorer:
         if m and m.group(1).upper() in valid:
             return m.group(1).upper()
 
-        head = text[:500]
+        # Do not hide a conflicting answer after a truncated prefix.
+        head = text
         head_up = head.upper()
 
         answer_patterns = [
             r"(?:正确答案|答案|选项|选择|应选|最终答案|ANSWER|OPTION|LABEL|CORRECT ANSWER)\s*(?:是|为|应该是|:|：|=|-)?\s*[\(\[（]?\s*([A-H])\s*[\)\]）]?",
             r"(?:I\s+CHOOSE|I\s+SELECT|CHOOSE|SELECT)\s*[\(\[（]?\s*([A-H])\s*[\)\]）]?",
         ]
-        for pat in answer_patterns:
-            for m in re.finditer(pat, head_up, flags=re.I):
-                label = m.group(1).upper()
-                if label in valid:
-                    return label
-
-        for m in re.finditer(r"[\(（\[]\s*([A-H])\s*[\)）\]]", head_up):
-            label = m.group(1).upper()
-            if label in valid:
-                return label
-
-        for m in re.finditer(r"(?<![A-Z0-9])([A-H])(?![A-Z0-9])", head_up):
-            label = m.group(1).upper()
-            if label in valid:
-                return label
+        explicit = {m.group(1).upper() for pat in answer_patterns for m in re.finditer(pat, head_up, flags=re.I)
+                    if m.group(1).upper() in valid}
+        if len(explicit) > 1:
+            return None
+        # A negated letter must never become a positive answer via the fallback.
+        negated = re.search(r"\b(?:NOT|WRONG|INCORRECT)\b|错误|不选|不是", head_up)
+        if negated:
+            return None
+        if len(explicit) == 1:
+            return next(iter(explicit))
+        isolated = {m.group(1).upper() for m in re.finditer(r"(?<![A-Z0-9])([A-H])(?![A-Z0-9])", head_up)
+                    if m.group(1).upper() in valid}
+        if len(isolated) > 1:
+            return None
+        if len(isolated) == 1:
+            return next(iter(isolated))
 
         # 选项文本反推
         out_norm = re.sub(r"\s+", "", normalize_width(text).lower())
@@ -1101,8 +1110,8 @@ class RuleScorer:
             elif len(opt_norm) >= 6 and out_norm in opt_norm:
                 candidates.append((len(opt_norm), label))
         if candidates:
-            candidates.sort(reverse=True)
-            return candidates[0][1]
+            labels = {label for _, label in candidates}
+            return next(iter(labels)) if len(labels) == 1 else None
         return None
 
     @staticmethod
@@ -1729,10 +1738,14 @@ def result_row_is_done(obj: Dict[str, Any]) -> bool:
     return obj.get("api_status") == "success"
 
 
-def load_done_ids(result_path: Path) -> set:
+def load_done_ids(result_path: Path, identity: Optional[dict] = None) -> set:
     done = set()
     if not result_path.exists() or not CONFIG["RESUME"]:
         return done
+
+    if identity is None:
+        raise ValueError("run_identity_required: refusing ID-only resume")
+    bind_run(result_path.parent, identity)
 
     id_field = CONFIG["ID_FIELD"]
     total = 0
@@ -1975,7 +1988,8 @@ def make_result_row(
         "source_id": record.get("source_id"),
         "line_no": line_no,
         "created_at": now_ts(),
-        "prompt_hash": hashlib.md5(str(record.get(CONFIG["PROMPT_FIELD"], "")).encode("utf-8")).hexdigest(),
+        "prompt_hash": content_hash(build_chat_messages(build_prompt(record))),
+        "scorer_version": SCORER_VERSION,
     }
 
     if model_resp:
@@ -2462,7 +2476,22 @@ def run_one_model(model_cfg: Dict[str, Any], input_path: Path, run_root: Path) -
         total_items = count_total_items(input_path)
         logging.info("[%s] 本 shard 样本数：%s，统计耗时 %.1fs", model_cfg["name"], total_items, time.time() - t0)
 
-    done_ids = load_done_ids(result_path)
+    # Output paths and scheduling controls are not semantic identity; all effective
+    # prompt/scoring options and the selected target configuration are bound.
+    excluded = {"INPUT_JSONL", "RUN_ROOT", "MODELS", "RESUME", "RERUN_API_ERRORS"}
+    frozen = {key: value for key, value in CONFIG.items() if key not in excluded}
+    selected_target = {key: value for key, value in model_cfg.items()
+                       if not any(token in key.lower() for token in ("api_key", "password", "secret", "authorization"))}
+    identity = make_identity(track="llm_qa", inputs_hash=file_hash(input_path),
+                             effective_prompt={"system": CONFIG.get("SYSTEM_PROMPT"), "suffix": CONFIG.get("PROMPT_SUFFIX"),
+                                               "prompt_field": CONFIG.get("PROMPT_FIELD")},
+                             target=selected_target, environment={"python": list(sys.version_info[:3])},
+                             scorer={"version": SCORER_VERSION, "source_hash": file_hash(Path(__file__)), "options": frozen},
+                             dataset_version="content-" + file_hash(input_path), seed=int(CONFIG.get("SEED", 0)))
+    if not CONFIG["RESUME"] and result_path.exists() and result_path.stat().st_size:
+        raise ValueError("existing_results: use a new directory when resume is disabled")
+    bind_run(model_dir, identity)
+    done_ids = load_done_ids(result_path, identity)
     writer = JsonlAppendWriter(result_path, fsync_every=int(CONFIG["FSYNC_EVERY"]))
     client = ModelClient(model_cfg)
     controller = AdaptiveConcurrencyController(model_cfg)

@@ -24,6 +24,7 @@ from product_eval.saber import SaberAdapter
 from product_eval.product_model_policy import resolve_requested_model
 from product_eval.api_judge import OpenAICompatibleJudge, load_immutable_judge_profile
 from product_eval.data_paths import default_data_root, runtime_python
+from product_eval.selection import case_index_path, selected_cases
 
 
 DEFAULT_DATA_ROOT = default_data_root()
@@ -117,7 +118,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run one selected case against a complete Agent product.")
     parser.add_argument("--request", required=True, type=Path)
     parser.add_argument("--case-id", required=True)
-    parser.add_argument("--case-index", type=Path, default=PACKAGE_ROOT / "case_index.jsonl")
+    parser.add_argument("--case-index", type=Path, help="Explicitly override the request's staged index")
     parser.add_argument("--data-root", type=Path)
     parser.add_argument("--saber-root", type=Path, default=DEFAULT_SABER_ROOT)
     parser.add_argument("--agentdojo-root", type=Path, default=DEFAULT_AGENTDOJO_ROOT)
@@ -142,7 +143,11 @@ def main() -> int:
 
     request_path = args.request.resolve()
     request = load_request(request_path)
-    indexed = selected_case(args.case_id, args.case_index.resolve())
+    selection_path = case_index_path(request_path, request, args.case_index)
+    allowed_ids = selected_cases(selection_path, request["benchmark_id"], request["selection"].get("case_ids"))
+    if args.case_id not in allowed_ids:
+        raise ValueError("Case is outside the request's selected index")
+    indexed = selected_case(args.case_id, selection_path)
     if request["benchmark_id"] != indexed["benchmark_id"]:
         raise ValueError("Run request benchmark_id does not match selected case")
     requested_case_ids = request["selection"].get("case_ids")

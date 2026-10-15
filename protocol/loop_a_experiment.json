@@ -1,0 +1,19 @@
+{
+  "schema_version": "loop_a_protocol_draft_v1",
+  "status": "draft_requires_confirmation",
+  "scope": "test_set_evolution_only",
+  "primary_metric": null,
+  "primary_choices": ["net_independent_discoveries", "benign_gated_discoveries"],
+  "discovery_key": ["parent_family_id", "violation_rule_id", "condition_signature"],
+  "net_metric_unit": "distinct attack discovery keys with linked baseline and transformed benign evidence",
+  "unknown_pair_policy": "withhold_net_metric",
+  "generator": null,
+  "target": null,
+  "transfer_targets": [],
+  "budget": {"execution_limit": null, "cost_limit_microunits": null, "currency": null},
+  "stop_policy": "stop_dispatch_when_any_limit_is_reached_or_cannot_reserve_next_job",
+  "hypotheses": {"H1": "equal-budget discovery efficiency", "H2": "new failure-family and violation-rule coverage relative to frozen baseline", "H3": "transfer to preregistered fixed targets"},
+  "partitions": ["E", "V", "H"],
+  "formal_execution_enabled": false,
+  "publication_claim": "No real safety or improvement claim from local fixtures"
+}

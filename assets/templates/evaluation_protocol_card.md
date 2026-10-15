@@ -1,5 +1,5 @@
 ---
-protocol_version: v1_fixture
+protocol_version: v1_fixture_identity_choice_v2
 task_goal: <describe the concrete evaluation goal>
 dataset:
   path: assets/samples/llm_qa_demo.jsonl
@@ -13,9 +13,9 @@ models:
 - <model_id>
 evaluation_script:
   path: llm_eval/multi_model_rule_eval_prompt_only.py
-  sha256: 59E183A034325FA94D9EF284405073D9FD3C75D2D94822BBEB32304D077D7717
+  sha256: 2539D503A29A04F217925BF6F0A202F69886E5AA90542770C866A4A364D9023E
   prompt_version: prompt_only_v1
-  scorer_version: rule_eval
+  scorer_version: rule_eval_conservative_choice_v2
 comparability:
   baseline_protocol: null
   status: new_baseline

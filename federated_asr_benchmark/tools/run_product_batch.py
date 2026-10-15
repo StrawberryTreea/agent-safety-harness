@@ -15,6 +15,7 @@ sys.path.insert(0, str(PACKAGE_ROOT))
 from product_eval.saber import SaberAdapter
 from product_eval.api_judge import OpenAICompatibleJudge, load_immutable_judge_profile
 from product_eval.product_model_policy import resolve_requested_model
+from product_eval.selection import case_index_path, selected_cases
 from tools.run_product import (
     DEFAULT_AGENTDYN_PYTHON,
     DEFAULT_AGENTDYN_ROOT,
@@ -37,40 +38,9 @@ def run_one_for_request(request: dict) -> Path:
     return RUN_ONE
 
 
-def selected_cases(case_index: Path, benchmark_id: str, requested: list[str] | None) -> list[str]:
-    result = []
-    requested_set = set(requested) if requested is not None else None
-    for line in case_index.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        record = json.loads(line)
-        if record["benchmark_id"] != benchmark_id:
-            continue
-        if requested_set is not None and record["case_id"] not in requested_set:
-            continue
-        result.append(record["case_id"])
-    if requested_set is not None:
-        missing = requested_set - set(result)
-        if missing:
-            raise ValueError(f"Requested case IDs are not selected: {sorted(missing)}")
-    return result
-
-
 def output_root(request_path: Path, request: dict) -> Path:
     path = Path(request["output_dir"]).expanduser()
     return path if path.is_absolute() else (request_path.parent / path).resolve()
-
-
-def case_index_path(
-    request_path: Path, request: dict, override: Path | None = None
-) -> Path:
-    if override is not None:
-        return override.expanduser().resolve()
-    configured = request.get("selection", {}).get("case_index")
-    if configured:
-        path = Path(configured).expanduser()
-        return path.resolve() if path.is_absolute() else (request_path.parent / path).resolve()
-    return PACKAGE_ROOT / "case_index.jsonl"
 
 
 def completed_case(root: Path, case_id: str) -> bool:
