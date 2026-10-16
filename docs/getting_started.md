@@ -1,6 +1,6 @@
 # 从零安装与本地运行
 
-以下所有命令在仓库根目录运行。当前验证平台：Windows PowerShell、Python 3.14。真实 benchmark 的解释器可能不同，见[配置](configuration.md)。
+以下所有命令在仓库根目录运行。当前验证平台：Windows PowerShell、Python 3.11 与 3.14。真实 benchmark 的解释器可能不同，见[配置](configuration.md)。
 
 ## 1. 安装
 
@@ -61,6 +61,46 @@ LLM 评测器支持断点续跑；重复自测可能复用已有结果。需要�
 ## 5. 配置真实目标
 
 读[配置指南](configuration.md)，先冻结输入、模型/产品版本、权限、scorer 与预算，然后小批量验证。`pipeline.py plan` 仅检查路径并输出执行命令，不保证 API、外部环境或评分资格。
+
+## 6. 比较 LLM / Agent 目标候选
+
+先对基线运行 `analyze`。若基线目标是 JSON/YAML 提示或策略配置，可用显式白名单 recipe 构建并登记候选：
+
+```powershell
+python pipeline.py target-build --baseline-asset work/targets/agent-v1.yaml --recipe work/evolution/agent-v2-recipe.yaml --failures runs/baseline/analysis/failures.jsonl --out runs/evolution/agent-v2-build
+```
+
+提示、策略、工具配置、代码、模型路由或训练插件等外部候选，也可直接登记；登记不会自动修改或执行候选：
+
+```powershell
+python pipeline.py target-register --track agent_execution --baseline-id agent-v1 --candidate-id agent-v2 --change-type policy --candidate-asset work/candidates/agent-v2.json --failures runs/baseline/analysis/failures.jsonl --out runs/evolution/agent-v2-registration
+```
+
+复制并填写 `assets/templates/target_evolution_policy.yaml` 与 `assets/templates/target_evaluation_manifest.json`，在同一冻结安全集和独立良性回归集上分别运行基线/候选，然后执行：
+
+```powershell
+python pipeline.py target-compare --candidate-manifest runs/evolution/agent-v2-registration/target_candidate.json --baseline-results runs/baseline/score/results.jsonl --candidate-results runs/candidate/score/results.jsonl --baseline-regression-results runs/baseline-benign/score/results.jsonl --candidate-regression-results runs/candidate-benign/score/results.jsonl --evaluation-manifest work/evolution/development-set.json --policy work/evolution/policy.yaml --out runs/evolution/agent-v2-development
+```
+
+开发比较通过只输出 `development_pass`。停止调优后使用对候选隐藏的封存发布集，才可能输出 `promote`；该记录也不会执行部署。完整要求见[目标进化契约](../references/target-evolution-contract.md)。
+
+内部 Agent 候选可从 `assets/templates/target_agent_config.yaml` 与 `target_evaluation_job.yaml` 创建配置，然后自动执行配对安全集和良性回归集：
+
+```powershell
+python pipeline.py target-evaluate --candidate-manifest runs/evolution/agent-v2-build/registration/target_candidate.json --job work/evolution/development-job.yaml --policy work/evolution/policy.yaml --out runs/evolution/agent-v2-evaluation
+```
+
+真实 `model:<id>` 或 `cli:<id>` 目标分别从 `assets/templates/target_model_config.yaml`、`target_cli_config.yaml` 创建。执行前先运行不产生外部调用的预检：
+
+```powershell
+python pipeline.py target-preflight --candidate-manifest runs/evolution/agent-v2-build/registration/target_candidate.json --out runs/evolution/agent-v2-preflight
+```
+
+预检把报告写入 `readiness.json`，检查凭据变量是否存在但不读取/记录值，也不调用 `--version`；CLI 身份以解析路径、文件大小和 SHA-256 记录。只有在报告 `ready=true` 且明确接受 API 费用或本地命令执行后，才给 `target-evaluate` 增加 `--allow-external-targets`。目标提示/策略会物化到每个 run 的 `runtime_config/`；密钥值只放环境变量，不写入目标资产。
+
+默认只允许本地 stub。真实 `model:`、`reference:` 或 `cli:` 目标可能使用凭据、API 预算或本地 CLI，调用者必须显式添加 `--allow-external-targets`。当前没有为 LLM QA、产品或离线轨迹轨道实现同类调度。
+
+可先运行 `python pipeline.py target-smoke --out runs/target-smoke` 验证本地控制链。它只使用 safe/unsafe stub 与三条合成任务，不调用模型 API，也不证明真实目标优化有效。
 
 ## 常见问题
 

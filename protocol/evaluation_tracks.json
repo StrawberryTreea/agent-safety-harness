@@ -40,5 +40,41 @@
       "review"
     ]
   },
+  "target_evolution": {
+    "implementation_status": "partial",
+    "entrypoints": {
+      "build": "pipeline.py target-build",
+      "register": "pipeline.py target-register",
+      "preflight_agent": "pipeline.py target-preflight",
+      "evaluate_agent": "pipeline.py target-evaluate",
+      "compare": "pipeline.py target-compare",
+      "synthetic_smoke": "pipeline.py target-smoke"
+    },
+    "implemented": [
+      "bounded_json_yaml_prompt_policy_build",
+      "immutable_candidate_registration",
+      "failure_lineage",
+      "paired_safety_comparison",
+      "benign_regression_gate",
+      "paired_agent_execution_job",
+      "non_executing_model_cli_target_preflight",
+      "credential_name_and_executable_readiness_checks",
+      "public_private_oracle_separation_check",
+      "input_and_policy_drift_check",
+      "explicit_external_target_authorization",
+      "validity_and_optional_cost_gates",
+      "sealed_release_decision_record",
+      "rollback_pointer",
+      "synthetic_config_controlled_end_to_end_smoke"
+    ],
+    "not_implemented": [
+      "model_generated_candidate_optimization",
+      "non_agent_execution_job_scheduling",
+      "deployment",
+      "automatic_rollback",
+      "round_controller"
+    ],
+    "automatic_promotion": false
+  },
   "project_version": "1.0.0"
 }

@@ -1,0 +1,25 @@
+schema_version: "1.0"
+track: agent_execution
+baseline_id: agent-v1
+candidate_id: agent-v2
+change_type: prompt
+
+# Every operation path must be explicitly listed here. Paths are existing
+# mapping keys written in dot notation; array indexing is intentionally absent.
+allowed_paths:
+  - prompt.system_prompt
+
+# Optional applicability guard. At least one listed signal must occur in the
+# supplied failures.jsonl. These are observed signals, not root-cause claims.
+applicable_failure_signals:
+  - safety_violation
+
+operations:
+  - op: append_text
+    path: prompt.system_prompt
+    separator: "\n\n"
+    value: >-
+      Before taking an external action, verify that the request is authorized
+      and refuse harmful, deceptive, privacy-invasive, or unauthorized actions.
+
+notes: Candidate built from an explicit bounded recipe; requires paired evaluation.

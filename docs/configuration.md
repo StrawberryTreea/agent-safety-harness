@@ -42,6 +42,7 @@ V1 默认协议绑定三条合成自测题。真实安全数据使用 `data/cano
 - [models.json](../harness/config/models.json)：API provider、base_url、model、api_key_env、超时，`--agent model:<id>`。
 - [policies.json](../harness/config/policies.json)：内部安全类别参考；工具权限和私有评分规则由实际任务与执行配置定义。
 - 使用 `--agents-config` / `--models-config` 指向实验副本，不改共享配置来隐式改变已有实验。
+- 模型条目的可选 `system_prompt` 进入 chat system message；CLI 条目的可选 `system_prompt` 进入标准输入和提示文件，不进入命令参数。回路 B 的真实目标模板见 `assets/templates/target_model_config.yaml` 与 `target_cli_config.yaml`。
 
 TaskSpec 分发打包器 `harness/tools/package_release_datasets.py` 默认读取 `harness/runs/curated/harness_tasks/`，也可用 `--source-root` 指定当前整理输出。打包集成测试通过 `AGENT_EVAL_CURATED_TASKS_ROOT` 读取同类外部输入，要求至少 50 条；没有输入时明确跳过，不绑定旧实验行数。
 

@@ -140,7 +140,7 @@ PHASE_METADATA: Dict[str, Dict[str, object]] = {
     "phase10": {
         "title": "Failure Analysis And Evolution Planning",
         "summary": "Analyze native results and propose tests with evidence gates before dataset admission.",
-        "artifacts": ["observations.jsonl", "failures.jsonl", "invalids.jsonl", "candidate_plans.jsonl", "summary.json"],
+        "artifacts": ["observations.jsonl", "failures.jsonl", "invalids.jsonl", "candidate_plans.jsonl", "target_candidate.json", "comparison.json", "decision.json", "summary.json"],
     },
 }
 
@@ -286,6 +286,10 @@ def phase_commands(phase: str, models: Optional[str], manifest: Optional[Path]) 
         commands.append(f'python "{REPO_ROOT / "pipeline.py"}" plan --track agent_execution --tasks "<public_tasks.jsonl>" --private-rules "<private_rules.jsonl>"')
     elif phase == "phase10":
         commands.append(f'python "{REPO_ROOT / "pipeline.py"}" analyze --track "<track>" --results "<results.jsonl>" --out "<new_analysis_dir>"')
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" target-build --baseline-asset "<baseline.json|yaml>" --recipe "<bounded_recipe.yaml>" --failures "<analysis_dir>/failures.jsonl" --out "<new_candidate_build_dir>"')
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" target-register --track "<track>" --baseline-id "<baseline>" --candidate-id "<candidate>" --change-type "<prompt|policy|tools|code|model_route|training_plugin>" --candidate-asset "<asset>" --failures "<analysis_dir>/failures.jsonl" --out "<new_registration_dir>"')
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" target-evaluate --candidate-manifest "<registration_dir>/target_candidate.json" --job "<agent_evaluation_job.yaml>" --policy "<policy.yaml>" --out "<new_evaluation_dir>"')
+        commands.append(f'python "{REPO_ROOT / "pipeline.py"}" target-compare --candidate-manifest "<registration_dir>/target_candidate.json" --baseline-results "<baseline_results.jsonl>" --candidate-results "<candidate_results.jsonl>" --baseline-regression-results "<baseline_regression.jsonl>" --candidate-regression-results "<candidate_regression.jsonl>" --evaluation-manifest "<evaluation_manifest.json>" --policy "<policy.yaml>" --out "<new_comparison_dir>"')
     return commands
 
 
@@ -324,7 +328,11 @@ def phase_notes(phase: str) -> List[str]:
             "Every report number must trace back to canonical or authoritative artifacts.",
         ],
         "phase9": ["Agent data and scorers are separate from LLM QA canonical membership.", "Mock smoke does not establish official benchmark qualification."],
-        "phase10": ["Failure reasons are observed signals, not proven root causes.", "Candidate plans remain unaccepted until all evidence gates pass."],
+        "phase10": [
+            "Failure reasons are observed signals, not proven root causes.",
+            "Test candidate plans remain unaccepted until all evidence gates pass.",
+            "Target candidates are registered external assets; comparison decisions never execute deployment or rollback.",
+        ],
     }
     return notes.get(phase, [])
 

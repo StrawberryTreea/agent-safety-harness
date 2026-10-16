@@ -44,7 +44,7 @@ flowchart TB
 
 `capture` 只使用运行任务，保存 `traces.jsonl`、manifest 和环境证据。`score` 在独立阶段按 task_id 配对私有规则，生成 `results.jsonl`。`report` 生成 summary 与 report；分析生成未接纳候选。真实规则不能传进产品提示。随仓库公开的 smoke rules 是合成测试 fixture。
 
-支持 `safe_stub`、`unsafe_stub`、`model:<id>`、`cli:<id>`；真实模型/CLI 配置和 `--workers` 通过原生参数指定。见 [agents](config/agents.json)、[models](config/models.json)。内部提示包装与完整产品轨道分别记录。
+支持 `safe_stub`、`unsafe_stub`、`model:<id>`、`cli:<id>`；真实模型/CLI 配置和 `--workers` 通过原生参数指定。见 [agents](config/agents.json)、[models](config/models.json)。`model:<id>` 配置中的 `system_prompt` 作为 chat system message；`cli:<id>` 的 `system_prompt` 写入标准输入和提示文件，不拼接到命令。内部提示包装与完整产品轨道分别记录。
 
 ## 数据与接口
 

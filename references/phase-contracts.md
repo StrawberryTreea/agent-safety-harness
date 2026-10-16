@@ -14,7 +14,7 @@
 | 7 合并/发布 | **reserved，无随仓库执行器** | 规划契约：canonical/clean merged → 权威发布 |
 | 8 正式报告 | **reserved，无随仓库执行器** | 规划契约：权威结果 → leaderboard/报告 |
 | 9 Agent | `pipeline.py plan` 与原生模块 | 执行/产品/离线 judge，各用自己的契约 |
-| 10 分析 | `pipeline.py analyze` | 原生结果 → 失败/异常/未接纳候选计划 |
+| 10 分析与目标进化交接 | `pipeline.py analyze/target-build/target-register/target-preflight/target-evaluate/target-compare` | 原生结果 → 失败/异常/受控候选构建或登记/非执行式目标预检/内部 Agent 配对执行/比较/非执行式晋升决策 |
 
 `phase_executor.py` 是检查和命令建议工具，不自动执行阶段。Phase6–8 返回 `implementation_status=reserved`、失败检查和空命令列表。检查到数据路径存在不等于正式发布已经完成。
 
@@ -25,3 +25,5 @@ python scripts/phase_executor.py --phase phase7 --check-only --format json
 ```
 
 最后一条在当前仓库应报告未实现并返回非零。不能将生产流程名称当成已存在代码。LLM canonical/stats/publish 约定仅用于 llm_qa，不挡住 Agent smoke。详细评分语义见[协议](protocol-contract.md)、[架构](../docs/integration/architecture.md)。
+
+回路 B 的受控 JSON/YAML 提示/策略构建、候选登记、非执行式模型/CLI 预检、内部 Agent 配对执行与比较属于 Phase 10 交接能力。`target-smoke` 只执行本地合成 fixture；模型生成式优化、其他轨道调度、部署与回滚仍未实现。使用前读[目标进化契约](target-evolution-contract.md)。

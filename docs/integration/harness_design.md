@@ -1,6 +1,6 @@
 # V1 自动化评测与自进化 Harness：设计草案
 
-状态：设计草案；新增自动控制与进化模块尚未实现。实现状态核对日期：2026-10-13。
+状态：设计草案；受控 JSON/YAML 提示/策略候选构建、内部 Agent 配对执行、候选登记与决策层已部分实现，模型生成式优化、非 Agent 轨道自动控制和部署仍未实现。实现状态核对日期：2026-10-16。
 
 ## 1. 总体构思
 
@@ -57,9 +57,9 @@ flowchart TB
 
     subgraph TargetLoop["反馈回路 B：LLM / Agent 进化"]
         Optimize["未实现：候选改进器<br/>提示、策略、工具、代码或训练插件"]
-        Compare["未实现：对照复测<br/>复用执行层，冻结验证池与良性回归"]
-        Release["未实现：独立发布验证<br/>停止调优后评估封存留出集"]
-        Promote["未实现：版本晋升与回滚<br/>安全、能力、有效率与成本门槛"]
+        Compare["部分实现：对照比较与门槛<br/>读取冻结安全集与良性回归结果"]
+        Release["部分实现：封存发布决策<br/>校验隔离声明；执行仍由原生入口完成"]
+        Promote["部分实现：晋升记录与回滚指针<br/>不自动部署或回滚"]
         Optimize --> Compare -->|开发验证通过| Release -->|发布验证通过| Promote
     end
     Diagnosis --> Optimize
@@ -68,7 +68,7 @@ flowchart TB
     Promote --> Next
     Next -->|下一轮重新评测| Inputs
     classDef planned stroke-dasharray:5 5
-    class Controller,Recovery,Diagnosis,Generate,Admit,Dataset,Optimize,Compare,Release,Promote,Next planned
+    class Controller,Recovery,Diagnosis,Generate,Admit,Dataset,Optimize,Next planned
 ```
 
 控制器让两个回路调用同一套评测链。每次调用都生成独立任务清单、运行目录、结果与决策记录；四条轨道分别统计原生指标和分母。版本注册与运行账本覆盖整张图，记录任务、目标、环境、评分器及生成谱系。
@@ -89,7 +89,7 @@ flowchart TB
 | 评分与离线评审 | 已实现 | `ash.py score/judge`、各产品原生 scorer、LLM 原生规则 | 评分进程与生成进程的读取权限、评分器版本锁定 |
 | 结果与反馈起点 | 已实现 | [result_analysis.py](../../scripts/result_analysis.py) | 将现有失败观察与 `candidate_plans.jsonl` 接入重放诊断、反馈过滤与候选生成 |
 | 测试验收与发布 | 未实现 | 现有八项 pending 验收槽位 | 实际验收执行器、拒收原因、数据版本 manifest |
-| 目标优化与晋升 | 未实现 | 当前尚无自动实现 | 候选构建插件、对照验证、发布门槛与回滚记录 |
+| 目标优化与晋升 | 部分实现 | `pipeline.py target-build/target-register/target-preflight/target-evaluate/target-compare/target-smoke`、`evolution/target_optimizer.py`、`target_preflight.py`、`target_executor.py`、`target_loop.py` | 模型生成式优化插件、非 Agent 轨道评测调度、部署、自动回滚和轮次控制 |
 
 当前默认 LLM 输入是三条合成参考题。LLM 轨道的 `rule_eval_failure` 是规则评测失败信号；需要相应安全任务与评分契约才能将其解释为安全问题。内部 Agent、产品和离线 judge 的失败也按各自契约解释。
 
@@ -99,10 +99,10 @@ flowchart TB
 2. **执行与评分。** 按轨道派发任务；Agent / 产品使用独立运行状态，保存公开输入、工具调用、环境变更和资源消耗。评分阶段读取私有规则；离线 judge 有独立任务清单。
 3. **核验运行覆盖。** 对照清单检查缺失、重复、排除与 unknown。API/环境故障进入运行问题队列，按预先定义的次数和合并规则重跑，保留所有尝试及成本。
 4. **重放与诊断。** 从有效失败中抽取任务、轨迹与环境快照；通过重复执行、良性配对和单条件变换验证失败条件。未确认的根因继续标记 `unconfirmed`。
-5. **生成两类候选。** 测试生成器提出新任务；目标改进器提出独立的提示、策略、工具配置、代码补丁或模型候选。生成输入来自允许的反馈视图。
+5. **生成两类候选。** 测试生成器提出新任务；目标改进器提出独立的提示、策略、工具配置、代码补丁或模型候选。生成输入来自允许的反馈视图。当前可用 `target-build` 对 JSON/YAML 提示/策略应用显式白名单 recipe；在内部 Agent 轨道，登记后的提示与受限策略会物化为模型/CLI 的带哈希运行配置。其他候选由外部产生，再用 `target-register` 登记资产哈希与失败谱系。
 6. **验证测试候选。** 在 staging 中执行八项验收，通过后写入下一版演化池；拒收候选保留理由与谱系。
-7. **验证目标候选。** 基线与候选使用相同任务、初始状态、评分器、种子方案和预算，在冻结的开发验证池与良性回归集上比较。旧失败可作回归集；新生成任务可作挑战集，分别报告。
-8. **作出版本决策。** 开发阶段满足门槛后停止调优，再运行独立发布验证；通过才晋升。记录基线、候选、证据、阈值与回滚指针。下一轮重新锁定输入。
+7. **验证目标候选。** 基线与候选使用相同任务、初始状态、评分器、种子方案和预算，在冻结的开发验证池与良性回归集上运行。`target-compare` 校验配对身份、预期数量、安全改善、能力回归、有效率和可选成本/置信度门槛。
+8. **作出版本决策。** 开发阶段满足门槛只输出 `development_pass`。停止调优并运行封存发布集后，满足隔离和全部门槛才输出 `promote`。记录基线、候选、证据、阈值与回滚指针；实际部署、回滚与下一轮调度仍由外部流程负责。
 
 自动停止条件写入配置：预算或轮数耗尽、连续无有效新发现/可验证改进、有效运行比例低于门槛、环境资格失效。具体阈值在真实小规模实验后锁定。
 
@@ -141,7 +141,7 @@ flowchart TB
 
 ## 7. 建议新增的接口与目录
 
-下面是拟新增布局，不是已经可调用的模块。现有三个执行模块保持各自职责。
+下面是目标布局；其中 `evolution/target_optimizer.py` 的受控提示/策略候选构建、`target_executor.py` 的内部 Agent 配对执行，以及 `target_loop.py` 的候选登记、配对比较和决策记录已实现，其余仍是拟新增模块。现有三个执行模块保持各自职责。
 
 ```text
 orchestrator/
@@ -151,6 +151,9 @@ orchestrator/
   registry.py             任务/目标/环境/协议快照与资产引用
   comparison.py           基线-候选配对、覆盖核验与晋升决策
 evolution/
+  target_optimizer.py     已实现：受控 JSON/YAML 提示/策略候选构建
+  target_executor.py      已实现：内部 Agent 安全/良性配对执行
+  target_loop.py          已实现：候选登记、配对比较与非执行式决策
   diagnosis.py            重放、配对和失败条件证据
   feedback_view.py        按权限生成允许的反馈视图
   test_generator.py       将 candidate_plan 实例化为任务候选

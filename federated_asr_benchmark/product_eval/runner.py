@@ -1061,7 +1061,18 @@ def _remove_directory(path: Path, attempts: int = 60) -> bool:
     for attempt in range(attempts):
         if path.exists():
             try:
-                shutil.rmtree(path, onexc=_remove_readonly)
+                if sys.version_info >= (3, 12):
+                    shutil.rmtree(path, onexc=_remove_readonly)
+                else:
+                    # ``onexc`` was added in Python 3.12. Keep the repository's
+                    # documented Python 3.11 Conda workflow compatible without
+                    # weakening cleanup of read-only product state.
+                    shutil.rmtree(
+                        path,
+                        onerror=lambda function, failed_path, exc_info: _remove_readonly(
+                            function, failed_path, exc_info[1]
+                        ),
+                    )
             except OSError:
                 pass
         if path.exists():

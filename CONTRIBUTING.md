@@ -2,7 +2,7 @@
 
 ## 安装与提交前检查
 
-从仓库根目录操作，Windows + Python 3.14 是当前验证环境：
+从仓库根目录操作，Windows + Python 3.11/3.14 是当前验证环境：
 
 ```powershell
 python -m venv .venv
@@ -22,6 +22,7 @@ CI 调用同一个验收入口并保留日志。只改文档时可先运行 `scr
 |---|---|
 | 新 track 或路由 | `protocol/evaluation_tracks.json`、`scripts/pipeline_cli.py` |
 | 结果解释/失败分析 | `scripts/result_analysis.py`、`tests/test_pipeline_integration.py` |
+| LLM / Agent 受控目标候选构建、预检、执行与比较 | `evolution/target_optimizer.py`、`target_preflight.py`、`target_executor.py`、`target_loop.py`、`tests/test_target_loop.py`、`references/target-evolution-contract.md` |
 | LLM 配置或评分 | `llm_eval/multi_model_rule_eval_prompt_only.py`、`protocol/` |
 | Agent/工具/私有评分 | `harness/src/agent_safety_harness/`、`harness/tests/` |
 | 新产品/原生 benchmark | `federated_asr_benchmark/product_eval/`、registry、schema、模块测试 |

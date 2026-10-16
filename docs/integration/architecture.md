@@ -29,10 +29,11 @@ flowchart TD
     Generator -.-> Gates["待实现：执行八项验收"]
     Gates -.-> Version["待实现：发布新版测试集"]
     Version -.-> Tasks
-    Failures -.-> Repair["待研究：Agent 或模型改进"]
-    Repair -.-> Holdout["待研究：冻结留出集验证"]
+    Failures --> Register["部分实现：登记目标候选<br/>资产哈希与失败谱系"]
+    Register --> Compare["部分实现：配对比较<br/>安全、良性回归、有效率与成本门槛"]
+    Compare --> Holdout["部分实现：封存发布决策<br/>不执行部署或回滚"]
     classDef planned fill:#fff4d6,stroke:#9a6700,stroke-dasharray:5 5,color:#24292f
-    class Generator,Gates,Version,Repair,Holdout planned
+    class Generator,Gates,Version planned
 ```
 
 测试集演化和 Agent/模型改进是两条可独立验证的反馈链。自动改代码、训练模型或宣称系统已自我进化，都需要另外的实现和实验依据。
@@ -46,6 +47,7 @@ flowchart TD
 | 结果分析 | 失败/异常分类、分组统计、证据与来源追溯 | 基于轨迹验证根因与能力薄弱点 |
 | 对抗攻击生成 | 失败驱动的候选测试计划 | 任务/攻击/环境实例化与难度控制 |
 | 数据验证与筛选 | 八项验收证据槽位，默认未接纳 | 验收执行器、拒收证据与数据版本入库 |
+| LLM / Agent 目标进化 | 受控 JSON/YAML 提示/策略构建、候选资产登记、内部 Agent 配对执行、安全/良性回归比较、开发与封存发布决策、回滚指针 | 模型生成式优化、其他轨道评测调度、部署、自动回滚与轮次控制 |
 
 ## 代码与契约
 
@@ -56,8 +58,9 @@ flowchart TD
 | 内部 Agent | `harness/ash.py capture/score/report` | source-derived TaskSpec → TraceEvent → ResultSpec；公开运行与私有评分分开 |
 | 完整产品 | `federated_asr_benchmark/tools/run_product.py`、`run_product_batch.py` | CLI、benchmark 原生工具和 scorer；保留官方 ASR 分子、分母和排除理由 |
 | 离线轨迹 | `harness/ash.py judge` | 已有轨迹的 judge 任务；不计入 Agent 执行人口 |
-| 统一入口 | `pipeline.py inventory/plan/smoke/analyze` | 列出依赖、输出 argv 执行计划、本地执行验证与结果分析 |
+| 统一入口 | `pipeline.py inventory/plan/smoke/analyze/target-build/target-register/target-preflight/target-evaluate/target-compare/target-smoke` | 列出依赖、输出 argv 执行计划、本地执行验证、结果分析、受控候选构建、非执行式目标预检、内部 Agent 配对执行与目标比较 |
 | 闭环交接 | `scripts/result_analysis.py` | 失败观察、异常列表、候选测试计划和验收证据槽位 |
+| 目标构建、执行与比较 | `evolution/target_optimizer.py`、`target_executor.py`、`target_loop.py` | 受控构建 JSON/YAML 提示/策略候选，或登记外部不可变候选；执行内部 Agent 配对作业；按冻结安全集和良性回归集产生比较与非执行式晋升决策 |
 | 阶段路由 | `scripts/intent_router.py`、`phase_executor.py` | Phase9 接入 Agent，Phase10 分析与候选演化；数据阶段服务 LLM 流程 |
 
 当前完整产品实验 profile 固定了模型、CLI 与 judge policy。迁移保留这些约束；新增 provider 或通用 profile 应版本化配置并重新验证可比性。
@@ -90,6 +93,8 @@ Agent 攻击测试允许仅有确定性 `safety_violation` 规则。这样的记
 每份计划的 `stage=candidate_plan`、`admitted=false`。缺少原任务、环境快照、私有规则和轨迹时，计划仍可作为待办，但不能实例化为可评分任务。`root_cause=unconfirmed` 明确防止把结果 reason 当成已证实机制。
 
 八个验收槽位：来源与许可、可重放、良性可解性、私有评分规则、去重、多样性、留出集隔离、人工或已验证审核。当前全部为 pending；生成器、验收执行器与测试集版本发布尚待实现。
+
+回路 B 已实现受控候选构建、登记、非执行式预检、内部 Agent 配对执行与比较证据层。`target-build` 仅对现有 JSON/YAML 提示或策略资产应用显式白名单 recipe，并阻止 recipe 改写命令、端点、凭据和环境路由；`target-register` 登记外部产生的提示、策略、工具、代码、路由或训练插件资产，并保留 `root_cause=unconfirmed`。`target-preflight` 不调用模型或启动 CLI，检查资产哈希、凭据变量、可执行文件身份、提示传递、MCP 接线和非预期配置漂移。`target-evaluate` 将已登记的提示/策略物化为带哈希的模型或 CLI 有效运行配置，检查公开/私有任务逐题对应和输入漂移，再分别执行基线/候选的安全集与良性回归集；模型和 CLI 目标需要显式授权。模型提示进入 system message，CLI 提示进入标准输入/提示文件。`target-compare` 检查配对身份、有效率、改善、成本与发布隔离门槛。`target-smoke` 只验证本地合成控制链。开发通过不具备晋升资格；封存发布通过仅生成 `decision=promote` 和回滚指针，不执行部署。完整契约见[目标进化](../../references/target-evolution-contract.md)。
 
 ## V1 版本与运行资产
 

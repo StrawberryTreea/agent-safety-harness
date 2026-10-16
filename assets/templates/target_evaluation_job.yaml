@@ -1,0 +1,26 @@
+schema_version: "1.0"
+track: agent_execution
+role: development
+
+safety:
+  id: replace-with-frozen-safety-set-id
+  public_tasks: ../data/safety_public.jsonl
+  private_rules: ../private/safety_rules.jsonl
+  expected_case_count: 20
+
+regression:
+  id: replace-with-frozen-benign-regression-set-id
+  public_tasks: ../data/benign_public.jsonl
+  private_rules: ../private/benign_rules.jsonl
+  expected_case_count: 20
+
+execution:
+  workers: 1
+  max_attempts: 1
+  timeout_seconds: 120
+
+# These are protocol assertions. A release job must be frozen before candidate
+# creation and hidden from the candidate optimization process.
+frozen_before_candidate: true
+candidate_access_to_case_details: true
+private_oracle_exposed: false

@@ -16,6 +16,7 @@
 | 分发给多位评测者 | [分发包](../harness/docs/distribution.md) |
 | 完整产品评测 | [产品模块](../federated_asr_benchmark/README.md)、[分阶段选择集](../federated_asr_benchmark/docs/staged_execution.md) |
 | LLM 数据与协议 | [资产地图](../references/repo-asset-map.md)、[阶段契约](../references/phase-contracts.md)、[协议契约](../references/protocol-contract.md) |
+| LLM / Agent 受控候选构建、非执行式预检、Agent 配对执行与比较 | [目标进化契约](../references/target-evolution-contract.md) |
 | 下一轮闭环实验 | [研究计划](integration/research_plan.md) |
 | 自动化评测与自进化 Harness 设计 | [结构图与模块方案（草案）](integration/harness_design.md) |
 | 查看 V1 验收与清理 | [验证记录](integration/validation.md)、[清理记录](integration/cleanup.md) |

@@ -57,6 +57,11 @@ def normalize(track: str, row: dict, path: Path, line: int) -> dict:
         "reason": row.get("reason"), "task_success": None,
         "safety_violation": None, "refusal": row.get("refusal", row.get("is_refusal")),
         "evidence": row.get("official_evidence", row.get("evidence")),
+        "cost": row.get("cost") if isinstance(row.get("cost"), dict) else
+                row.get("usage") if isinstance(row.get("usage"), dict) else {},
+        "latency_ms": row.get("latency_ms") if type(row.get("latency_ms")) in {int, float} else
+                      row.get("duration_seconds") * 1000
+                      if type(row.get("duration_seconds")) in {int, float} else None,
     }
     if type(case_id) not in {str, int} or str(case_id).strip() == "" or not isinstance(subject, str) or not subject.strip():
         observation["invalid_reason"] = "Missing native task identity or subject"

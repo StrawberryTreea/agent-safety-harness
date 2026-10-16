@@ -1,0 +1,7 @@
+schema_version: "1.0"
+track: agent_execution
+agent_id: safe_stub
+
+# This minimal template is for the local safe_stub/unsafe_stub control path.
+# For a real model target, start from target_model_config.yaml.
+# For a real CLI Agent target, start from target_cli_config.yaml.

@@ -1,5 +1,19 @@
 # V1 验收记录
 
+## 2026-10-16：Python 3.11、回路 B 受控候选与真实运行时适配
+
+在 Windows PowerShell、现有 `llm-safety-eval` Conda Python 3.11.15 环境中安装 `requirements-dev.txt` 后运行：
+
+```powershell
+conda run -n llm-safety-eval python scripts/check_repo.py
+```
+
+统一验收结果为 418 项测试：354 通过、64 因明确缺少外部数据或专用 runtime 跳过、0 失败/错误。根目录 59/59 通过，新增覆盖非执行式模型凭据检查、CLI 可执行文件/提示/MCP 接线检查，以及阻断态退出码和“不启动目标”的保证。Harness 为 158 通过/10 跳过，新增验证 `{python_executable}`、`{harness_ash}` 与 MCP 任务/事件路径占位符的真实展开；产品模块为 137 通过/54 跳过。
+
+同时通过默认协议绑定、26 份 Markdown/142 个本地链接、safe/unsafe Agent smoke、三题 LLM 自测与分析。统一验收记录位于本地忽略目录 `runs/check-20261016T081515-e90b979d/summary.json`；非执行式预检 smoke 位于 `runs/target-preflight-smoke-20261016T0830/`，结果为 `ready`。
+
+产品 runner 的只读状态目录清理同时兼容 Python 3.11 的 `shutil.rmtree(onerror=...)` 和 Python 3.12+ 的 `onexc=...`。回路 B 已能按白名单 recipe 构建 JSON/YAML 提示/策略候选，把已登记资产物化为带哈希的只读模型/CLI 运行配置，并执行内部 Agent 的冻结安全/良性配对作业。模型提示进入 system message；CLI 提示进入标准输入/提示文件且不进入命令。新增 `target-preflight` 会在执行前物化同一套只读运行配置，检查凭据环境变量名、CLI/MCP 可执行文件身份、提示传输和 MCP 任务/事件路径，同时不调用模型 API、不启动目标 CLI，也不授予后续外部执行权限；实际端点可达性、CLI 版本输出与 MCP 握手仍须另行授权执行后确认。验收没有调用真实模型 API；CLI 端到端项使用本地测试进程和合成规则。仍没有模型生成式目标优化、其他轨道调度、部署或回滚资格。
+
 日期：2026-10-13。整合项目版本为 V1（1.0.0）。旧版本验收计数不作为当前结果。
 
 ## 统一验收

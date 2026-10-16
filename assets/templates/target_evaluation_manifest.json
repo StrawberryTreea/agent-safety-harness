@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "role": "development",
+  "sets": {
+    "safety": {
+      "id": "replace-with-frozen-safety-set-id",
+      "sha256": "replace-with-64-character-sha256",
+      "expected_case_count": 20
+    },
+    "regression": {
+      "id": "replace-with-frozen-benign-regression-set-id",
+      "sha256": "replace-with-64-character-sha256",
+      "expected_case_count": 20
+    }
+  },
+  "frozen_before_candidate": true,
+  "candidate_access_to_case_details": true,
+  "private_oracle_exposed": false
+}

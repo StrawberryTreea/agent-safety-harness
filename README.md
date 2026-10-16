@@ -4,7 +4,7 @@
 
 This is the primary project repository. The integrated platform starts at **V1 (1.0.0)**, combining LLM evaluation, internal Agent execution, full-product native evaluation and offline trace judging. Failure evidence informs new tests and subsequent improvements.
 
-**Implemented:** native entry points, public execution with separate private scoring, result analysis and unaccepted candidate plans. **Not implemented:** general experiment scheduling, replay diagnosis, automatic test-set evolution, LLM / Agent improvement, promotion and rollback.
+**Implemented:** native entry points, public execution with separate private scoring, result analysis, unaccepted test plans, bounded recipe-based prompt/policy candidates, non-executing model/CLI target preflight, prompt/policy runtime adapters, paired internal-Agent evaluation jobs, and evidence-gated target comparison. **Not implemented:** general experiment scheduling outside the internal-Agent track, replay diagnosis, automatic test-set evolution, model-generated target optimization, deployment and rollback.
 
 ## Original design reference
 
@@ -39,9 +39,9 @@ flowchart TB
     end
 
     subgraph TargetLoop["Loop B: LLM / Agent evolution"]
-        Improve["Not implemented: generate target candidates<br/>Prompts, strategies, tools, code"]
-        Validate["Not implemented: baseline/candidate comparison<br/>Safety, benign capability, validity, cost"]
-        Promote["Not implemented: independent release check and promotion<br/>Promote on pass; retain baseline on failure; rollback"]
+        Improve["Partial: build target candidates<br/>Bounded JSON/YAML prompt or policy recipes"]
+        Validate["Partial: paired baseline/candidate comparison<br/>Safety, benign capability, validity, optional cost"]
+        Promote["Partial: release decision and rollback pointer<br/>No deployment or automatic rollback"]
         Improve --> Validate --> Promote
     end
 
@@ -51,7 +51,7 @@ flowchart TB
     Promote --> Next
     Next -->|Re-evaluate in the next round| Inputs
     classDef planned stroke-dasharray:5 5
-    class Controller,Diagnosis,Generate,Admission,Dataset,Improve,Validate,Promote,Next planned
+    class Controller,Diagnosis,Generate,Admission,Dataset,Next planned
 ```
 
 The return arrow connects "automatic next round" to "freeze round inputs": freeze task and target versions again, then let the controller start evaluation, closing both loops. Compare test-set changes and target changes separately so a change in test difficulty is not mistaken for target improvement. Independent release validation uses a sealed holdout after tuning stops.
@@ -66,7 +66,7 @@ The return arrow connects "automatic next round" to "freeze round inputs": freez
 | Analysis and candidate plans | Implemented | [result_analysis.py](scripts/result_analysis.py) emits failures, invalids and `candidate_plans.jsonl`; `admitted=false`, `root_cause=unconfirmed` |
 | Controller and replay diagnosis | Not implemented | In [pipeline_cli.py](scripts/pipeline_cli.py), `plan` only prints commands and `smoke` orchestrates three synthetic Agent fixtures; general scheduling, shared budgets, recovery and feedback filtering are missing |
 | Loop A: test-set evolution | Not implemented | [Eight gate definitions](protocol/evaluation_tracks.json) exist and all candidate slots are `pending`; actual task generation, gate execution and version release are missing |
-| Loop B: target evolution and next round | Not implemented | Candidate improvement, automated comparison, independent release checks, promotion/rollback and round cycling are missing; weight training is a future plugin |
+| Loop B: target evolution and next round | Partial | `target-build` applies allowlisted JSON/YAML prompt/policy edits; `target-preflight` checks and materializes model/CLI assets without execution; `target-register` accepts external assets; `target-evaluate` runs paired internal-Agent safety/regression jobs; `target-compare` checks validity, improvement, optional cost and release gates. Model-generated optimization, scheduling for other tracks, deployment, automatic rollback and round cycling remain missing |
 
 See the [Harness design](docs/integration/harness_design.md) for the full module proposal, and [architecture](docs/integration/architecture.md) for the original concept and existing implementation mapping.
 
@@ -76,7 +76,7 @@ See the [Harness design](docs/integration/harness_design.md) for the full module
 
 ```mermaid
 flowchart TB
-    CLI["pipeline.py<br/>inventory / plan / smoke / analyze"] --> QA["llm_eval/<br/>LLM rule evaluation"]
+    CLI["pipeline.py<br/>inventory / plan / smoke / analyze / target-*"] --> QA["llm_eval/<br/>LLM rule evaluation"]
     CLI --> Harness["harness/<br/>Public task execution and trace capture"]
     CLI --> Product["federated_asr_benchmark/<br/>Product and native environment adapters"]
     CLI --> Judge["harness/ judge<br/>Offline trace judging"]
@@ -87,11 +87,12 @@ flowchart TB
     Product --> Results
     Judge --> Results
     Results --> Analyze["scripts/result_analysis.py<br/>Grouped analysis and candidate plans"]
+    Analyze --> Evolve["evolution/<br/>Bounded candidate build, paired Agent execution, comparison, decision"]
 ```
 
 ## Quick start
 
-Run from the repository root. Validated platform: Windows PowerShell and Python 3.14. Local fixtures require no API key, product CLI, Docker or downloaded dataset.
+Run from the repository root. Validated platform: Windows PowerShell with Python 3.11 and 3.14. Local fixtures require no API key, product CLI, Docker or downloaded dataset.
 
 ```powershell
 git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
@@ -108,6 +109,7 @@ Acceptance verifies the default protocol's bound count/hashes, Markdown links, t
 | `safe_stub` | 3/3 safety passes, no candidate plans |
 | `unsafe_stub` | 1/3 safety passes, 2 unaccepted candidate plans |
 | LLM reference self-test | 3/3 rule passes; copies the answer key without model inference |
+| `target-smoke` | Config-controlled unsafe-to-safe stub candidate produces `development_pass`; no model API, promotion or deployment |
 
 These results verify local execution. Real safety claims require configured models/data and verified environments, coverage and scorers. See [getting started](docs/getting_started.md) and [validation](docs/integration/validation.md).
 
@@ -139,12 +141,15 @@ flowchart TB
 
 `plan` does not execute. `analyze --track ... --results ... --out ...` produces observations, failures, invalids and candidate plans. Plans have `admitted=false` and eight pending acceptance gates. Failure reasons remain observations until traces establish their causes.
 
+For Loop B, `target-build` applies an explicit allowlisted recipe to an existing JSON/YAML prompt or policy asset and registers the immutable result. Prompt recipes cannot rewrite commands, endpoints, credentials or environment routing. `target-register` records externally built candidates. `target-preflight` verifies the registered pair, credential-variable presence, executable identities, prompt transport and MCP wiring without calling a model or starting a CLI. `target-evaluate` then materializes the registered prompt/policy into a hashed model/CLI runtime config and executes paired internal-Agent safety and benign-regression populations with separate private scoring; external model/CLI targets require an explicit opt-in. Model prompts become chat system messages; CLI prompts enter standard input/the prompt file, not the command. `target-compare` also accepts manually produced native results, while `target-smoke` exercises the chain with local stubs only. A development pass cannot promote; a sealed release pass writes a reviewable `promote` record but never deploys the candidate. See the [target-evolution contract](references/target-evolution-contract.md).
+
 ## Code map
 
 | Path | Responsibility |
 |---|---|
 | `pipeline.py`, `scripts/pipeline_cli.py` | Shared inventory, plans and local smoke execution |
 | `scripts/result_analysis.py` | Failure analysis with metric direction, denominators and lineage |
+| `evolution/target_optimizer.py`, `target_executor.py`, `target_loop.py` | Bounded candidate building, paired internal-Agent execution, registration, comparison and evidence-only promotion decisions |
 | `scripts/` | Protocols, source intake, canonicalization, statistics and preparation |
 | `llm_eval/` | Streaming, resumable LLM rule evaluation |
 | `harness/` | Internal Agents, tool environments, private rules and offline judging |
