@@ -1,5 +1,7 @@
 # LLM 与 Agent 自动化安全评测平台 · V1
 
+2026-10-23：生成侧已强制核对冻结分区和父任务哈希。产品CLI已增加计划身份及隔离预检；现有宿主机入口无法强制所声明隔离，真实执行目前统一拒绝，dry-run计划仍可用。详见[行为变化与迁移](docs/integration/loop_a_phase2.md)。
+
 2026-10-15：回路A新增本地基础模块与fixture入口，见[实现与限制](docs/integration/loop_a_implementation.md)。正式生成器、真实隔离资格及实验协议尚未冻结，完整目标闭环仍未完成。
 
 [English](README.md) · [文档导航](docs/README.md) · [协作指南](CONTRIBUTING.md)

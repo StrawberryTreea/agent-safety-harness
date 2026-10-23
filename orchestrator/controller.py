@@ -13,6 +13,7 @@ from evolution.feedback_view import build_feedback
 from evolution.qualification import inventory
 from evolution.test_generator import generate
 from evolution.contracts import validate_contract
+from evolution.partitions import build_manifest, GenerationScope
 
 
 def readiness(config: dict) -> dict:
@@ -40,6 +41,9 @@ def smoke(out: Path, *, resume=False):
     out.mkdir(parents=True, exist_ok=True)
     public = read_rows(ROOT/"harness/smoke/public_tasks.jsonl")
     private = read_rows(ROOT/"harness/smoke/private_rules.jsonl")
+    parent = public[0]
+    partition_manifest = build_manifest([parent], {parent["task_id"]: {"family_id": "smoke-refusal", "partition": "E"}})
+    scope = GenerationScope(partition_manifest)
     ledger = BudgetLedger(out/"budget.sqlite3", 12, 1, "fixture-no-paid-api")
     baseline = run_fixture(public, private, out=out/"baseline", agent="unsafe_stub", ledger=ledger, bucket="baseline", job_id="baseline")
     rows = read_rows(out/"baseline"/baseline["results_ref"])
@@ -54,12 +58,12 @@ def smoke(out: Path, *, resume=False):
               "minimum_valid_replays": 3, "dedup_threshold": .9, "family_quotas": {"smoke-refusal": 1}}
     candidate = generate(parent, family="smoke-refusal", feedback=view, pointer="/user_goal",
                          replacement="For this synthetic test, " + parent["user_goal"], space="wording",
-                         policy=policy["transform"], canaries=canaries)
+                         policy=policy["transform"], canaries=canaries, scope=scope)
     validate_contract("TestCandidate", candidate)
     # No synthetic source/benign/reviewer assertions are invented to force a pass.
     decision = evaluate(candidate, {"kind": "mock", "candidate_hash": content_hash(candidate),
                                    "policy_hash": content_hash(policy)}, policy,
-                        canaries=canaries, existing_texts=[], holdout_families=set(), admitted_counts={}, mode="fixture")
+                        canaries=canaries, existing_texts=[], holdout_families=set(), admitted_counts={}, scope=scope, mode="fixture")
     version = publish(out/"datasets", [candidate], [decision], parent_version=None,
                       policy_hash=content_hash(policy), seed=0, kind="fixture")
     summary = dict(schema_version="loop_a_smoke_v1", status="completed_fixture_only", target_fixed="unsafe_stub",
@@ -68,7 +72,7 @@ def smoke(out: Path, *, resume=False):
                    baseline_safety_failures=sum(r.get("safety_violation") is True for r in rows),
                    budget=ledger.summary(), readiness=readiness(protocol),
                    note="Native capture/score executed; generated candidate remains unaccepted without complete evidence. No real evolution efficacy claim.")
-    artifacts = {"feedback.json": view, "candidate.json": candidate, "admission.json": decision,
+    artifacts = {"partitions.json": partition_manifest, "feedback.json": view, "candidate.json": candidate, "admission.json": decision,
                  "qualification.json": inventory(ROOT), "summary.json": summary}
     for name, value in artifacts.items():
         path = out/name

@@ -3,6 +3,46 @@
   "$id": "urn:llm-safety:loop-a-contracts:v1",
   "title": "Loop A execution and candidate contracts",
   "$defs": {
+    "PartitionManifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "entries", "manifest_hash"],
+      "properties": {
+        "schema_version": {"const": "partition_manifest_v1"},
+        "manifest_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "entries": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["task_id", "family_id", "partition", "public_task_hash"],
+            "properties": {
+              "task_id": {"type": "string", "pattern": "\\S"},
+              "family_id": {"type": "string", "pattern": "\\S"},
+              "partition": {"enum": ["E", "V", "H"]},
+              "public_task_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+            }
+          }
+        }
+      }
+    },
+    "FeedbackView": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "public_task", "observed_signals", "root_cause"],
+      "properties": {
+        "schema_version": {"const": "feedback_view_v1"},
+        "root_cause": {"const": "unconfirmed"},
+        "observed_signals": {"type": "array", "uniqueItems": true, "items": {"enum": ["safety_violation", "attack_success", "task_failure", "rule_eval_failure"]}},
+        "public_task": {
+          "type": "object", "additionalProperties": false,
+          "required": ["task_id", "user_goal"],
+          "properties": {
+            "task_id": {"type": "string", "pattern": "\\S"},
+            "user_goal": {"type": "string"},
+            "benchmark": {"type": "string"},
+            "profile": {"type": "string"}
+          }
+        }
+      }
+    },
     "AdmissionPolicy": {
       "type": "object", "additionalProperties": false,
       "required": ["version", "transform", "minimum_valid_replays", "dedup_threshold", "family_quotas"],
@@ -183,7 +223,7 @@
       "additionalProperties": false,
       "properties": {
         "schema_version": {
-          "const": "test_candidate_v1"
+          "const": "test_candidate_v2"
         },
         "candidate_id": {
           "type": "string",
@@ -200,6 +240,7 @@
             "H"
           ]
         },
+        "partition_manifest_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
         "parent_task": {
           "type": "object"
         },
@@ -244,6 +285,7 @@
         "candidate_id",
         "parent_family_id",
         "partition",
+        "partition_manifest_hash",
         "parent_task",
         "public_task",
         "transform_spec",

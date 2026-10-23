@@ -10,6 +10,9 @@ from typing import Any
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_ROOT = PACKAGE_ROOT.parent
 sys.path.insert(0, str(PACKAGE_ROOT))
+sys.path.append(str(WORKSPACE_ROOT))
+
+from orchestrator.execution_guard import product_preflight, require_product_execution, product_identity, bind_product_run
 
 from product_eval.runner import ProductIdentity, ProductRunner, default_state_source
 from product_eval.agentdyn import AgentDynAdapter
@@ -137,12 +140,18 @@ def main() -> int:
     parser.add_argument("--run-id", help="Override request.run_id for a staged execution.")
     parser.add_argument("--output-root", type=Path, help="Override request.output_dir.")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--preflight-only", action="store_true", help="Inspect isolation without product, benchmark or judge execution")
     parser.add_argument("--publish-native-result", action="store_true")
     args = parser.parse_args()
     apply_data_root(args)
 
     request_path = args.request.resolve()
     request = load_request(request_path)
+    if args.preflight_only:
+        report = product_preflight(request, dry_run=args.dry_run)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0 if args.dry_run else 2
+    preflight = require_product_execution(request, dry_run=args.dry_run)
     selection_path = case_index_path(request_path, request, args.case_index)
     allowed_ids = selected_cases(selection_path, request["benchmark_id"], request["selection"].get("case_ids"))
     if args.case_id not in allowed_ids:
@@ -185,6 +194,7 @@ def main() -> int:
         else resolve_relative(request["output_dir"], request_path)
     )
     case_output = output_root / args.case_id.replace(":", "__")
+    bind_product_run(output_root, product_identity(request, selection_path, args), preflight)
     native_result = case_output / "native_result.json"
     published = None
     case_result = None

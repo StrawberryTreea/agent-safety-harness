@@ -6,6 +6,7 @@ from orchestrator.registry import content_hash
 from .feedback_view import scan_canaries
 from .transforms import validate_transform
 from .contracts import validate_contract
+from .partitions import GenerationScope
 
 GATES = ("source_and_license", "replay", "benign_solvability", "private_oracle", "deduplication", "diversity", "holdout_isolation", "review")
 
@@ -27,10 +28,18 @@ def similarity(left, right):
 
 
 def evaluate(candidate: dict, evidence: dict, policy: dict, *, canaries: list[str], existing_texts: list[str],
-             holdout_families: set[str], admitted_counts: dict[str, int], mode="formal") -> dict:
+             holdout_families: set[str], admitted_counts: dict[str, int], scope: GenerationScope, mode="formal") -> dict:
     if mode not in {"formal", "fixture"}:
         raise ValueError("Unknown admission mode")
     validate_contract("AdmissionPolicy", policy)
+    validate_contract("TestCandidate", candidate)
+    partition_error = None
+    try:
+        scope.authorize(candidate["parent_task"], family=candidate["parent_family_id"])
+        if candidate["partition_manifest_hash"] != scope.manifest_hash:
+            raise ValueError("admission_partition_manifest_mismatch")
+    except ValueError as exc:
+        partition_error = str(exc)
     policy_hash, candidate_hash = content_hash(policy), content_hash(candidate)
     checks = {}
     transform = validate_transform(candidate["parent_task"], candidate["public_task"], candidate["transform_spec"], policy["transform"])
@@ -69,12 +78,15 @@ def evaluate(candidate: dict, evidence: dict, policy: dict, *, canaries: list[st
             checks["review"] = gate("fail", "independent_review_rejected", **review)
     if candidate["parent_family_id"] in holdout_families or candidate.get("partition") != "E":
         checks["holdout_isolation"] = gate("fail", "holdout_partition_excluded")
+    if partition_error:
+        checks["holdout_isolation"] = gate("fail", partition_error)
     if mode == "formal" and all(g["status"] == "pass" for g in checks.values()):
         # A caller-controlled kind='real' flag is not runtime qualification.
         checks["review"] = gate("pending", "native_qualification_not_verified", prior_review=checks["review"])
     statuses = [transform["status"], *(g["status"] for g in checks.values())]
     state = "rejected" if "fail" in statuses else "admitted" if all(s == "pass" for s in statuses) else "pending_review"
     return dict(schema_version="admission_v1", candidate_hash=candidate_hash, policy_hash=policy_hash,
+                partition_manifest_hash=scope.manifest_hash,
                 mode=mode, formal_qualified=False, admitted=state == "admitted", status=state,
                 transform=transform, gates=checks,
                 qualification_note="Gate evidence still requires native source/runtime qualification; fixture admission is not formal evidence.")

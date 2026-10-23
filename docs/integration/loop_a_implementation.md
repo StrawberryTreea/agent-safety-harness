@@ -2,6 +2,8 @@
 
 日期：2026年10月15日。项目保持V1 1.0.0；LLM合成协议另升为v1_fixture_identity_choice_v2，评分器为rule_eval_conservative_choice_v2。
 
+2026-10-23更新：已补强生成侧冻结分区清单和产品执行前身份/隔离预检，具体行为、兼容性变化及迁移要求见[第二批实现](loop_a_phase2.md)。下表按当前实现更新。
+
 本次新增的是可测试的基础模块和本地原生执行衔接。真实目标、生成器、主指标、预算及隔离资格尚未配置，正式实验入口会拒绝启动。未调用付费模型，未完成真实测试集演化实验。
 
 ## 可运行入口
@@ -35,13 +37,13 @@ metrics输出两种候选口径和组成项，默认primary为null、protocol_fr
 
 | 模块 | 本地能力 | 尚待完成 |
 |---|---|---|
-| orchestrator/registry.py | 内容哈希、RunIdentity、拒绝旧身份或无身份结果续跑 | 原生内部Agent和产品入口全面接入；镜像和完整环境身份 |
+| orchestrator/registry.py、execution_guard.py | 内容哈希、RunIdentity、LLM与产品计划身份校验，拒绝旧身份或无身份结果续跑 | 原生内部Agent全面接入、实际产品/外部资产/镜像身份与完整环境资格 |
 | LLM评测器 | run_one_model绑定身份、有效提示哈希、保守选择题抽取 | 人工输出校准集；数字与标签完整三态抽取 |
 | product_eval/selection.py | 单条与batch共用请求相对索引、重复与边界检查 | 实机产品与来源全集资格 |
 | orchestrator/budget.py | 事务预留、双上限、幂等结算、超支留账、故障不退款 | 真实provider费用上界与计费采集 |
 | evolution/transforms.py | JSON差异、前后哈希、字段白名单、单因素声明核验 | 文本语义单因素判断，默认转人工 |
 | evolution/admission.py | 八门槛、拒收/待审、三元组n-gram Jaccard、确定性家族配额 | 真实证据采集与信任链；formal_qualified始终为false |
-| evolution/feedback_view.py | 白名单、canary扫描及泄漏负例 | 真实E/V/H分区清单在生成侧的强制接入、编码与语义泄漏检查、跨权限域部署 |
+| evolution/feedback_view.py、partitions.py | 白名单、canary、冻结分区导入与生成前强制校验、完整反馈绑定及负例 | 真实分区审核、编码与语义泄漏检查、跨权限域部署 |
 | evolution/diagnosis.py、orchestrator/replay.py | 按身份实际执行fixture重放、区分缺投递与可复现，不确认根因 | 真实重放执行、最小条件诊断 |
 | evolution/test_generator.py、strategies.py | 固定共享模板池、带种子的随机/反馈排序、表述对照及候选谱系 | 冻结的真实生成器、真实攻击变换和良性配对生成 |
 | orchestrator/fixture_cycle.py | 原生基线、候选三次重放、同模板良性对照、等预算三臂、证据清单及续跑核验 | 来源资格、独立审核、真实运行资格及正式统计 |
@@ -63,6 +65,6 @@ schema位于[契约文件](../../protocol/loop_a_contracts.schema.json)与[RunId
 
 LLM保留invalid_prediction计为不通过、拒答失败并单列、API错误不进入正确率分母的语义。抽取规则改变后历史分数应按新评分器重算，不能靠缩小分母提高成绩。旧结果缺少run_identity.json时拒绝续跑；不删除原输出，使用新目录重新运行。
 
-原生harness分发格式未修改；当前Loop A worker在其外层绑定公开任务、私有规则和执行代码身份。已有产品入口的隔离声明缺少强制消费问题仍待真实执行器改造，本次Loop A不调用该入口，不能声称已在所有旧入口修复。
+原生harness分发格式未修改；当前Loop A worker在其外层绑定公开任务、私有规则和执行代码身份。产品单条及批量CLI已消费隔离声明，当前无法证明其宿主机启动器满足所声明隔离，因此真实执行会拒绝；这是明确的兼容性变化，dry-run计划仍可使用。实际隔离启动器与所有底层库入口的资格仍未完成。
 
 运行产物在runs下且被Git忽略。fixture、mock、来源映射与正式资格分别记录。未完成的job保持预算占用并要求核对，不因重启而自动退款或重复执行。

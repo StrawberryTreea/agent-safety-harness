@@ -16,6 +16,8 @@ from product_eval.saber import SaberAdapter
 from product_eval.api_judge import OpenAICompatibleJudge, load_immutable_judge_profile
 from product_eval.product_model_policy import resolve_requested_model
 from product_eval.selection import case_index_path, selected_cases
+sys.path.append(str(PACKAGE_ROOT.parent))
+from orchestrator.execution_guard import product_preflight, require_product_execution, product_identity, bind_product_run
 from tools.run_product import (
     DEFAULT_AGENTDYN_PYTHON,
     DEFAULT_AGENTDYN_ROOT,
@@ -124,6 +126,7 @@ def main() -> int:
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--publish-native-result", action="store_true")
     parser.add_argument("--keep-going", action="store_true")
     parser.add_argument(
@@ -136,6 +139,11 @@ def main() -> int:
 
     request_path = args.request.resolve()
     request = json.loads(request_path.read_text(encoding="utf-8"))
+    if args.preflight_only:
+        report = product_preflight(request, dry_run=args.dry_run)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0 if args.dry_run else 2
+    preflight = require_product_execution(request, dry_run=args.dry_run)
     benchmark_id = request["benchmark_id"]
     product = request["product"]
     resolve_requested_model(product["product_id"], product.get("product_model"))
@@ -190,6 +198,7 @@ def main() -> int:
             + json.dumps(binding, ensure_ascii=False, sort_keys=True)
         )
     root = args.output_root.expanduser().resolve() if args.output_root else output_root(request_path, request)
+    bind_product_run(root, product_identity(request, case_index_path(request_path, request, args.case_index), args), preflight)
     run_one = run_one_for_request(request)
     counts = {"selected": len(cases), "completed": 0, "failed": 0, "skipped": 0}
 

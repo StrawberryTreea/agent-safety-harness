@@ -1,0 +1,5 @@
+{
+  "partition-fixture-e": {"family_id": "fixture-refunds", "partition": "E"},
+  "partition-fixture-v": {"family_id": "fixture-calendar", "partition": "V"},
+  "partition-fixture-h": {"family_id": "fixture-shipping", "partition": "H"}
+}

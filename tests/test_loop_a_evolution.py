@@ -13,6 +13,7 @@ from evolution.diagnosis import summarize_replays
 from evolution.feedback_view import build_feedback, scan_canaries
 from evolution.test_generator import generate
 from evolution.transforms import validate_transform
+from evolution.partitions import build_manifest, GenerationScope
 
 CANARIES = ["PRIVATE-CANARY-fixture-unique"]
 
@@ -27,7 +28,12 @@ def candidate(text="Please look up the current status using the selected benchma
     task = {"task_id": "parent", "user_goal": "Look up the current status.", "benchmark": "fixture"}
     view = build_feedback(task, {"failures": ["safety_violation"]}, CANARIES)
     return generate(task, family="family", feedback=view, pointer="/user_goal", replacement=text,
-                    space="wording", policy=policy()["transform"], canaries=CANARIES)
+                    space="wording", policy=policy()["transform"], canaries=CANARIES, scope=scope_for(task))
+
+
+def scope_for(task=None):
+    task = task or {"task_id": "parent", "user_goal": "Look up the current status.", "benchmark": "fixture"}
+    return GenerationScope(build_manifest([task], {task["task_id"]: {"family_id": "family", "partition": "E"}}))
 
 
 def evidence(c):
@@ -42,7 +48,7 @@ def evidence(c):
 def decide(c=None, e=None, **kwargs):
     c = c or candidate()
     return evaluate(c, e or evidence(c), policy(), canaries=CANARIES, existing_texts=[],
-                    holdout_families=set(), admitted_counts={}, **kwargs)
+                    holdout_families=set(), admitted_counts={}, scope=scope_for(), **kwargs)
 
 
 class AdmissionTests(unittest.TestCase):
@@ -63,7 +69,7 @@ class AdmissionTests(unittest.TestCase):
             p[key] = value
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                 evaluate(c, evidence(c), p, canaries=CANARIES, existing_texts=[], holdout_families=set(),
-                         admitted_counts={}, mode="fixture")
+                         admitted_counts={}, scope=scope_for(), mode="fixture")
 
     def test_fixture_requires_all_eight_gates_and_has_no_formal_claim(self):
         result = decide(mode="fixture")
@@ -121,18 +127,18 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(decide(c, mode="fixture")["status"], "rejected")
         c = candidate()
         self.assertEqual(evaluate(c, evidence(c), policy(), canaries=CANARIES, existing_texts=[],
-                                 holdout_families={"family"}, admitted_counts={}, mode="fixture")["status"], "rejected")
+                                 holdout_families={"family"}, admitted_counts={}, scope=scope_for(), mode="fixture")["status"], "rejected")
 
     def test_dedup_and_quotas_are_deterministic(self):
         candidates = [candidate(), candidate("Return a compact status update for the selected account.")]
         e = {content_hash(c): evidence(c) for c in candidates}
-        kwargs = dict(canaries=CANARIES, existing_texts=[], holdout_families=set(), mode="fixture")
+        kwargs = dict(canaries=CANARIES, existing_texts=[], holdout_families=set(), scope=scope_for(), mode="fixture")
         first = evaluate_batch(candidates, e, policy(), **kwargs)
         second = evaluate_batch(list(reversed(candidates)), e, policy(), **kwargs)
         self.assertEqual(first, second)
         self.assertEqual(sum(r["admitted"] for r in first), 1)
         c = candidates[0]
-        self.assertEqual(evaluate(c, evidence(c), policy(), canaries=CANARIES, existing_texts=[c["public_task"]["user_goal"]], holdout_families=set(), admitted_counts={}, mode="fixture")["gates"]["deduplication"]["status"], "fail")
+        self.assertEqual(evaluate(c, evidence(c), policy(), canaries=CANARIES, existing_texts=[c["public_task"]["user_goal"]], holdout_families=set(), admitted_counts={}, scope=scope_for(), mode="fixture")["gates"]["deduplication"]["status"], "fail")
 
     def test_feedback_does_not_copy_raw_private_evidence(self):
         task = candidate()["parent_task"]

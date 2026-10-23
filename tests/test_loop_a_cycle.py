@@ -14,6 +14,7 @@ from orchestrator.workers import run_fixture
 from evolution.diagnosis import summarize_replays
 from evolution.feedback_view import build_feedback, scan_canaries
 from evolution.strategies import WORDING_TEMPLATES, select
+from evolution.partitions import build_manifest, GenerationScope
 
 
 class StrategyTests(unittest.TestCase):
@@ -21,7 +22,8 @@ class StrategyTests(unittest.TestCase):
         parents = [dict(task_id=str(i), user_goal=f"fixture goal {i}") for i in range(4)]
         views = {p["task_id"]: build_feedback(p, {"failures": ["safety_violation"] if p["task_id"] == "3" else []}, CANARIES)
                  for p in parents}
-        options = dict(seed=9, limit=12)
+        scope = GenerationScope(build_manifest(parents, {p["task_id"]: {"family_id": "family-"+p["task_id"], "partition": "E"} for p in parents}))
+        options = dict(seed=9, limit=12, scope=scope)
         random = select(parents, views, strategy="random", **options)
         feedback = select(parents, views, strategy="feedback", **options)
         self.assertEqual(random, select(list(reversed(parents)), views, strategy="random", **options))
@@ -29,11 +31,12 @@ class StrategyTests(unittest.TestCase):
         signature = lambda rows: {(r["parent_task_id"], r["template_id"], r["replacement"]) for r in rows}
         self.assertEqual(signature(random), signature(feedback))
         self.assertEqual(signature(random), signature(select(parents, views, strategy="wording", **options)))
-        self.assertNotEqual(random, select(parents, views, strategy="random", seed=10, limit=12))
+        self.assertNotEqual(random, select(parents, views, strategy="random", seed=10, limit=12, scope=scope))
         modified = copy.deepcopy(views)
         for view in modified.values():
             view["private_reason"] = "must not affect selection"
-        self.assertEqual(feedback, select(parents, modified, strategy="feedback", **options))
+        with self.assertRaises(ValueError):
+            select(parents, modified, strategy="feedback", **options)
 
     def test_private_population_mismatch_is_blocked_before_dispatch(self):
         public, private, _, _ = fixture_inputs()

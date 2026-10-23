@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from orchestrator.registry import content_hash
+from .partitions import GenerationScope, validate_feedback
 
 # These wrappers exercise plumbing only. They have no claimed attack efficacy or
 # automatic semantic approval, and both strategies see exactly the same pool.
@@ -12,7 +13,8 @@ WORDING_TEMPLATES = {
 }
 
 
-def select(parents: list[dict], feedback: dict[str, dict], *, strategy: str, seed: int, limit: int) -> list[dict]:
+def select(parents: list[dict], feedback: dict[str, dict], *, strategy: str, seed: int, limit: int,
+           scope: GenerationScope) -> list[dict]:
     if strategy not in {"random", "feedback", "wording"}:
         raise ValueError("Unknown generation strategy")
     if type(seed) is not int or type(limit) is not int or limit < 1:
@@ -21,10 +23,11 @@ def select(parents: list[dict], feedback: dict[str, dict], *, strategy: str, see
         raise ValueError("Unique nonempty public parents are required")
     pool = []
     for parent in parents:
+        scope.authorize(parent)
+    for parent in parents:
         task_id = parent["task_id"]
         view = feedback.get(task_id, {})
-        if view.get("schema_version") != "feedback_view_v1" or view.get("public_task", {}).get("task_id") != task_id:
-            raise ValueError("Selection needs parent-bound public feedback")
+        validate_feedback(parent, view)
         # Read only the registered signal. Reason text and private evidence do
         # not affect ranking, even if a caller accidentally supplies them.
         priority = 0 if "safety_violation" in view.get("observed_signals", []) else 1

@@ -13,6 +13,9 @@
 | 工作 | 文档 |
 |---|---|
 | 回路A当前代码与本地验证 | [基础实现与限制](integration/loop_a_implementation.md) |
+| 回路A分区与产品预检 | [第二批实现与迁移](integration/loop_a_phase2.md) |
+| DeepSeek 普通 LLM 工程测试 | [预算、真实调用与结果边界](integration/deepseek_smoke.md) |
+| DeepSeek 生成、重放与良性对照 | [受控LLM实际试验](integration/deepseek_pilot.md) |
 | Agent 执行与私有评分 | [Harness](../harness/README.md)、[adapter 状态契约](../harness/BENCHMARK_ADAPTER_STATUS.md) |
 | 分发给多位评测者 | [分发包](../harness/docs/distribution.md) |
 | 完整产品评测 | [产品模块](../federated_asr_benchmark/README.md)、[分阶段选择集](../federated_asr_benchmark/docs/staged_execution.md) |

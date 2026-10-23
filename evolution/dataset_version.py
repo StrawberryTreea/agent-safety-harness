@@ -34,6 +34,8 @@ def publish(root: Path, candidates: list[dict], decisions: list[dict], *, parent
             raise ValueError("Admission policy mismatch")
         if result.get("admitted") is not True:
             continue
+        if result.get("partition_manifest_hash") != candidate["partition_manifest_hash"]:
+            raise ValueError("Admission partition manifest mismatch")
         if result.get("status") != "admitted":
             raise ValueError("Conflicting admission status")
         if result.get("mode") != ("formal" if kind == "formal" else "fixture"):

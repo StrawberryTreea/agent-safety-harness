@@ -147,11 +147,13 @@ def main(argv: list[str] | None = None) -> int:
     command.add_argument("--results", type=Path, nargs="+", required=True)
     command.add_argument("--out", type=Path, required=True)
     command = sub.add_parser("loop-a", help="Local test-evolution contracts, fixtures and formal-readiness checks")
-    command.add_argument("action", choices=("plan", "qualify", "metrics", "smoke", "cycle", "compare", "run"))
+    command.add_argument("action", choices=("plan", "qualify", "partitions", "metrics", "smoke", "cycle", "compare", "run"))
     command.add_argument("--config", type=Path, default=ROOT / "protocol/loop_a_experiment.json")
     command.add_argument("--out", type=Path)
     command.add_argument("--data-root", type=Path)
     command.add_argument("--results", type=Path)
+    command.add_argument("--tasks", type=Path, help="Public task JSONL for a partition manifest")
+    command.add_argument("--assignments", type=Path, help="Explicit task-ID to family/partition JSON mapping")
     command.add_argument("--primary", choices=("net_independent_discoveries", "benign_gated_discoveries"))
     command.add_argument("--resume", action="store_true")
     command.add_argument("--strategy", choices=("random", "feedback", "wording"), default="feedback")
@@ -170,6 +172,15 @@ def main(argv: list[str] | None = None) -> int:
                     return 2
             elif args.action == "qualify":
                 result = qualify(ROOT, args.data_root)
+            elif args.action == "partitions":
+                if args.tasks is None or args.assignments is None or args.out is None:
+                    raise ValueError("loop-a partitions requires --tasks, --assignments and a new --out directory")
+                from evolution.partitions import build_manifest
+                from orchestrator.workers import read_rows
+                manifest = build_manifest(read_rows(args.tasks), json.loads(args.assignments.read_text(encoding="utf-8-sig")))
+                result = {"schema_version": "partition_build_report_v1", "manifest_hash": manifest["manifest_hash"],
+                          "counts": {p: sum(row["partition"] == p for row in manifest["entries"]) for p in ("E", "V", "H")},
+                          "formal_ready": False}
             elif args.action == "metrics":
                 if args.results is None:
                     raise ValueError("loop-a metrics requires --results")
@@ -190,6 +201,8 @@ def main(argv: list[str] | None = None) -> int:
                 from orchestrator.workers import write_json as write_once
                 empty_output(args.out)
                 write_once(args.out / "summary.json", result)
+                if args.action == "partitions":
+                    write_once(args.out / "partitions.json", manifest)
         elif args.command == "inventory":
             result = inventory()
         elif args.command == "plan":
