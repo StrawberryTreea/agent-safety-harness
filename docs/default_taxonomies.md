@@ -117,7 +117,19 @@
 | 两套默认体系完整定义（机器可读） | `protocol/default_taxonomies.yaml` | 仓库内相对路径；或 GitHub 链接 `https://github.com/StrawberryTreea/agent-safety-harness/blob/main/protocol/default_taxonomies.yaml` |
 | LLM 8×19 编码注册表（id/parent/name） | `protocol/taxonomy_registry.yaml` | 同上（`.../blob/main/protocol/taxonomy_registry.yaml`） |
 | 本文 | `docs/default_taxonomies.md` | 同上（`.../blob/main/docs/default_taxonomies.md`） |
-| 白皮书 PDF / 综合测评报告 docx | 作者本地（`C:/Users/xiaoz/Desktop/2026.07-Agent安全评测/白皮书/`） | **仅本地**，不随仓库分发 |
+| 白皮书 PDF / 综合测评报告 docx | 作者本地（`2026.07-Agent安全评测/白皮书/`） | **仅本地**，不随仓库分发 |
 
 > 仓库内**不包含**白皮书原文与评测样本数据；本文件中的定义文字属于为协作方便整理的摘要，
 > 正式引用请以白皮书 PDF 原文为准。
+
+### 5.1 仓库可见性（当前状态，2026-11-03 实测）
+
+| 访问身份 | 能否访问本文件 | 说明 |
+|---|---|---|
+| 仓库协作者（已被邀请的 GitHub 账号，push/pull 权限） | ✅ 可以 | `git clone https://github.com/StrawberryTreea/agent-safety-harness.git` 后直接读 `protocol/default_taxonomies.yaml` 与本文 |
+| 匿名访问者 / 论文复现者 | ❌ 不行 | 仓库当前为 **private**，匿名 HTTP 请求一律返回 404 |
+
+若需让外部人员访问，三种做法（择一）：
+1. 给对方加为仓库协作者（`gh api -X PUT repos/StrawberryTreea/agent-safety-harness/collaborators/<username> -f permission=pull`）；
+2. 把仓库转为 public（`gh repo edit --visibility public`）——转公开前建议先自查 `federated_asr_benchmark/selections/**.jsonl` 等已跟踪数据文件是否适合公开；
+3. 只把本文件单独发布到公开渠道（如 `gh gist create`，或论文仓库的 docs 目录），其余代码保持私有。
