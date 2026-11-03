@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>agent-safety-harness · 项目架构与分工图</title>
+<style>
+  :root{
+    --bg:#f6f8fa; --card:#ffffff; --ink:#1f2328; --muted:#57606a;
+    --line:#d0d7de; --blue:#0969da; --green:#1a7f37; --amber:#9a6700; --red:#cf222e;
+    --green-bg:#daffdd; --amber-bg:#fff8c5; --red-bg:#ffebe9; --blue-bg:#ddf4ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.55;font-size:14px}
+  header{padding:24px 32px;background:linear-gradient(120deg,#0b3d91,#0969da);color:#fff}
+  header h1{margin:0 0 6px;font-size:24px}
+  header p{margin:0;opacity:.92;font-size:14px}
+  .wrap{max-width:1280px;margin:0 auto;padding:24px 32px 64px}
+  section{margin-top:36px}
+  h2{font-size:19px;border-left:5px solid var(--blue);padding-left:10px;margin:0 0 16px}
+  h3{font-size:15px;color:var(--muted);margin:18px 0 10px;text-transform:none}
+  .badges{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
+         font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--card)}
+  .b-green{background:var(--green-bg);color:var(--green);border-color:#a9e8b0}
+  .b-amber{background:var(--amber-bg);color:var(--amber);border-color:#eac54f}
+  .b-red{background:var(--red-bg);color:var(--red);border-color:#f0a3a0}
+  .b-blue{background:var(--blue-bg);color:var(--blue);border-color:#a6d9ff}
+
+  /* architecture diagram */
+  .arch{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+  .stack{display:flex;flex-direction:column;gap:0}
+  .layer{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:0}
+  .layer-title{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:10px;text-transform:uppercase}
+  .cards{display:flex;gap:10px;flex-wrap:wrap}
+  .node{flex:1 1 160px;min-width:150px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fbfcfd}
+  .node .t{font-weight:700;font-size:13px}
+  .node .s{font-size:11px;color:var(--muted);margin-top:3px}
+  .node.green{border-left:4px solid var(--green)}
+  .node.amber{border-left:4px solid var(--amber)}
+  .node.red{border-left:4px solid var(--red)}
+  .arrow{text-align:center;color:var(--muted);font-size:18px;line-height:1;padding:3px 0}
+  .side{background:var(--card);border:1px dashed var(--blue);border-radius:10px;padding:14px}
+  .side h4{margin:0 0 10px;font-size:14px;color:var(--blue)}
+  .loop{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:12px;background:#fbfcfd}
+  .loop.amber{border-left:4px solid var(--amber)}
+  .loop.green{border-left:4px solid var(--green)}
+  .loop .tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:6px}
+  .feed{font-size:12px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .note{font-size:12.5px;color:var(--muted);margin-top:14px;background:var(--card);border:1px solid var(--line);
+        border-radius:8px;padding:12px 14px}
+  .note b{color:var(--ink)}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:#eef2f6;font-weight:700;color:var(--ink)}
+  tr:last-child td{border-bottom:none}
+  td code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:12px}
+  .grp{background:#f0f6ff;font-weight:700}
+  .pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
+  .pill.g{background:var(--green-bg);color:var(--green)}
+  .pill.a{background:var(--amber-bg);color:var(--amber)}
+  .pill.r{background:var(--red-bg);color:var(--red)}
+
+  /* loop cards */
+  .loopgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .lcard{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:16px 18px}
+  .lcard h3{margin-top:0;color:var(--blue)}
+  .lcard ul{margin:8px 0 0;padding-left:18px}
+  .lcard li{margin:5px 0}
+  .kpi{display:inline-block;background:var(--blue-bg);color:var(--blue);border-radius:6px;padding:1px 7px;font-weight:700;font-size:12px;margin-right:4px}
+
+  /*分工 */
+  .team{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .member{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:14px 16px}
+  .member .role{font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+  .member .who{font-size:12px;color:var(--muted)}
+  .member ul{margin:8px 0 0;padding-left:18px;font-size:12.5px}
+  .member li{margin:4px 0}
+  .lead{border:2px solid var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+  footer{padding:20px 32px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <h1>agent-safety-harness · 项目架构与分工图</h1>
+  <p>LLM &amp; Agent 自动化安全评测 harness · CLI 命令行形态 · 支持评测结果反向优化（自进化）</p>
+  <div class="badges">
+    <span class="badge b-blue">仓库：StrawberryTreea/agent-safety-harness</span>
+    <span class="badge b-green">✅ 已实现 18 模块</span>
+    <span class="badge b-amber">🟡 部分/设计态 4 模块</span>
+    <span class="badge b-red">🔴 未实现/分支内 5 模块</span>
+    <span class="badge">VERSION 1.0.0</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ========== 架构图 ========== -->
+<section>
+  <h2>一、分层架构图</h2>
+  <div class="arch">
+    <div class="stack">
+      <!-- 交互层 -->
+      <div class="layer">
+        <div class="layer-title">交互层（CLI 与 自然语言驱动 为兄弟，共享同一函数层 · 你定的）</div>
+        <div class="cards">
+          <div class="node blue" style="border-left:4px solid var(--blue)">
+            <div class="t">命令行入口（CLI）</div>
+            <div class="s">pipeline_cli · ash · 手敲子命令 → 解析参数 → <b>直接调函数层</b></div>
+          </div>
+          <div class="node amber" style="border-left:4px solid var(--amber)">
+            <div class="t">自然语言驱动（harness_driver）</div>
+            <div class="s">agent_safety_harness/driver/ · LLM 解析自然语言 → 规划 → <b>直接调同一批函数</b>（绝不 shell CLI 字符串）</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <!-- 统一函数层 / tool registry -->
+      <div class="layer">
+        <div class="layer-title">统一能力函数层 · TOOL REGISTRY（CLI 与驱动共享的单一入口）</div>
+        <div class="cards">
+          <div class="node blue" style="border-left:4px solid var(--blue)">
+            <div class="t">工具注册表 tool_registry</div>
+            <div class="s">每个能力注册为带 schema 的可调用函数：<code>bench_intake</code> / <code>build_sandbox</code> / <code>run_capture</code> / <code>score</code> / <code>analyze</code> / <code>evolve_*</code>。CLI 与驱动都从这里取函数，零重复实现。</div>
+          </div>
+          <div class="node blue" style="border-left:4px solid var(--blue)">
+            <div class="t">harness_driver 自主编排</div>
+            <div class="s">“拉 benchmark → 搭沙箱 → 跑评测 → 评分 → 分析 → 触发自进化”都是注册函数，驱动按 plan 自主串联，不需人肉敲命令。</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <!-- 分析层 -->
+      <div class="layer">
+        <div class="layer-title">统一结果分析层（自进化的燃料）</div>
+        <div class="cards">
+          <div class="node green">
+            <div class="t">四轨聚合分析</div>
+            <div class="s">result_analysis · 输出 observations / failures / invalids / candidate_plans / summary（保留各轨指标与分母）</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <!-- 轨道层 -->
+      <div class="layer">
+        <div class="layer-title">评测轨道层（四条独立评测轨道）</div>
+        <div class="cards">
+          <div class="node green"><div class="t">LLM 问答安全评测<br><span style="font-weight:400;font-size:11px">llm_qa</span></div><div class="s">规则通过率；拒答=失败，API 错误单列</div></div>
+          <div class="node green"><div class="t">Agent 执行安全评测<br><span style="font-weight:400;font-size:11px">agent_execution</span></div><div class="s">公开执行+私有评分分离；native safety pass</div></div>
+          <div class="node green"><div class="t">完整产品评测<br><span style="font-weight:400;font-size:11px">agent_product</span></div><div class="s">8 个原生 adapter；ASR 越低越好</div></div>
+          <div class="node green"><div class="t">离线轨迹评审<br><span style="font-weight:400;font-size:11px">trace_judge</span></div><div class="s">复用 safety 判定，不计入执行人口</div></div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <!-- 引擎层 -->
+      <div class="layer">
+        <div class="layer-title">核心引擎层</div>
+        <div class="cards">
+          <div class="node green"><div class="t">基准适配器</div><div class="s">adapters · 16 注册，1 真实+抽象层</div></div>
+          <div class="node green"><div class="t">确定性规则评分引擎</div><div class="s">evaluation · 不调 LLM judge，私有评分核心</div></div>
+          <div class="node green"><div class="t">沙箱后端</div><div class="s">sandbox · 6 文件全；任务隔离执行</div></div>
+          <div class="node green"><div class="t">运行器 / Agent 接入</div><div class="s">runners / agents · 并发执行、多类 Agent</div></div>
+          <div class="node green"><div class="t">数据导入器</div><div class="s">importers · 外部集→TaskSpec</div></div>
+          <div class="node green"><div class="t">Schema / 协议 / 配置</div><div class="s">schema / protocol / config</div></div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <!-- 数据层 -->
+      <div class="layer">
+        <div class="layer-title">数据资产层</div>
+        <div class="cards">
+          <div class="node green"><div class="t">配置与协议</div><div class="s">config / protocol · 已随仓库</div></div>
+          <div class="node amber"><div class="t">Canonical 数据集</div><div class="s">脚本在，数据默认在 data/ 未随仓库</div></div>
+          <div class="node red"><div class="t">外部官方 benchmark 源</div><div class="s">需 AGENT_EVAL_DATA_ROOT 外部提供</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自进化侧栏 -->
+    <div class="side">
+      <h4>自进化层（反向优化）</h4>
+      <div class="loop amber">
+        <span class="tag" style="background:var(--amber-bg);color:var(--amber)">🔴 未合入 main</span>
+        <div class="t" style="font-weight:700">测试集自动进化（Loop-A）</div>
+        <div class="s" style="font-size:11px;color:var(--muted)">反向优化"评测数据"</div>
+        <div class="feed">仅存在于 <code>loop-a-local-harness</code> 分支：fixture 级原型，formal_qualified 恒 false，未调付费模型。</div>
+      </div>
+      <div class="loop green">
+        <span class="tag" style="background:var(--green-bg);color:var(--green)">🟡 受控控制平面</span>
+        <div class="t" style="font-weight:700">评测方法进化（Loop-B）</div>
+        <div class="s" style="font-size:11px;color:var(--muted)">反向优化"评测方法"</div>
+        <div class="feed">main 已实现：target-build/register/preflight/evaluate/compare。但"模型生成式候选优化、自动晋升、部署、回滚"未实现。</div>
+      </div>
+      <div class="feed" style="border-top:none">
+        <b>反馈回路：</b><br>
+        ① 分析层失败观察 → Loop-A 生成新测试集 → 回到数据层/轨道（评测集越长越刁）<br>
+        ② 分析层失败观察 → Loop-B 优化提示/策略 → 回到被测对象（方法被反向打磨）
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>一句话完成度：</b>main 分支是一个<strong>“可验收的 harness”</strong>——四轨评测引擎、确定性评分、沙箱隔离、Loop-B 受控控制平面都有真实代码且指标方向与文档一致；但
+    <strong>从没对真实模型/产品跑出过安全分数</strong>（runs/ 全是验收/smoke 日志），你想要的"自进化"里 Loop-A 还在分支没合入、Loop-B 还不是"AI 自动优化"。最大风险：官方 benchmark 源与真实评测数据不在仓库内。
+  </div>
+</section>
+
+<!-- ========== 模块清单 ========== -->
+<section>
+  <h2>二、模块清单（功能 / 输入 / 输出 / 状态）</h2>
+  <table>
+    <thead><tr><th>层</th><th>模块（白话 / 技术名）</th><th>功能职责</th><th>CLI / API 入口</th><th>输入</th><th>输出</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="7">交互层（CLI 与 自然语言驱动 为兄弟，共享函数层）</td></tr>
+      <tr>
+        <td></td>
+        <td>统一命令行入口<br><code>scripts/pipeline_cli.py</code></td>
+        <td>单一 CLI，分派全流程：列依赖、出执行计划、冒烟、四轨分析、Loop-B 目标进化。解析 argv 后<b>直接调 tool_registry 函数</b></td>
+        <td><code>inventory / plan / smoke / analyze / target-register / target-build / target-preflight / target-evaluate / target-compare / target-smoke</code></td>
+        <td>仓库配置 / 目标与轨道参数 / 提示·策略资产</td>
+        <td>依赖清单、argv 计划、验证结果、聚合报告、Loop-B 登记/比较/决策</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>内部 Agent 评测 CLI<br><code>harness/ash.py</code></td>
+        <td>Agent 任务细粒度评测；核心是“公开执行(capture)”与“私有评分(score)”两阶段分离，防评分规则泄漏给被测模型。同样薄壳，调函数层</td>
+        <td><code>capture / score / judge / report / review / import / list / run / mcp-server</code></td>
+        <td>TaskSpec（capture 阶段无私有规则）/ 隔离私有规则（score 阶段）/ 已有轨迹（judge）</td>
+        <td>captures.jsonl、traces.jsonl（manifest 标不含私有 oracle）/ ResultSpec（safety_pass 等）</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>自然语言驱动<br><code>agent_safety_harness/driver/</code></td>
+        <td><b>harness 大脑</b>（新增模块）：解析自然语言指令 → 生成执行 plan → 直接调 tool_registry 函数自主串联（拉 benchmark→搭沙箱→跑评测→评分→分析→触发自进化）。不 shell CLI，零重复实现</td>
+        <td>自然语言 / 半结构化指令；只读已批准函数清单，不能越权未注册动作</td>
+        <td>自然语言评测需求（如“复现 AgentBench 并构建隔离环境跑一轮”）、已批准 tool 清单</td>
+        <td>结构化执行 plan、各阶段产物（同函数层）、自进化触发信号</td>
+        <td><span class="pill r">🔴 未实现（新增模块，成员1/4 共建）</span></td>
+      </tr>
+
+      <tr class="grp"><td colspan="7">统一能力函数层 · TOOL REGISTRY（CLI 与驱动共享的单一实现入口）</td></tr>
+      <tr>
+        <td></td>
+        <td>工具注册表<br><code>agent_safety_harness/registry.py</code></td>
+        <td>把每个能力注册为<b>带 schema 的可调用函数</b>，CLI 与驱动都从中取函数；新增能力只注册一次，两交互面自动可用</td>
+        <td>程序内 API：<code>register(fn)</code> / <code>get(name)</code> / <code>list()</code></td>
+        <td>各引擎函数（bench_intake / build_sandbox / run_capture / score / analyze / evolve_*）的装饰注册</td>
+        <td>统一函数目录（名称 + 入参 schema + 返回 schema）</td>
+        <td><span class="pill r">🔴 未实现（新增，成员1 落地）</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>沙箱构建函数<br><code>agent_safety_harness/sandbox/build.py</code></td>
+        <td>benchmark 环境需求声明的<b>自动构建</b>（Python 版本/依赖/容器镜像），产出隔离 runtime，并包官方 scorer 为统一 ResultSpec</td>
+        <td><code>build_sandbox(benchmark_id)</code> → 注册到 registry</td>
+        <td>benchmark 环境需求声明（env spec）+ 已拉取的源</td>
+        <td>隔离执行 runtime（容器/venv）、官方 scorer 适配、执行 Session</td>
+        <td><span class="pill r">🔴 未实现（原手动设 *_PYTHON，改自动构建）</span></td>
+      </tr>
+
+      <tr class="grp"><td colspan="7">统一分析层</td></tr>
+      <tr>
+        <td></td>
+        <td>四轨聚合与失败归因<br><code>scripts/result_analysis.py</code></td>
+        <td>把四轨结果归一聚合，保留各轨指标与分母；产出失败观察——这是自进化的“燃料”</td>
+        <td><code>pipeline analyze</code></td>
+        <td>各轨道结果文件（runs/）</td>
+        <td>observations.jsonl / failures.jsonl / invalids.jsonl / candidate_plans.jsonl（admitted=false）/ summary.json</td>
+        <td><span class="pill g">✅ 分析层已实现</span><br><span class="pill r">🔴 八门控验收执行器未实现</span></td>
+      </tr>
+
+      <tr class="grp"><td colspan="7">评测轨道层（四轨）</td></tr>
+      <tr>
+        <td></td>
+        <td>LLM 问答安全评测<br><code>llm_eval/multi_model_rule_eval_prompt_only.py</code></td>
+        <td>对 LLM 做规则化安全问答评测；规则打分不调 LLM judge；拒答算主指标失败，API 错误单列</td>
+        <td>脚本直接运行 + <code>--config</code> YAML</td>
+        <td>YAML 配置（多模型、API 类型：OpenAI/Anthropic/Gemini/Azure）、JSONL 题目（canonical_schema）</td>
+        <td>每题 passed(bool)/api_status；聚合 rule_eval_pass_rate；leaderboard</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Agent 执行安全评测<br><code>harness/ash.py capture/score</code></td>
+        <td>让 Agent 在沙箱执行来源派生任务、捕获轨迹，再用隔离的私有规则评分；执行与评分分离</td>
+        <td><code>ash capture</code> → <code>ash score</code></td>
+        <td>TaskSpec（公开任务）、沙箱配置、私有规则（评分阶段注入）</td>
+        <td>captures/traces（执行）/ ResultSpec（safety_pass、task_success、safety_violation 三者独立；unknown 不补通过）</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>完整产品评测<br><code>federated_asr_benchmark/tools/run_product.py</code></td>
+        <td>对真实 AI 产品（codex/claude_code/qoder/codebuddy 等）在原生 benchmark 环境跑攻击，用官方 scorer 算 ASR；强隔离</td>
+        <td><code>run_product.py --request ...</code></td>
+        <td>run_request JSON（benchmark_id/product/adapter/isolation/selection）、外部数据根、专用 runtime</td>
+        <td>case_result.json（status=success 即攻击成功）、官方 ASR（越低越好）；8 个原生 adapter</td>
+        <td><span class="pill g">✅ 已实现</span><br><span class="pill a">🟡 需外部数据/专用 runtime</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>离线轨迹评审<br><code>harness/ash.py judge</code></td>
+        <td>对已有轨迹做离线 rule judge，复用 agent_execution 的 safety 判定，不计入执行人口</td>
+        <td><code>ash judge</code></td>
+        <td>已有 traces</td>
+        <td>离线 judge 判定（native_trace_judge_pass_rate）</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+
+      <tr class="grp"><td colspan="7">核心引擎层</td></tr>
+      <tr>
+        <td></td>
+        <td>基准适配器<br><code>adapters/</code></td>
+        <td>把外部 benchmark/任务接入统一 TaskSpec 契约。16 个官方基准名注册，仅 AgentSafetyBench 真实实现，其余 stub 拦截；另有 executable/unified_scenario/native_environment 适配器</td>
+        <td>registry 自动分派</td>
+        <td>外部基准源 / 任务描述</td>
+        <td>统一 TaskSpec / Runtime</td>
+        <td><span class="pill a">🟡 1/16 真实，抽象层已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>确定性规则评分引擎<br><code>evaluation/</code></td>
+        <td>用确定性规则评判安全违规/任务成功，不调 LLM judge；支持丰富算子（tool_called / response_contains / state_matches…）</td>
+        <td><code>evaluate_task</code>、<code>classify_safety_outcome</code></td>
+        <td>TraceEvent + 规则定义</td>
+        <td>三规则结果（attack_exposure / task_success / safety_violation）</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>沙箱后端<br><code>sandbox/</code></td>
+        <td>任务本地隔离执行环境，绝不让 Agent 触达主机 FS/网络/进程；提供 mock 工具观察与 policy 判定</td>
+        <td>LocalWorkspace / Tool / Null / Composite 后端</td>
+        <td>任务 profile / tools</td>
+        <td>SandboxSession（隔离执行、state_diff、policy_verdict）</td>
+        <td><span class="pill g">✅ 已实现（6 文件全）</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>运行器 / Agent 接入<br><code>runners.py / agents.py</code></td>
+        <td>执行 Agent 任务、拼轨迹、线程池并发；接入 API/CLI/Reference/Cli 各类 Agent</td>
+        <td><code>run_agent_tasks</code> / <code>build_agent</code></td>
+        <td>TaskSpec + Agent 配置</td>
+        <td>trace / 结果</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>数据导入器<br><code>importers/</code></td>
+        <td>把外部数据集（AgentHarm / 通用映射）规范化为 TaskSpec JSONL</td>
+        <td><code>convert_agentharm_records</code> / <code>convert_mapped_records</code></td>
+        <td>外部源文件（JSON/JSONL/CSV + 字段映射模板）</td>
+        <td>规范化 TaskSpec</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Schema / 协议 / 配置<br><code>schema.py / protocol/ / config/</code></td>
+        <td>TaskSpec/TraceEvent/ResultSpec 数据类；四轨协议；canonical 输入契约；agents/benchmarks/imports/models/policies 配置</td>
+        <td>—</td>
+        <td>—</td>
+        <td>统一数据结构与契约</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+
+      <tr class="grp"><td colspan="7">自进化层（你的核心目标）</td></tr>
+      <tr>
+        <td></td>
+        <td>测试集自动进化<br><code>evolution/（分支 loop-a-local-harness）</code></td>
+        <td>把失败案例当种子，自动生成更难/更多样的新测试题，过八道验收门槛后发布新版本测试集——反向优化“评测数据”</td>
+        <td><code>test_generator</code> / <code>admission</code>（八门控）</td>
+        <td>失败观察（failures.jsonl）</td>
+        <td>新 TaskSpec + dataset-version manifest（目标产物）</td>
+        <td><span class="pill r">🔴 分支内 fixture 级，未合入</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>评测方法进化<br><code>evolution/target_*.py（main）</code></td>
+        <td>受控地改被测对象的提示词/策略（非模型乱改），配对跑基线 vs 候选，过 8 道门槛后封存决策——反向优化“评测方法”</td>
+        <td><code>target-build / register / preflight / evaluate / compare</code></td>
+        <td>提示/策略资产或外部候选</td>
+        <td>登记哈希 / 配对比较 / 封存决策（promote / development_pass / reject）</td>
+        <td><span class="pill a">🟡 受控控制平面已实现；模型生成式优化未实现</span></td>
+      </tr>
+
+      <tr class="grp"><td colspan="7">数据资产层</td></tr>
+      <tr>
+        <td></td>
+        <td>配置与协议资产<br><code>config/ / protocol/</code></td>
+        <td>agents / benchmark 注册 / 导入字段映射 / 模型画像 / 策略 / 四轨协议</td>
+        <td>—</td>
+        <td>—</td>
+        <td>配置 JSON</td>
+        <td><span class="pill g">✅ 已实现</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Canonical 数据集<br><code>data/（默认位置）</code></td>
+        <td>规范化数据集与统计；source_intake / canonicalize_datasets / canonical_validate 脚本</td>
+        <td>脚本</td>
+        <td>来源数据</td>
+        <td>规范化数据集</td>
+        <td><span class="pill a">🟡 脚本在，数据未随仓库</span></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>外部官方 benchmark 源<br><code>AGENT_EVAL_DATA_ROOT</code></td>
+        <td>AgentDojo / SABER / AgentHarm / InjecAgent / MSB / AgentLeak / AgentPoison / AgentDyn 等真实评测源</td>
+        <td>环境变量 / <code>--data-root</code></td>
+        <td>外部数据根</td>
+        <td>可评分的真实任务集</td>
+        <td><span class="pill r">🔴 不在仓库，需外部提供</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========== 自进化双回路 ========== -->
+<section>
+  <h2>三、自进化双回路详解（你的核心目标）</h2>
+  <div class="loopgrid">
+    <div class="lcard">
+      <h3>Loop-A · 测试集自动进化（反向优化“评测数据”）</h3>
+      <p><span class="kpi">白话</span>评测跑完后，把“失败案例”当种子，自动生成新的、更难/更多样的测试题，经过验收后发布成新版本测试集。评测集自己越长越刁钻。</p>
+      <p><span class="kpi">为什么需要</span>静态测试集会被被测对象“刷分”过拟合；失败驱动的进化能持续发现新安全盲区，且每单位预算发现率可量化（research_plan 主指标）。</p>
+      <p><span class="kpi">例子</span>agent_execution 发现 10 条“Agent 泄露了私有日历”的失败 → Loop-A 生成 50 条同类但换了场景/工具的变体 → 八门控验收 → 发布 v2 测试集。</p>
+      <ul>
+        <li><b>当前状态：</b>🔴 仅在 <code>loop-a-local-harness</code> 分支，fixture 级原型</li>
+        <li>已有：<code>test_generator</code>（本地模板，未调付费 API）、<code>admission</code> 八门控（来源许可/可重放/良性可解/私有规则/去重/多样性/留出隔离/审核）</li>
+        <li><code>formal_qualified</code> 恒 false，run 返回非零阻断——<b>还没真正生成过可发布测试集</b></li>
+        <li><b>待补：</b>合入 main、真实测试集生成器、八门控执行器、dataset-version 发布、留出集隔离落地</li>
+      </ul>
+    </div>
+    <div class="lcard">
+      <h3>Loop-B · 评测方法进化（反向优化“评测方法”）</h3>
+      <p><span class="kpi">白话</span>针对“某个被测对象分数低”，受控地改它的提示词/策略（不是让模型自己乱改），配对跑基线 vs 候选，过门槛后封存决策。方法被反向打磨。</p>
+      <p><span class="kpi">为什么需要</span>同一套评测方法会对不同被测对象暴露不同短板；受控进化让“方法”随证据迭代，同时守住“不自动部署、unknown 不补通过”的安全边界。</p>
+      <p><span class="kpi">例子</span>某产品 ASR 偏高 → 写一条 prompt recipe（白名单改动）→ 配对跑基线 vs 候选 → 8 门槛（安全/回归/成本/配对置信…）→ 封存 promote，但不自动上线。</p>
+      <ul>
+        <li><b>当前状态：</b>🟡 main 已实现“受控控制平面”</li>
+        <li>已实现：<code>target-build</code>（白名单 recipe，禁改命令/端点/凭据）、<code>register</code>（资产哈希+失败谱系）、<code>preflight</code>（只读校验，不调 API）、<code>evaluate</code>（配对执行，sha256 防篡改）、<code>compare</code>（8 门槛）</li>
+        <li><b>缺口（protocol 里 not_implemented 5 项）：</b>模型生成式候选优化、非 agent_execution 轨道调度、部署、自动回滚、轮次控制</li>
+        <li><b>关键差距：</b>现在是“人写 recipe，机器受控比较”，<b>还不是“AI 根据失败自动生成优化”</b>——这正是你要的“反向优化方法”所需补的那块</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 分工 ========== -->
+<section>
+  <h2>四、4 人分工方案（你 = 总体框架与设计）</h2>
+
+  <div class="note">
+    <b>先说人怎么切：</b>你（总体框架）+ 4 个成员，共 5 人。你不定具体某条评测轨道的业务代码，你定的是<b>所有人都要遵守的“铁轨”</b>（数据格式、接口、质量门），以及最后拍板矛盾谁听谁的。4 个成员每人认领一块<b>垂直模块包</b>，互相之间<b>不读对方代码、只看“标准产物”交接</b>——就像工厂流水线，上一道工序只管把标准件递到下一道，不管下一道怎么用。<br>
+    <b>为什么能并行不接不上？</b>因为数据在管道里只以 5 种统一格式流动（见第五章），每个人只需保证“我吃进标准 X、吐出标准 Y”，顺序随便并行。下面每张卡都写清：负责什么文件、写什么、输入输出是什么、对外暴露什么接口、怎么算做完、现在有什么。
+  </div>
+
+  <!-- 总览表 -->
+  <table>
+    <thead><tr><th>角色</th><th>一句话</th><th>主负责目录 / 文件</th><th>对外的“标准接口”</th><th>现在起点</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="5">🧭 你 · 总体框架与设计（跨模块，不定业务）</td></tr>
+      <tr>
+        <td>框架总控</td>
+        <td>定契约 + 仲裁，不写具体评测逻辑</td>
+        <td><code>schema.py</code> / <code>protocol/</code> / <code>config/</code> / 本看板第 5 章</td>
+        <td>审批契约变更；裁决 4 人接口冲突</td>
+        <td>契约已在看板定死；代码里 schema/协议已部分存在</td>
+      </tr>
+      <tr class="grp"><td colspan="5">4 个成员（各认一个垂直包）</td></tr>
+      <tr>
+        <td><b>成员1</b><br>评测引擎组</td>
+        <td>把“怎么跑评测”做扎实 + 搭统一函数层</td>
+        <td><code>harness/src/agent_safety_harness/</code> 全包 + <code>harness/ash.py</code> + <code>registry.py</code> + <code>driver/</code>(注册表)</td>
+        <td>把每个能力注册成 <code>registry</code> 函数（bench_intake / build_sandbox / run_capture / score / analyze）</td>
+        <td>核心引擎已实；函数层/注册表本次已搭骨架；官方基准仅 1 真实</td>
+      </tr>
+      <tr>
+        <td><b>成员2</b><br>产品评测组</td>
+        <td>让 harness 能评“完整产品”（如语音助手）</td>
+        <td><code>federated_asr_benchmark/</code>（tools / product_eval / release）</td>
+        <td><code>run_product</code> + 8 个原生 adapter/scorer → 官方 ASR（越低越好）</td>
+        <td>代码已实现；缺真实数据接入与真实产出</td>
+      </tr>
+      <tr>
+        <td><b>成员3</b><br>LLM 问答 + 分析</td>
+        <td>纯 LLM 安全问答评测 + 四轨聚合分析</td>
+        <td><code>llm_eval/</code> + <code>scripts/result_analysis.py</code> + canonical 数据</td>
+        <td>每题结果 + <b>分析四件套</b>（给自进化供“失败种子”）</td>
+        <td>llm_qa 与分析层已实现；缺真实数据</td>
+      </tr>
+      <tr>
+        <td><b>成员4</b><br>自进化组</td>
+        <td>让 harness“评完反向优化自己”</td>
+        <td><code>evolution/</code> + CI + <code>driver/</code>(planner/executor/nl_bridge)</td>
+        <td><code>evolve</code> 函数 + driver 自然语言编排</td>
+        <td>Loop-B 受控平面已实现；Loop-A 在分支；driver 本次已搭骨架</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 详细卡 -->
+  <h3>4.1 你 · 总体框架与设计</h3>
+  <div class="member lead">
+    <div class="role"><span>🧭 你</span><span class="pill b-blue" style="background:var(--blue-bg);color:var(--blue)">跨模块 · 定契约</span></div>
+    <ul>
+      <li><b>定跨模块契约（4 人全依赖，改要你批）：</b><code>schema.py</code>（TaskSpec/ResultSpec 等 5 个标准产物）、<code>protocol/</code>（四轨输入契约 + 自进化门控）、<code>config/</code>。</li>
+      <li><b>CLI 顶层设计：</b>统一入口 <code>scripts/pipeline_cli.py</code> 与内部 <code>harness/ash.py</code> 的子命令语义对齐，确保成员1/4 的接口和你的设计一致。</li>
+      <li><b>自进化协议仲裁：</b>Loop-A 八门控、Loop-B 8 门槛 + “模型生成式优化”接口谁来定义（你来拍板形状）。</li>
+      <li><b>质量门硬约束：</b>CI 必跑端到端 smoke；未知结果（unknown）不补通过；自进化产物不自动部署、不自动晋升版本。</li>
+      <li><b>不做：</b>不写具体某条轨道的业务代码；不替成员决定内部实现——只定边界与交接格式。</li>
+    </ul>
+  </div>
+
+  <h3>4.2 成员 1 · 评测引擎组（最核心，所有人都靠它的函数层）</h3>
+  <div class="member">
+    <div class="role"><span>成员 1</span><span class="pill g">核心引擎 + 函数层</span></div>
+    <div class="who">负责：<code>harness/src/agent_safety_harness/</code> 全包 + <code>harness/ash.py</code> + <code>registry.py</code> + <code>driver/</code>里的注册表部分</div>
+    <ul>
+      <li><b>写什么：</b>
+        <ol>
+          <li><b>统一函数层（已搭骨架，你来填实）：</b>把每个评测能力用 <code>@REGISTRY.register_fn</code> 注册成带 schema 的函数（<code>bench_intake</code> / <code>build_sandbox</code> / <code>run_capture</code> / <code>score</code> / <code>analyze</code>）。CLI 和 driver 都从这里取函数。</li>
+          <li><b>benchmark 环境构建（新增）：</b>写 <code>sandbox/build.py</code>，读 benchmark 的“环境需求声明”（Python 版本/依赖/容器镜像），自动构建隔离 runtime，替代现在手动设 <code>AGENTDOJO_PYTHON</code> 等。</li>
+          <li><b>扩官方基准接入：</b>现在 16 个注册只有 1 个真实现（AgentSafetyBench），把更多官方 benchmark 接成真实 importer/adapter。</li>
+          <li><b>强化沙箱隔离 + 确定性评分算子。</b></li>
+        </ol>
+      </li>
+      <li><b>输入 → 输出：</b>吃 TaskSpec（capture 阶段无私有评分规则）→ 吐 ResultSpec（safety_pass 等）+ 隔离执行 runtime。</li>
+      <li><b>对外接口：</b>上面那 5 个注册函数；<code>harness/ash.py</code> 的 capture/score/judge。成员2/3/4 都通过调用这些函数或读它们产出的文件来协作。</li>
+      <li><b>完成标准：</b>① registry 里 5 个核心函数都是真实调用（不是占位）；② 至少 N 个官方 benchmark 能一键 <code>build_sandbox</code> 自动构建并跑通；③ 守住“公开执行 + 私有评分分离”（评分规则绝不进 capture）。</li>
+      <li><b>与成员4 共建 driver：</b>你出 registry + 引擎函数，成员4 出 planner/executor/nl_bridge。</li>
+      <li><b>现在起点：</b>核心引擎已实；本次已搭好 <code>registry.py</code> + <code>driver/</code> 骨架（占位函数可 dry_run 跑通）；官方基准仅 1 真实。</li>
+    </ul>
+  </div>
+
+  <h3>4.3 成员 2 · 产品评测组（评“完整产品”，和 LLM/Agent 评测并列）</h3>
+  <div class="member">
+    <div class="role"><span>成员 2</span><span class="pill g">agent_product</span></div>
+    <div class="who">负责：<code>federated_asr_benchmark/</code>（tools / product_eval / release）</div>
+    <ul>
+      <li><b>写什么：</b>把“完整产品”（例如一个语音助手）接进 harness 评测。已有 8 个原生 adapter、<code>run_product.py</code>、BYOK 隔离、ASR 统计。</li>
+      <li><b>关键交付：</b>接真实外部数据 + 专用 runtime（和成员1 的 build_sandbox 对接），<b>跑出第一份真实产品评测结果</b>——这是整个项目目前最大的缺口（现在 runs/ 全是验收日志，没真跑过）。</li>
+      <li><b>维护：</b>8 个 benchmark 原生 scorer 与版本/preflight 证据（证明评测可复现）。</li>
+      <li><b>输入 → 输出：</b>吃 run_request + 数据根 + 隔离 runtime → 吐 case_result.json / 官方 ASR（<b>越低越好</b>）。</li>
+      <li><b>对外接口：</b><code>run_product</code> 命令 + 各 adapter/scorer。成员4 的 Loop-A/B 会拿它的失败 case 当进化种子。</li>
+      <li><b>完成标准：</b>至少一个真实产品在一组真实数据上跑出可复现的 ASR 数字，并带源哈希 + 固定索引入仓。</li>
+      <li><b>现在起点：</b>代码已实现，缺真实数据接入与真实产出（这一步卡住了，自进化就没有燃料）。</li>
+    </ul>
+  </div>
+
+  <h3>4.4 成员 3 · LLM 问答评测 + 统一分析（纯 LLM 那条轨 + 四轨汇总）</h3>
+  <div class="member">
+    <div class="role"><span>成员 3</span><span class="pill g">llm_qa + 分析</span></div>
+    <div class="who">负责：<code>llm_eval/</code> + <code>scripts/result_analysis.py</code> + canonical 数据集 + <code>pipeline_cli analyze</code></div>
+    <ul>
+      <li><b>写什么：</b>
+        <ol>
+          <li><b>llm_qa 轨：</b>纯 prompt → 模型输出 → 规则判分（不调 LLM judge）。正是你们 2026.03 实测的那套（668,820 题、规则通过率、拒答=失败、API 错误单列）。</li>
+          <li><b>四轨聚合分析：</b><code>result_analysis.py</code> 把四轨结果归一，产出<b>失败观察</b>——这是自进化的“燃料”。</li>
+          <li><b>把失败观察转成可实例化的候选计划</b>（给 Loop-A 当“种子”）。</li>
+        </ol>
+      </li>
+      <li><b>输入 → 输出：</b>吃 config + canonical 题目 / 各轨结果 → 吐每题结果 + <b>分析四件套</b>（observations / failures / invalids / candidate_plans）。</li>
+      <li><b>对外接口：</b><code>llm_eval</code> 执行 + <code>analyze</code>。它的 failures.jsonl 是成员4 的输入。</li>
+      <li><b>完成标准：</b>llm_qa 能跑你们 2026.03 的真实数据集出分；分析层能稳定吐出 failures.jsonl 供 Loop-A 消费。</li>
+      <li><b>现在起点：</b>llm_qa 与分析层已实现，缺真实数据（canonical 数据默认在 data/ 未随仓库）。</li>
+    </ul>
+  </div>
+
+  <h3>4.5 成员 4 · 自进化组（让 harness 评完反向优化自己）</h3>
+  <div class="member">
+    <div class="role"><span>成员 4</span><span class="pill a">Loop-A + Loop-B + driver</span></div>
+    <div class="who">负责：<code>evolution/</code> + CI + <code>driver/</code>(planner/executor/nl_bridge) + docs/integration</div>
+    <ul>
+      <li><b>写什么：</b>
+        <ol>
+          <li><b>Loop-A（反向优化“评测数据”）：</b>合入 <code>loop-a-local-harness</code> 分支，实现真实测试集生成器 + 八门控执行器 + 数据集版本发布（失败案例 → 更难更多样的测试题 → 过八门控 → 发新版本）。</li>
+          <li><b>Loop-B（反向优化“评测方法”）：</b>从现有“受控控制平面”升级到“模型生成式候选优化”（仍走受控比较与封存，不自动部署）。</li>
+          <li><b>harness_driver 的“智能”部分（已搭骨架）：</b>planner（自然语言→plan）、executor（调 registry 函数）、nl_bridge（用 LLM 把指令转 plan）。和成员1 的 registry 对接。</li>
+          <li><b>CI 质量门：</b>每次 PR 跑端到端 smoke，接不上就红灯。</li>
+        </ol>
+      </li>
+      <li><b>输入 → 输出：</b>吃 failures.jsonl / 候选资产 → 吐决策记录 / dataset-version manifest / 自然语言执行结果。</li>
+      <li><b>对外接口：</b><code>evolve</code> 注册函数 + driver 的自然语言入口。成员3 的 failures.jsonl 是它的输入。</li>
+      <li><b>完成标准：</b>① Loop-A 能真实产出一版新测试集并过八门控；② Loop-B 能跑“模型生成式候选→受控比较→封存决策”；③ driver 能用自然语言驱动跑通一条真实链路。</li>
+      <li><b>守住约束：</b>不部署、不自动晋升、unknown 不补通过；driver 只读已批准函数清单。</li>
+      <li><b>现在起点：</b>Loop-B 受控平面已实现；Loop-A 在分支内（fixture 级）；driver 本次已搭骨架（占位函数 + dry_run 已跑通）。</li>
+    </ul>
+  </div>
+
+  <h3>4.6 5 个人怎么保证最后接得上（白话版）</h3>
+  <div class="note">
+    <ul style="margin:6px 0 0;padding-left:18px">
+      <li><b>铁轨统一：</b>数据在管道里只以 5 种格式流动（TaskSpec / TraceEvent / ResultSpec / 分析四件套 / 自进化 manifest）。每个人只认格式不认人。</li>
+      <li><b>接口是函数不是人：</b>成员1 把能力注册成 <code>registry</code> 函数，别人调函数即可，不关心内部。</li>
+      <li><b>改格式要你批：</b>谁想加字段/改门控，先过你，且同步更新本看板第 5 章——避免各写各的。</li>
+      <li><b>CI 每晚拼一遍：</b><code>scripts/check_repo.py</code> 把四块拼起来跑合成链路，接不上立刻红灯。</li>
+      <li><b>准入闸门：</b>adapter 注册表 + Loop-A 八门控 + Loop-B 8 门槛，谁产出的数据要进管道先过门，不过就停 staging，不污染主集。</li>
+    </ul>
+  </div>
+
+  <h3>4.7 第一周谁先动（建议执行顺序）</h3>
+  <div class="note">
+    <b>① 你（第 1–2 天）：</b>把第 5 章契约代码化——确认 <code>schema.py</code> 已含 modality/双模态字段，registry 接口定稿，给 4 人发本看板 + 一份 <code>FRAMEWORK_CONTRACT.md</code> 开工规范。<br>
+    <b>② 成员1（并行启动）：</b>把 registry 里 5 个占位函数换成真实引擎调用（至少 run_capture/score 先真），并搭好 build_sandbox 框架。<br>
+    <b>③ 成员2 / 成员3（并行）：</b>接真实数据，目标第 1 周结束跑出第一份真实分数（这是自进化的燃料，最优先解锁）。<br>
+    <b>④ 成员4（等成员1 的 registry 与成员3 的 failures）：</b>先合入 Loop-A 分支，再让 driver 接成员1 的 registry 做真实编排。<br>
+    <b>汇合点：</b>第 1 周末用 CI 跑一次端到端（真实数据进 → 出 ResultSpec → 出 failures → 触发一次 Loop-A 生成），验证四块接得上。
+  </div>
+  <div class="note">
+    <b>当前最该先补的两块（决定“自进化”能否成立）：</b>① 真实评测产出（成员 2/3 接数据跑出第一份真实分数，否则自进化没有燃料）；② Loop-A 合入与 Loop-B 模型生成式优化（成员 4）。
+  </div>
+</section>
+
+<!-- ========== 框架契约（硬规定） ========== -->
+<section>
+  <h2>五、框架契约（硬规定 · 由总体框架定死，4 人开工即遵守）</h2>
+  <div class="note">
+    以下契约<strong>直接来自仓库现有代码（schema.py / evaluation_tracks.json / source_intake.py / canonicalize_datasets.py），不是新发明</strong>。任何人要改字段或删门控，必须总体框架（你）批。这是 4 人并行不接不上的根本保证。
+  </div>
+
+  <h3>5.1 统一数据契约 —— 贯穿全流程的 5 个标准产物</h3>
+  <table>
+    <thead><tr><th>标准产物</th><th>真实字段（来自 schema.py / 分析层）</th><th>谁产出 → 谁消费</th><th>硬规定</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>任务定义</b><br>TaskSpec<br><span class="tag" style="background:#e7f0ff;color:#1f6feb">模态可扩展</span></td>
+        <td>
+          <b>公共（必填）</b>：<code>task_id</code> <code>benchmark</code> <code>modality</code>(可扩展枚举，默认集 {llm, agent}) <code>profile</code> <code>taxonomy_ref</code>(引用已注册分类体系；缺省=默认体系) <code>labels</code>(expected_behavior/task_type + 该体系的风险标签) <code>evaluation</code>(评分阶段才注入) <code>metadata</code><br>
+          <b>LLM 模态（modality=llm · 默认示例 · 纯 prompt，无工具/环境）</b>：<code>test_text</code>(输入 prompt) <code>reference_answer</code> <code>type</code>(判断/选择/生成/问答) <code>eval_method</code>(规则) <code>note.rule</code>(判分规则) <code>label_mapping</code>(多选映射)<br>
+          <b>Agent 模态（modality=agent · 默认示例 · 需工具/环境）</b>：<code>user_goal</code> <code>attack_goal</code>(选) <code>tools</code>(name/type/risk) <code>initial_state</code> <code>profile</code>(harmful_agent_task|prompt_injection_tool_env|tool_use_emulated_sandbox|trajectory_judge)<br>
+          <b>结构契约按模态走</b>：llm 自动忽略 tools/initial_state/user_goal；agent 必须有 user_goal 或 tools/initial_state。
+        </td>
+        <td>各轨道 / importers / adapter / Loop-A → 运行器、评分、环境</td>
+        <td>
+          <b>modality 是分派键，但枚举可扩展</b>：llm → llm_qa 轨；agent → 其余三轨；新增模态须注册 track adapter + 结构契约（是否含工具/轨迹），由总体框架审批。<br>
+          <b>evaluation 在 capture 阶段必须为空</b>（公开执行不含私有评分规则）。<br>
+          <b>分类体系不写死</b>：维度标签经 <code>taxonomy_ref</code> 引用，benchmark 原生体系直接注册引用即可，不必套我们的默认体系。
+        </td>
+      </tr>
+      <tr>
+        <td><b>执行轨迹</b><br>TraceEvent</td>
+        <td><code>event_id</code> <code>task_id</code> <code>step</code> <code>role</code>(user/agent/tool/environment/judge/policy) <code>event_type</code>(message/tool_call/tool_result/state_diff/refusal/policy_check/judge_verdict) <code>content</code> <code>timestamp</code></td>
+        <td>运行器（沙箱内）→ 评分引擎、judge</td>
+        <td>轨迹里<strong>不得包含私有评分规则</strong>，泄漏检查在评分进程做。</td>
+      </tr>
+      <tr>
+        <td><b>评分结果</b><br>ResultSpec</td>
+        <td><code>task_id</code> <code>benchmark</code> <code>agent_id</code> <code>task_type</code> <code>safety_pass</code> <code>reason</code> <code>task_success</code> <code>safety_violation</code> <code>attack_success</code> <code>unsafe_tool_call</code> <code>data_leak</code> <code>refusal</code> <code>policy_verdict</code>(pass/fail/warn/unknown) <code>score</code> <code>evidence</code> <code>cost</code></td>
+        <td>确定性评分引擎 / 官方 scorer → 分析层</td>
+        <td><b>safety_violation 与 task_success 独立</b>；攻击型任务可无 task_success 分母；<code>policy_verdict=unknown</code> 不补成通过。</td>
+      </tr>
+      <tr>
+        <td><b>分析四件套</b><br>JSONL</td>
+        <td><code>observations</code>(有效结果+证据) <code>failures</code>(有效失败，区分 safety_violation vs task_success) <code>invalids</code>(API/环境/评分 unknown/格式) <code>candidate_plans</code>(以失败为父，<code>admitted=false</code>) + <code>summary</code>/<code>manifest</code></td>
+        <td>分析层（result_analysis）→ Loop-A / Loop-B / 人</td>
+        <td>重复 run/subject/benchmark/case 标识<strong>直接终止分析</strong>；<code>candidate_plans</code> 缺原任务/环境快照/私有规则/轨迹时只能当待办，不能实例化。</td>
+      </tr>
+      <tr>
+        <td><b>自进化产物</b><br>manifest</td>
+        <td>Loop-A：新 TaskSpec + <code>dataset-version</code>(含 parent task/生成策略/模型版本/提示版本/种子/环境·scorer 版本/拒收原因/谱系) ；Loop-B：决策记录(<code>decision=promote/development_pass/reject/insufficient_evidence</code>) + 回滚指针 + 资产哈希</td>
+        <td>Loop-A/B → 数据层、被测对象</td>
+        <td>新任务先入 staging；<code>root_cause</code> 恒为 <code>unconfirmed</code>（禁止把 reason 当已证实机制）。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note"><b>与代码现状的 gap（成员1 实现须知）：</b>当前 <code>schema.py</code> 的 TaskSpec 是 <strong>agent-only</strong>（含 <code>user_goal</code>/<code>tools</code>/<code>initial_state</code>，缺 <code>modality</code> 与 LLM 字段）。按本契约，成员1 须扩展 schema.py：① <code>modality</code> 改为<strong>可注册的可扩展枚举</strong>（默认集 {llm, agent}，存于配置而非关闭的 Literal）；新增 modality 在 modality 注册表登记 track adapter + 结构契约即可；② 新增 LLM 模态字段 <code>test_text</code>/<code>reference_answer</code>/<code>type</code>/<code>eval_method</code>/<code>note.rule</code>，<strong>不再在 schema 里硬编码 safety_l1/safety_l2 维度，维度改由 <code>taxonomy_ref</code> 引用 config/taxonomies 中的体系</strong>；③ <code>from_record</code> 按 modality 校验必填（LLM 忽略 tools，Agent 不要 test_text）；④ 接入新 benchmark 时，若它有原生体系，在 config/taxonomies 注册并让 TaskSpec 引用，<strong>不强套默认体系</strong>。所有旧 adapter/importer 的 TaskSpec 产出须补 <code>modality=agent</code>。这是 4 人开工前必须先落地的契约基础。</div>
+
+  <h3>5.2 四轨接口契约（写死，来自 evaluation_tracks.json）</h3>
+  <table>
+    <thead><tr><th>轨道</th><th>执行器</th><th>输入契约</th><th>正向指标</th><th>边界硬规定</th></tr></thead>
+    <tbody>
+      <tr><td>LLM 问答安全<br>llm_qa</td><td><code>llm_eval/multi_model_rule_eval_prompt_only.py</code></td><td><b>LLM 模态 TaskSpec</b>（test_text / reference_answer / eval_method=规则 / note.rule）</td><td>rule_eval_pass_rate</td><td><b>纯 prompt 评测，无 tools / 环境 / trajectory</b>；冻结输入总体；拒答=主指标失败；API error 单列排除，不进有效分母。</td></tr>
+      <tr><td>Agent 执行安全<br>agent_execution</td><td><code>harness/ash.py</code></td><td><code>schema.py</code> TaskSpec</td><td>native_safety_pass_rate</td><td>来源派生任务；私有规则评分捕获轨迹；攻击型任务 task_success 可选；unknown 保持 unknown。</td></tr>
+      <tr><td>完整产品评测<br>agent_product</td><td><code>federated_asr_benchmark/tools/run_product.py</code></td><td><code>run_request.schema.json</code></td><td>official_asr（越低越好）</td><td>完整产品 CLI + 原生环境 + scorer；status=success 即攻击成功；单位保持 case 或 retrieval_event，不互转。</td></tr>
+      <tr><td>离线轨迹评审<br>trace_judge</td><td><code>harness/ash.py</code></td><td><code>schema.py</code> TaskSpec</td><td>native_trace_judge_pass_rate</td><td>离线轨迹评估；<strong>绝不计入 Agent 执行人口</strong>。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.3 自进化闸门（写死，不可删减）</h3>
+  <div class="loopgrid">
+    <div class="lcard">
+      <h3>Loop-A · 测试集进化八门控</h3>
+      <p style="font-size:12.5px;color:var(--muted)">source_and_license / replay / benign_solvability / private_oracle / deduplication / diversity / holdout_isolation / review</p>
+      <ul>
+        <li>八门控是数据进主集的<strong>硬性验收闸门</strong>，新测试集须全过才发布 dataset-version。</li>
+        <li>演化池 / 验证池 / 最终留出集<strong>实验前冻结</strong>；留出集轨迹·答案·私有规则不得进入生成提示。</li>
+        <li>候选生成器只见允许的失败摘要与脱敏公开轨迹；私有 oracle 留在验收进程做泄漏检查。</li>
+        <li><code>automatic_admission=false</code>：自动生成≠自动接纳，须经门控 + review。</li>
+      </ul>
+    </div>
+    <div class="lcard">
+      <h3>Loop-B · 方法进化约束（automatic_promotion=false）</h3>
+      <ul>
+        <li><b>本期已实现并作为契约</b>的 15 项：受控 JSON/YAML 提示·策略构建、不可变候选登记、失败谱系、配对安全比较、良性回归门、配对 agent 执行作业、非执行式预检、凭据/可执行就绪检查、公私 oracle 分离检查、输入/策略漂移检查、显式外部目标授权、有效性与成本门、封存发布决策记录、回滚指针、合成受控端到端 smoke。</li>
+        <li><b>本期明确不做（待立项）</b>的 5 项：模型生成式候选优化、非 agent_execution 轨道调度、部署、自动回滚、轮次控制。</li>
+        <li><code>target-build</code> 禁改 command/base_url/credential/evaluation；<code>promotion_action_performed=false</code>：封存决策不自动部署。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>5.4 Benchmark 复现与规范化流水线（写死机制 + 扩展点）</h3>
+  <p style="font-size:13px"><b>既定机制（4 人必须复用，不得另起炉灶）：</b></p>
+  <table>
+    <thead><tr><th>阶段</th><th>脚本</th><th>输入</th><th>输出（已实现的真实产物）</th></tr></thead>
+    <tbody>
+      <tr><td>Phase 1 源接入</td><td><code>scripts/source_intake.py</code></td><td><code>--benchmark-root</code> 数据文件 + <code>--intake-config</code> + canonical schema</td><td>dataset_catalog.json（含 sha256/字段映射/status）、field_mapping_report.json、needs_review.json、pending_manifests</td></tr>
+      <tr><td>Phase 2 规范化</td><td><code>scripts/canonicalize_datasets.py</code></td><td>Phase 1 的 dataset_catalog.json</td><td>canonical.jsonl、stats.json、dataset_sources_clean.csv、quarantine.jsonl、membership_diff.json（含源哈希校验、去重、类型转换）</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px"><b>你要的"从 GitHub 拉取 + 为 agent 构建评测环境"，定为三个扩展点（写死归属）：</b></p>
+  <table>
+    <thead><tr><th>扩展点</th><th>职责</th><th>归属</th><th>设计依据</th></tr></thead>
+    <tbody>
+      <tr><td>① GitHub 拉取器</td><td>把"本地 --benchmark-root"前置为：按<strong>固定 revision clone</strong> 各 benchmark 仓库 → 落本地 → 哈希校验 → 交 Phase 1</td><td>成员1</td><td>复用 AgentSafetyBench 固定 revision 加载范本（无源即报错，防漂移）</td></tr>
+      <tr><td>② 评测环境构建器</td><td>读 benchmark 的<strong>环境需求声明</strong>（Python 版本/依赖/容器镜像），自动构建隔离 runtime，把官方 scorer 包成统一 ResultSpec 评分</td><td>成员1 构建 + 成员2 接入（agent_product 专用 runtime）</td><td>复用现有专用解释器变量（AGENTDOJO_PYTHON / AGENTDYN_PYTHON / AGENTPOISON_PYTHON）机制，从手动指定升级为自动构建</td></tr>
+      <tr><td>③ TaskSpec 适配</td><td>把规范化后的 benchmark 任务 → TaskSpec（含 tools/labels/evaluation）</td><td>成员1</td><td>复用 importers/mapped.py + importers/agentharm.py，扩到更多 benchmark（当前 16 注册仅 1 真实）</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>铁律：</b>所有外部 benchmark 一律先过 Phase 1/2 规范化 + ③ 转 TaskSpec，才允许进评测管道。这是"统一数据"与"4 人衔接"的源头闸门。</div>
+
+  <h3>5.5 四人包的接口边界（写死的稳定 CLI 契约）</h3>
+  <table>
+    <thead><tr><th>包（负责人）</th><th>稳定暴露接口</th><th>输入契约</th><th>输出契约</th></tr></thead>
+    <tbody>
+      <tr><td>成员1 评测引擎</td><td><code>ash capture/score/judge/import</code> + adapter 注册接口</td><td>TaskSpec（capture 阶段无 evaluation）</td><td>captures.jsonl / traces.jsonl / ResultSpec</td></tr>
+      <tr><td>成员2 产品评测</td><td><code>run_product</code> + 各 benchmark 原生 adapter/scorer</td><td>run_request + 数据根 + 隔离 runtime</td><td>case_result.json / official ASR</td></tr>
+      <tr><td>成员3 LLM QA + 分析</td><td><code>llm_eval</code> 执行 + <code>analyze</code></td><td>config + canonical 题目 / 各轨结果</td><td>每题结果 / 分析四件套</td></tr>
+      <tr><td>成员4 自进化</td><td><code>target-*</code> + <code>loop-a-*</code></td><td>failures.jsonl / 候选资产</td><td>决策记录 / dataset-version manifest</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted)">内部实现各包可自由重构，只要上述接口的输入/输出契约不变，4 人互不影响。</p>
+
+  <h3>5.6 评测分类体系（默认体系 + 可插拔 · 可修改变量）</h3>
+  <div class="note">分类体系是<strong>我们自己提出的默认参考体系</strong>，不是写死的锁。设计原则：<b>① 体系可插拔</b>——每个体系在 <code>protocol/</code> 下有一份自包含的定义文件（id + 维度编码 + 层级 + 适用 modality + 逐维定义，如 <code>protocol/default_taxonomies.yaml</code>），运行时由 <code>config/taxonomies/</code> 的注册项引用；改体系=改配置，不动 schema 代码；<b>② 默认体系</b>由我们提供（LLM 19 维 + Agent 5 域），仅作 benchmark 无原生体系时的兜底；<b>③ 原生体系优先</b>——官方 benchmark 自带体系（AgentBench 任务族、InjecAgent 注入子类、ASRBench 错误码等）直接注册引用，<strong>不强行套我们的体系</strong>；<b>④ 跨体系对照（crosswalk）是可修改的配置变量</b>——只为统一报告提供“映射到默认体系”的派生视图，改不改、怎么映射都由用户编辑，不影响原始数据。</div>
+  <table>
+    <thead><tr><th>体系</th><th>性质</th><th>维度定义（仓库内路径，外部协作者可直接访问）</th><th>如何接入</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>默认体系 · LLM</b><br>taxonomy=default-llm</td>
+        <td>默认兜底（我们提出）</td>
+        <td><code>safety_l1 × safety_l2</code>，<strong>19 个二级伤害维度</strong>（1–19）；定义在仓库内 <code>protocol/default_taxonomies.yaml</code>（含逐维定义）+ 编码注册表 <code>protocol/taxonomy_registry.yaml</code>；人读版 <code>docs/default_taxonomies.md</code>（待成员1 落地）</td>
+        <td>benchmark 无原生体系时，题目归到该体系，每模型按 19 维出分</td>
+      </tr>
+      <tr>
+        <td><b>默认体系 · Agent</b><br>taxonomy=default-agent</td>
+        <td>默认兜底（我们提出）</td>
+        <td>5 大一级 × 多级二级（1.1–5.2，共 14 个二级风险）；定义在仓库内 <code>protocol/default_taxonomies.yaml</code>（含逐维定义）；人读版 <code>docs/default_taxonomies.md</code>（待成员1 落地）</td>
+        <td>benchmark 无原生体系时，按 5 域出“执行安全率”</td>
+      </tr>
+      <tr>
+        <td><b>benchmark 原生体系</b><br>taxonomy=&lt;benchmark&gt;-native</td>
+        <td>首选（官方自带）</td>
+        <td>随 benchmark 自身定义，如 AgentBench 任务族、InjecAgent 注入子类、ASRBench 错误码</td>
+        <td>接入时注册该体系，TaskSpec 的 <code>taxonomy_ref</code> 指向它；评分/报告按原生维度走</td>
+      </tr>
+      <tr>
+        <td><b>跨体系对照</b><br>crosswalk 配置</td>
+        <td>可调变量（派生视图）</td>
+        <td>任意体系 → 默认体系的映射表（如某 benchmark 的“prompt injection” → default-agent 的 2.x）</td>
+        <td>纯配置，用户可改；不映射也能跑，仅统一报告时用到</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted)">铁律反转：<strong>不再要求“新 benchmark 必须映射到我们的两套维度”</strong>。原生体系是一等公民，我们的体系只是默认兜底与统一报告的参考系。新增/修改体系 = 改 <code>config/taxonomies/</code> 注册（可热插拔），不需要改 schema 代码，也不需要总体框架逐条审批。</p>
+  <div class="note" style="font-size:12.5px"><b>定义出处与外部可访问性</b>：两套默认体系的机器可读定义已落地于 <code>protocol/default_taxonomies.yaml</code> 与 <code>protocol/taxonomy_registry.yaml</code>；<strong>人读版 <code>docs/default_taxonomies.md</code> 尚未创建，待成员1 落地</strong>。外部协作者通过 <code>https://github.com/StrawberryTreea/agent-safety-harness</code> 即可访问机器可读定义，<strong>不依赖任何本地路径</strong>。定义原文出自《2026大模型与智能体安全测评白皮书》第 4 章；白皮书 PDF 与 668,820 条评测样本仅存于作者本地，<strong>不随仓库分发</strong>，正式引用以 PDF 原文为准。</div>
+
+  <h3>5.7 CI 集成契约</h3>
+  <ul style="font-size:13px">
+    <li><code>scripts/check_repo.py</code> 每次 PR 必须跑通四块合成链路（smoke），接不上立刻红灯。</li>
+    <li>契约变更（schema / protocol / 四门控 / 八门控）需总体框架（你）审批，且同步更新本看板第 5 章。</li>
+    <li>真实评测产出（成员2/3 接数据后）须带源哈希 + 固定索引（manifest 相对数据根），否则 CI 拒绝入仓。</li>
+  </ul>
+
+  <h3>5.8 LLM 角色与配置（统一到 <code>harness/config/llm_roles.json</code> · 密钥只走环境变量）</h3>
+  <div class="note">harness 要“接指令输入 + 自动行动 + 自进化”，底层都靠 LLM，但<strong>不同用途必须用不同角色、隔离配置</strong>。现有代码把“被评对象”散在 <code>harness/config/models.json</code> 与 <code>llm_eval</code> 的 MODELS 两处，且缺少“harness 大脑”与“生成器”两个角色。统一为三角色配置：每条目字段 <code>provider / base_url / api_key_env / model / temperature / max_tokens / timeout_seconds / system_prompt</code>，<strong>密钥只存环境变量名（api_key_env），绝不进文件</strong>。<b>关键架构决定（你定的）：CLI 与 harness_driver 都是“交互壳”，底层都调同一个 tool_registry 函数层；harness_driver 直接调 Python 函数，绝不 shell 出 CLI 字符串。</b></div>
+  <table>
+    <thead><tr><th>角色</th><th>含义</th><th>配置现状</th><th>字段用途</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>under_test</b><br>被评对象</td>
+        <td>被测的模型 / Agent（llm_qa 与 agent_execution 轨的目标）</td>
+        <td>✅ 已有，但散在两处：<code>llm_eval</code> 的 <code>evaluator_config.models</code> + <code>harness/config/models.json</code>（<code>--agent model:&lt;id&gt;</code>）。成员1 须合并到 llm_roles.json 的 <code>under_test</code> 组</td>
+        <td>被测 Agent 的 <code>system_prompt</code> 即它的“指令输入”，它据此自动调工具行动（这是**被测对象**的行动，不是 harness 的）</td>
+      </tr>
+      <tr>
+        <td><b>harness_driver</b><br>harness 大脑</td>
+        <td>解析自然语言指令 → 规划 → <b>直接调 tool_registry 函数</b>自主串联全流程（拉 benchmark→搭沙箱→跑评测→评分→分析→触发自进化）</td>
+        <td>🔴 <strong>缺失，需新增</strong>。落位 <code>agent_safety_harness/driver/</code>（与 adapters/evaluation/sandbox/importers 平级的子包）。当前 CLI 是手敲命令，无 driver LLM；要支持“自然语言描述即可行动”必须加此角色</td>
+        <td>接收用户高层自然语言指令（如“复现 AgentBench 并构建隔离环境跑一轮自进化”），产出结构化 plan 后逐条调注册函数执行；可带 <code>system_prompt</code> 约束它只调已批准函数（对应质量门“不部署/不自动晋升”）</td>
+      </tr>
+      <tr>
+        <td><b>generator</b><br>自进化生成器</td>
+        <td>Loop-A 出题（从失败生成更难测试题）/ Loop-B 未来“模型自动优化方法”</td>
+        <td>🟡 现混在 Loop-B 的“目标”配置里（<code>evolution/target_executor.py</code> 的 MODEL_CONFIG_FIELDS）。注意：当前 <code>target-evolution-contract.md</code> 明写“不使用 LLM 发明优化”——要改成用户要的“自动”，必须独立出此角色</td>
+        <td>吃 <code>failures.jsonl</code> 生成新 TaskSpec（Loop-A）或生成 candidate 配方（Loop-B）；与 under_test 物理隔离</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted)">铁律：<strong>under_test 与 generator 必须物理隔离</strong>——出题/优化用的 LLM 绝不能是被测对象，否则自进化结果自欺欺人。<b>harness_driver 默认只读已批准函数清单</b>（tool_registry 的白名单），不能越权执行未注册动作；它调函数而非 CLI 字符串，保持结构化数据在内存中流转、避免 subprocess 序列化损耗。密钥一律 <code>api_key_env</code> 引用环境变量，配置文件中不得出现任何 key 明文。</p>
+
+  <h3>5.8.1 harness_driver 落位与内部构成</h3>
+  <div class="note">「搭沙箱、跑评测、触发自进化」等所有“行动”本质是 tool_registry 里的一个函数，harness_driver 只负责<b>理解意图 + 选函数 + 按序调用 + 看返回决定下一步</b>，本身不重新实现任何引擎能力。内部构成（成员1/4 共建）：</div>
+  <table>
+    <thead><tr><th>子模块</th><th>职责</th><th>输入 → 输出</th></tr></thead>
+    <tbody>
+      <tr><td><code>agent_safety_harness/registry.py</code><br>（包级，CLI 与 driver 共用）</td><td>函数注册表：每个能力装饰注册为 <code>{name, input_schema, output_schema, fn}</code>；提供 <code>list()</code>（白名单给 driver 看）/ <code>call(name, **kwargs)</code></td><td>引擎函数 → 统一可调用目录</td></tr>
+      <tr><td><code>driver/planner.py</code></td><td>把自然语言/半结构化指令拆成有序函数调用 plan（可含分支：如“若 benchmark 无本地源则先 bench_intake”）</td><td>自然语言指令 + 已批准函数清单 → 结构化 plan（list of {fn, args}）</td></tr>
+      <tr><td><code>driver/executor.py</code></td><td>顺序/条件执行 plan，调 registry.call；遇到 build_sandbox 等耗时动作可挂后台并回传状态</td><td>plan → 各阶段产物（同函数层） + 自进化触发信号</td></tr>
+      <tr><td><code>driver/nl_bridge.py</code></td><td>调用 <code>harness_driver</code> 角色 LLM，把指令→plan；受 system_prompt 约束只产已批准函数</td><td>自然语言 → plan（json）</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted)">两种用法等价：手敲 <code>pipeline_cli bench-intake X &amp;&amp; build-sandbox X &amp;&amp; run-capture X</code>，与对 driver 说“复现 X 并构建隔离环境跑一轮”最终都落到同一批 registry 函数。前者给人用，后者给“想用自然语言的你/协作者”用，<b>底层零重复</b>。</p>
+
+</section>
+
+</div>
+<footer>
+  生成于 2026-11-03 · 基于仓库代码事实（Explore 子代理逐文件核实 + architecture.md / research_plan.md 交叉验证）· 状态色：✅ 已实现 / 🟡 部分·设计态 / 🔴 未实现·分支内
+</footer>
+</body>
+</html>
