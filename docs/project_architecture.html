@@ -750,13 +750,13 @@
       <tr>
         <td><b>默认体系 · LLM</b><br>taxonomy=default-llm</td>
         <td>默认兜底（我们提出）</td>
-        <td><code>safety_l1 × safety_l2</code>，<strong>19 个二级伤害维度</strong>（1–19）；定义在仓库内 <code>protocol/default_taxonomies.yaml</code>（含逐维定义）+ 编码注册表 <code>protocol/taxonomy_registry.yaml</code>；人读版 <code>docs/default_taxonomies.md</code>（待成员1 落地）</td>
+        <td><code>safety_l1 × safety_l2</code>，<strong>19 个二级伤害维度</strong>（1–19）；定义在仓库内 <code>protocol/default_taxonomies.yaml</code>（含逐维定义），编码注册表 <code>protocol/taxonomy_registry.yaml</code>，人读版 <code>docs/default_taxonomies.md</code></td>
         <td>benchmark 无原生体系时，题目归到该体系，每模型按 19 维出分</td>
       </tr>
       <tr>
         <td><b>默认体系 · Agent</b><br>taxonomy=default-agent</td>
         <td>默认兜底（我们提出）</td>
-        <td>5 大一级 × 多级二级（1.1–5.2，共 14 个二级风险）；定义在仓库内 <code>protocol/default_taxonomies.yaml</code>（含逐维定义）；人读版 <code>docs/default_taxonomies.md</code>（待成员1 落地）</td>
+        <td>5 大一级 × 多级二级（1.1–5.2，共 14 个二级风险）；定义在仓库内 <code>protocol/default_taxonomies.yaml</code>（含逐维定义），人读版 <code>docs/default_taxonomies.md</code></td>
         <td>benchmark 无原生体系时，按 5 域出“执行安全率”</td>
       </tr>
       <tr>
@@ -774,7 +774,7 @@
     </tbody>
   </table>
   <p style="font-size:12.5px;color:var(--muted)">铁律反转：<strong>不再要求“新 benchmark 必须映射到我们的两套维度”</strong>。原生体系是一等公民，我们的体系只是默认兜底与统一报告的参考系。新增/修改体系 = 改 <code>config/taxonomies/</code> 注册（可热插拔），不需要改 schema 代码，也不需要总体框架逐条审批。</p>
-  <div class="note" style="font-size:12.5px"><b>定义出处与外部可访问性</b>：两套默认体系的机器可读定义已落地于 <code>protocol/default_taxonomies.yaml</code> 与 <code>protocol/taxonomy_registry.yaml</code>；<strong>人读版 <code>docs/default_taxonomies.md</code> 尚未创建，待成员1 落地</strong>。外部协作者通过 <code>https://github.com/StrawberryTreea/agent-safety-harness</code> 即可访问机器可读定义，<strong>不依赖任何本地路径</strong>。定义原文出自《2026大模型与智能体安全测评白皮书》第 4 章；白皮书 PDF 与 668,820 条评测样本仅存于作者本地，<strong>不随仓库分发</strong>，正式引用以 PDF 原文为准。</div>
+  <div class="note" style="font-size:12.5px"><b>定义出处与外部可访问性</b>：两套默认体系的逐维定义已整理进仓库 <code>protocol/default_taxonomies.yaml</code>（机器可读）与 <code>docs/default_taxonomies.md</code>（人读版），外部协作者通过 <code>https://github.com/StrawberryTreea/agent-safety-harness</code> 即可访问，<strong>不依赖任何本地路径</strong>。定义原文出自《2026大模型与智能体安全测评白皮书》第 4 章；白皮书 PDF 与 668,820 条评测样本仅存于作者本地，<strong>不随仓库分发</strong>，正式引用以 PDF 原文为准。</div>
 
   <h3>5.7 CI 集成契约</h3>
   <ul style="font-size:13px">

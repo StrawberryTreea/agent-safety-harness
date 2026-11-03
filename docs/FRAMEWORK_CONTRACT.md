@@ -129,7 +129,7 @@
 
 **铁律**：不再要求"新 benchmark 必须映射到我们的两套维度"。原生体系是一等公民，我们的体系只是默认兜底与统一报告参考系。新增/修改体系 = 改 `config/taxonomies/` 注册（可热插拔），不需要改 schema 代码，也不需要总体框架逐条审批。
 
-> **文件状态**：机器可读定义已落地于 `protocol/default_taxonomies.yaml` 与 `protocol/taxonomy_registry.yaml`。**人读版 `docs/default_taxonomies.md` 尚未创建，由成员1 落地**（白皮书 PDF 与 668,820 条样本仅存于作者本地，不随仓库分发，正式引用以 PDF 原文为准）。
+> **文件状态**：机器可读定义已落地于 `protocol/default_taxonomies.yaml` 与 `protocol/taxonomy_registry.yaml`；**人读版 `docs/default_taxonomies.md` 也已落地**（含逐维中文定义）。白皮书 PDF 与 668,820 条样本仅存于作者本地，不随仓库分发，正式引用以 PDF 原文为准。
 
 ---
 
@@ -325,7 +325,7 @@
 | `protocol/canonical_schema.yaml` | canonical 数据字段定义 | ✅ 存在 |
 | `protocol/taxonomy_registry.yaml` | 默认 LLM 8×19 维度编码 | ✅ 存在 |
 | `protocol/default_taxonomies.yaml` | 默认 LLM/Agent 体系自包含定义 | ✅ 存在 |
-| `docs/default_taxonomies.md` | 默认体系人读版 | 🔴 待成员1 落地 |
+| `docs/default_taxonomies.md` | 默认体系人读版 | ✅ 存在 |
 | `scripts/source_intake.py` | Phase 1 源接入 | ✅ 存在 |
 | `scripts/canonicalize_datasets.py` | Phase 2 规范化 | ✅ 存在 |
 | `scripts/result_analysis.py` | 四轨聚合 + 分析四件套 | ✅ 已实现 |
