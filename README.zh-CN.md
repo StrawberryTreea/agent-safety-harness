@@ -95,8 +95,8 @@ flowchart TB
 从仓库根目录运行。当前验收平台为 Windows PowerShell、Python 3.11 与 3.14；本地自测不需要 API key、产品 CLI、Docker 或下载数据集。
 
 ```powershell
-git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
-cd llm-safety-eval-research-pipeline
+git clone https://github.com/StrawberryTreea/agent-safety-harness.git
+cd agent-safety-harness
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe scripts/check_repo.py

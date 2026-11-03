@@ -1,5 +1,5 @@
 ---
-name: llm-safety-eval-research-pipeline
+name: agent-safety-harness
 description: Route this repository's LLM and Agent safety evaluation, protocol, data governance, native execution and failure-analysis work using existing contracts.
 ---
 

@@ -95,8 +95,8 @@ flowchart TB
 Run from the repository root. Validated platform: Windows PowerShell with Python 3.11 and 3.14. Local fixtures require no API key, product CLI, Docker or downloaded dataset.
 
 ```powershell
-git clone https://github.com/StrawberryTreea/llm-safety-eval-research-pipeline.git
-cd llm-safety-eval-research-pipeline
+git clone https://github.com/StrawberryTreea/agent-safety-harness.git
+cd agent-safety-harness
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe scripts/check_repo.py
