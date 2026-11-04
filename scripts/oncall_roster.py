@@ -128,8 +128,13 @@ def resolve_token(explicit: Optional[str]) -> Optional[str]:
     return token or None
 
 
+def api_base() -> str:
+    """Base URL for GitHub API calls. Overridable for tests via ONCALL_API_BASE."""
+    return os.environ.get("ONCALL_API_BASE", "https://api.github.com").rstrip("/")
+
+
 def api_get(path: str, token: Optional[str], params: Optional[Dict[str, Any]] = None) -> Any:
-    url = f"https://api.github.com{path}"
+    url = f"{api_base()}{path}"
     if params:
         url = f"{url}?{urllib.parse.urlencode(params)}"
     request = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json",
@@ -142,7 +147,7 @@ def api_get(path: str, token: Optional[str], params: Optional[Dict[str, Any]] = 
 
 
 def api_request(method: str, path: str, token: Optional[str], payload: Optional[Dict[str, Any]] = None) -> Any:
-    url = f"https://api.github.com{path}"
+    url = f"{api_base()}{path}"
     data = json.dumps(payload).encode("utf-8") if payload is not None else None
     request = urllib.request.Request(url, data=data, method=method,
                                      headers={"Accept": "application/vnd.github+json",

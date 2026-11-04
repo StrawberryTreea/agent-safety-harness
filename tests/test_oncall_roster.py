@@ -3,6 +3,7 @@ import json
 import sys
 import tempfile
 import unittest
+import urllib.error
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -201,6 +202,80 @@ class JoinDateBaselineTests(unittest.TestCase):
         rows = oncall_roster.evaluate(roster, {"m": now - timedelta(days=2)}, now)
         self.assertEqual(rows[0]["inactive_basis"], "activity")
         self.assertEqual(rows[0]["inactive_days"], 2)
+
+
+class ApiLayerTests(unittest.TestCase):
+    """Exercise the GitHub call layer against a local stub server."""
+
+    def setUp(self):
+        import http.server
+        import os
+        import threading
+
+        calls = []
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+
+            def _respond(self):
+                calls.append((self.command, self.path))
+                body = json.dumps([
+                    {"number": 3, "title": "P0 task", "assignee": {"login": "deep-fry-xiaopengyou"}},
+                    {"number": 9, "title": "a PR in disguise", "pull_request": {"url": "x"}},
+                ]).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            do_GET = _respond
+            do_POST = _respond
+            do_PATCH = _respond
+
+        self.server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.calls = calls
+        self.base = f"http://127.0.0.1:{self.server.server_address[1]}"
+        self.previous_base = os.environ.get("ONCALL_API_BASE")
+        os.environ["ONCALL_API_BASE"] = self.base
+
+    def tearDown(self):
+        import os
+        if self.previous_base is None:
+            os.environ.pop("ONCALL_API_BASE", None)
+        else:
+            os.environ["ONCALL_API_BASE"] = self.previous_base
+        self.server.shutdown()
+        self.server.server_close()
+
+    def test_open_issues_excludes_pull_requests(self):
+        issues = oncall_roster.open_issues_for("owner/repo", "someone", None)
+        self.assertEqual([issue["number"] for issue in issues], [3])
+
+    def test_reassign_issue_patches_then_comments(self):
+        result = oncall_roster.reassign_issue("owner/repo", 3, "DylanWu6", None, "handover note")
+        self.assertTrue(result)
+        methods = [method for method, _ in self.calls]
+        self.assertIn("PATCH", methods)
+        self.assertIn("POST", methods)
+        patch_path = next(path for method, path in self.calls if method == "PATCH")
+        self.assertIn("/issues/3", patch_path)
+
+    def test_reassign_issue_reports_failure(self):
+        original = oncall_roster.api_request
+
+        def boom(*args, **kwargs):
+            raise urllib.error.HTTPError("u", 403, "Forbidden", None, None)
+
+        oncall_roster.api_request = boom
+        try:
+            result = oncall_roster.reassign_issue("owner/repo", 3, "DylanWu6", None, "note")
+        finally:
+            oncall_roster.api_request = original
+        self.assertFalse(result)
 
 
 class BoardRenderingTests(unittest.TestCase):
