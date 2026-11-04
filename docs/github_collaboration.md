@@ -2,10 +2,21 @@
 
 > **仓库**：https://github.com/StrawberryTreea/agent-safety-harness （公开）
 > **适用对象**：王浩、刘轲、辰浩、一迪、伦锋
-> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md)
+> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md) · **[决策权与缺席机制](governance_and_continuity.md)**
 
 这份文档回答一个具体问题：**5 个人同时改一个仓库，怎么用 GitHub 才不会乱。**
 每一条规则都对应仓库里已经配置好的机制，不是"应该这样做"的口号。
+
+---
+
+## 0. 遇到麻烦先看这里
+
+| 情况 | 怎么办 | 详见 |
+|---|---|---|
+| **你自己临时有事（几天）** | 什么都不用改配置。3-owner 设计保证你的目录仍有人能审。把 open issue 改派给你的代理人即可。 | [第 1.1 节](governance_and_continuity.md#2-有人临时有事几天内回来) |
+| **某人长期不上线（>30 天）** | 跑 `python scripts/oncall_roster.py --apply`，自动改派 issue。CODEOWNERS 条目替换与权限移除由王浩手动做。 | [第 3 节](governance_and_continuity.md#3-有人长期不上线超过-30-天) |
+| **王浩需要拍板但审批没人** | 王浩是唯一 admin，可强制合并。但必须在 PR 里写清为什么破例。 | [第 1 节](governance_and_continuity.md#1-王浩的绝对权具体指什么) |
+| **PR 卡住等不到 approve** | 看该目录的 CODEOWNERS，找列表里的另一位（每人配 3 个 owner）。 | 本文第 3 节 |
 
 ---
 
@@ -21,6 +32,7 @@
 
 **谁能合并到 `main`**：只有走 PR 且通过保护规则的人（见第 3 节）。
 **谁都不能直接推 `main`** —— 保护规则对 admin 同样生效（`enforce_admins: true`），王浩自己也要走 PR。
+（王浩作为唯一 admin，保留强制合并与关闭保护规则的能力，用于应急；用的时候要在 PR 里留痕。细则见[决策权与缺席机制](governance_and_continuity.md#1-王浩的绝对权具体指什么)。）
 
 **谁能改契约**：改 `schema.py` / `registry.py` / `protocol/` 的 PR，CODEOWNERS 会自动要求 `@StrawberryTreea` 批准。
 
@@ -90,10 +102,10 @@ type(scope): 描述
 >
 > | 你改的目录 | 自动找谁审 |
 > |---|---|
-> | `harness/src/agent_safety_harness/`（除 driver）、`harness/config/`、`scripts/source_intake.py` | 刘轲 + 王浩 |
-> | `federated_asr_benchmark/` | 辰浩 + 王浩 |
-> | `llm_eval/`、`scripts/result_analysis.py` | 一迪 + 王浩（`result_analysis.py` 另有伦锋） |
-> | `evolution/`、`orchestrator/`、`harness/src/agent_safety_harness/driver/` | 伦锋 + 刘轲 + 王浩 |
+> | `harness/src/agent_safety_harness/`（除 driver）、`harness/config/`、`scripts/source_intake.py` | 刘轲 + 伦锋 + 王浩 |
+> | `federated_asr_benchmark/` | 辰浩 + 一迪 + 王浩 |
+> | `llm_eval/`、`scripts/result_analysis.py` | 一迪 + 刘轲 + 王浩 |
+> | `evolution/`、`orchestrator/`、`harness/src/agent_safety_harness/driver/` | 伦锋 + 一迪 + 刘轲 + 王浩 |
 > | `docs/`、`protocol/`、`references/`、`scripts/` 其余、`tests/` | 王浩 + 一迪 + 伦锋 |
 >
 > **实测已验证**（2026-11-04）：改 `docs/` → 自动请求 `DylanWu6` + `321ddi`；
@@ -102,17 +114,19 @@ type(scope): 描述
 > 所以你看到只有 1 个 owner 被请求时，先看自己是不是那个 owner。
 
 
-> **为什么每条路径都有 2 个以上 owner**：仓库开了 `require_last_push_approval`（**作者不能 approve 自己最后推的代码**）。
+> **为什么每条路径都有 3 个 owner**：仓库开了 `require_last_push_approval`（**作者不能 approve 自己最后推的代码**）。
 > 如果某个目录只有 1 个 owner，就会死锁——比如刘轲改 `harness/`，而他自己就是唯一 CODEOWNER，没人能批他的 PR。
-> 所以每条路径都配了「主 owner + 兜底评审人」，保证你的 PR 一定有人能批。
-> 兜底人选是这么定的：改自己的目录时，找**该路径的另一位 owner**；不确定时找王浩。
+> 配 2 个 owner 时，如果这 2 个里恰好一个是 PR 作者，同样可能没人能批。
+> **配 3 个之后，任意 1 人缺席（有事、长期不上线）都还剩 2 人可批，不需要临时改任何配置。**
+> 第 3 个 owner 就是该成员的**代理人**（见 `docs/roster.json`），接手其未完成的工作。
 >
 > ✅ **CODEOWNERS 已进 `main`（PR #8，2026-11-04），自动指派已实测生效，无需任何手工操作。**
+> ✅ **覆盖度自检已接入 CI**（`在岗与代理覆盖度` 为合并必需项）：任何一条路径 owner 少于 3 人，
+> 或 CODEOWNERS 里的账号不在名册中，CI 直接失败——保证"有人缺席就卡死"这种事不会悄悄发生。
 >
 > **只有王浩自己的 PR 特殊**：因为王浩也是所有目录的兜底 owner，而规则禁止作者批准自己最后推的 commit，
 > 所以王浩提的 PR 必须等 **321ddi 或 DylanWu6** 中的另一位点同意（GitHub 会自动 @ 上他们）。
-> 其他人提的 PR 不受此影响——只要不是该目录的唯一 owner，都能自己找到人批。
->
+> 其他人提的 PR 不受此影响——只要不是该目录的唯一 owner，都能自己找到人批。>
 > 历史备注（已解决，留作记录）：PR #8 是**引入门禁本身的那一个 PR**，
 > 它的 base 分支还没有 CODEOWNERS，所以 GitHub 不会自动指派评审人，
 > 同时它又被「必须 CODEOWNER approve」卡住——这是 bootstrap 死锁。
@@ -321,6 +335,7 @@ python -m venv .venv
 | `driver` 编排 / `nl_bridge` | 伦锋 | @DylanWu6 |
 | 产品 CLI / preflight / ASR | 辰浩 | @ennnnn3232 |
 | GitHub 本身的问题（权限、CI、合并卡住） | 王浩 | Issue，标 `type:chore` |
+| **某人长期不上线，工作要移交** | **跑巡检脚本**，不用问人 | `python scripts/oncall_roster.py --apply`，见[决策权与缺席机制](governance_and_continuity.md#3-有人长期不上线超过-30-天) |
 
 ---
 
@@ -341,6 +356,10 @@ python -m venv .venv
 | 标签体系（23 个） | ✅ | Issues → Labels |
 | 里程碑（3 个） | ✅ | Issues → Milestones |
 | CODEOWNERS 目录归属 | ✅ | `.github/CODEOWNERS` |
+| **CODEOWNERS 三 owner（任一人缺席不卡死）** | ✅ | 同上 + `docs/roster.json` |
+| **名册与覆盖度 CI 自检** | ✅ | `.github/workflows/portable-checks.yml` 的 `在岗与代理覆盖度` |
+| **在岗巡检与自动改派** | ✅ | `scripts/oncall_roster.py` |
 | PR 标题 / 分支名格式校验 | ✅ | `.github/workflows/pr-policy.yml` |
 | PR 新增行密钥 / 路径 / 邮箱扫描 | ✅ | 同上 |
 | 全部 5 项检查设为合并必需 | ✅ | Settings → Branches |
+| **决策权 / 代理 / 缺席机制文档** | ✅ | `docs/governance_and_continuity.md` |

@@ -17,3 +17,20 @@ jobs:
         with:
           name: acceptance-logs
           path: runs/ci-check/
+
+  oncall-roster:
+    name: 在岗与代理覆盖度
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: 检查名册与 CODEOWNERS 覆盖度
+        run: |
+          python scripts/oncall_roster.py --out runs/oncall --offline
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oncall-report
+          path: runs/oncall/

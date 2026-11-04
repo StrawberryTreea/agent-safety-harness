@@ -18,6 +18,9 @@
 [benchmark 获取指南](benchmark_acquisition.md)（从哪下、下到哪、怎么登记与验收）。
 测试阶段先用免费 API 打通管道，全部跑通后再用优质模型做贯通测试——免费端点见 `harness/config/free_endpoints.json`。
 
+**任何人临时有事、或长期不上线怎么办**（含王浩的最终决定权与代理人接手规则）：
+**[决策权、缺席与长期不上线](governance_and_continuity.md)** → [名册数据](roster.json)。
+
 ## 按工作选择文档
 
 | 工作 | 文档 |
@@ -26,6 +29,7 @@
 | **不知道 pipeline 是什么、在哪、怎么跑** | **[Pipeline 全景说明](pipeline_guide.md)**（**总入口、11 个子命令、四条轨、数据流向、产物目录、代码在哪**） |
 | **第一次分工 / 拿任务** | **[上手清单](day0_onboarding.md)**、**[四人分工与推进顺序](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
 | **提交代码 / 提 PR / 找谁审** | **[GitHub 协作规范](github_collaboration.md)**（权限矩阵、分支模型、PR 流程、CODEOWNERS、泄密红线、命令速查） |
+| **自己有事 / 别人长期不上线 / 谁来接手** | **[决策权、缺席与长期不上线](governance_and_continuity.md)**（王浩的最终决定权、三 owner 覆盖、代理人接手与自动改派） |
 | **第一轮跑哪个 benchmark、怎么拿数据** | **[benchmark 获取指南](benchmark_acquisition.md)**、**[跑通样例选型](rampup_samples.md)** |
 | **免费 API 端点（先用免费档跑通）** | [免费端点配置](../harness/config/free_endpoints.json) |
 | 回路A当前代码与本地验证 | [基础实现与限制](integration/loop_a_implementation.md) |

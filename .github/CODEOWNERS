@@ -1,54 +1,62 @@
 # 代码所有者：按目录指派自动评审人
 # 依据：docs/work_assignment.md 的分工表（2026-11 拍板）
+# 依据：docs/roster.json 的在岗与代理表（2026-11-04 建立）
 #
 # 规则：
 #   1. 后面的规则覆盖前面的规则；未列出的文件由 @StrawberryTreea（王浩）兜底。
-#   2. 每条路径至少 2 个 owner。原因：仓库开启了 require_last_push_approval
-#      （作者不能 approve 自己最后推的代码），只有 1 个 owner 时会死锁——
-#      刘轲改 harness/ 而他自己就是唯一 CODEOWNER，没人能批。
-#      所以每条路径都配「主 owner + 一个兜底评审人」。
+#   2. 每条路径配 3 个 owner：**主 owner + 代理人 + 王浩**。
+#      为什么要 3 个：
+#        - require_last_push_approval（作者不能 approve 自己最后推的代码）
+#          → 只有 1 个 owner 时必然死锁（作者就是唯一 owner，没人能批）。
+#        - 成员可能有事 / 长期不上线。配 3 个后，
+#          **任意 1 人缺席，另 2 人仍能完成评审与合并**，不需要临时改配置。
+#        - 代理人来自 docs/roster.json 的 backup 字段：
+#          接手该成员未完成的工作（接 issue、继续做），但不代签 approve。
+#   3. 王浩是唯一 admin，持有绝对权（可绕过门禁直接合并/改配置）。
+#      细则见 docs/governance_and_continuity.md。
 #
 # 生效条件：main 已开启 require_code_owner_reviews，改这些目录必须由对应 owner 批准。
 
-# ---------- 默认兜底：王浩 + 一迪（保证任何文件都有人能批，不会卡死） ----------
-*                                @StrawberryTreea @321ddi
+# ---------- 默认兜底：王浩 + 一迪 + 伦锋（保证任何文件都有人能批，不会卡死） ----------
+*                                @StrawberryTreea @321ddi @DylanWu6
 
-# ---------- 刘轲 · 评测引擎组（harness 核心 + 统一函数层） ----------
-/harness/src/agent_safety_harness/           @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/evaluation/ @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/adapters/   @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/importers/  @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/sandbox/    @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/runners.py  @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/registry.py @deep-fry-xiaopengyou @DylanWu6
-/harness/src/agent_safety_harness/schema.py   @deep-fry-xiaopengyou @StrawberryTreea
-/harness/src/agent_safety_harness/llm.py      @deep-fry-xiaopengyou @StrawberryTreea
-/harness/config/                              @deep-fry-xiaopengyou @StrawberryTreea
-/scripts/source_intake.py                     @deep-fry-xiaopengyou @StrawberryTreea
+# ---------- 刘轲 · 评测引擎组（harness 核心 + 统一函数层）· 代理人：伦锋 ----------
+/harness/src/agent_safety_harness/           @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/evaluation/ @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/adapters/   @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/importers/  @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/sandbox/    @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/runners.py  @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/registry.py @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/schema.py   @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/src/agent_safety_harness/llm.py      @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/harness/config/                              @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
+/scripts/source_intake.py                     @deep-fry-xiaopengyou @DylanWu6 @StrawberryTreea
 
-# ---------- 辰浩 · 产品评测组（完整产品 / 系统原生评测） ----------
-/federated_asr_benchmark/                     @ennnnn3232 @StrawberryTreea
+# ---------- 辰浩 · 产品评测组（完整产品 / 系统原生评测）· 代理人：一迪 ----------
+/federated_asr_benchmark/                     @ennnnn3232 @321ddi @StrawberryTreea
 
-# ---------- 一迪 · LLM QA + 四轨统一分析 ----------
-/llm_eval/                                    @321ddi @StrawberryTreea
-/scripts/result_analysis.py                   @321ddi @DylanWu6
+# ---------- 一迪 · LLM QA + 四轨统一分析 · 代理人：刘轲 ----------
+/llm_eval/                                    @321ddi @deep-fry-xiaopengyou @StrawberryTreea
+/scripts/result_analysis.py                   @321ddi @deep-fry-xiaopengyou @StrawberryTreea
 
-# ---------- 伦锋 · 自进化组 + driver 编排 + CI ----------
-/evolution/                                   @DylanWu6 @StrawberryTreea
-/orchestrator/                                @DylanWu6 @StrawberryTreea
-/harness/src/agent_safety_harness/driver/     @DylanWu6 @deep-fry-xiaopengyou @StrawberryTreea
+# ---------- 伦锋 · 自进化组 + driver 编排 + CI · 代理人：一迪 ----------
+/evolution/                                   @DylanWu6 @321ddi @StrawberryTreea
+/orchestrator/                                @DylanWu6 @321ddi @StrawberryTreea
+/harness/src/agent_safety_harness/driver/     @DylanWu6 @321ddi @deep-fry-xiaopengyou @StrawberryTreea
 
-# ---------- 王浩 · 契约、协议、文档、公共脚本 ----------
+# ---------- 王浩 · 契约、协议、文档、公共脚本 · 代理人：一迪（仲裁代理） ----------
 # 王浩自己改这些文件时，需要一迪或伦锋来批（不能自己批自己的 PR）
 /docs/                                        @StrawberryTreea @321ddi @DylanWu6
-/protocol/                                    @StrawberryTreea @DylanWu6
-/references/                                  @StrawberryTreea @321ddi
-/agents/                                      @StrawberryTreea @ennnnn3232
-/scripts/canonical_validate.py                @StrawberryTreea @321ddi
-/scripts/canonicalize_datasets.py             @StrawberryTreea @321ddi
-/scripts/check_repo.py                        @StrawberryTreea @DylanWu6
-/scripts/pipeline_cli.py                      @StrawberryTreea @DylanWu6
-/scripts/protocol_manager.py                  @StrawberryTreea @321ddi
-/scripts/run_deepseek_smoke.py                @StrawberryTreea @DylanWu6
-/scripts/run_deepseek_pilot.py                @StrawberryTreea @321ddi
-/tests/                                       @StrawberryTreea @DylanWu6
+/protocol/                                    @StrawberryTreea @DylanWu6 @321ddi
+/references/                                  @StrawberryTreea @321ddi @DylanWu6
+/agents/                                      @StrawberryTreea @ennnnn3232 @321ddi
+/scripts/canonical_validate.py                @StrawberryTreea @321ddi @DylanWu6
+/scripts/canonicalize_datasets.py             @StrawberryTreea @321ddi @DylanWu6
+/scripts/check_repo.py                        @StrawberryTreea @DylanWu6 @321ddi
+/scripts/pipeline_cli.py                      @StrawberryTreea @DylanWu6 @321ddi
+/scripts/protocol_manager.py                  @StrawberryTreea @321ddi @DylanWu6
+/scripts/run_deepseek_smoke.py                @StrawberryTreea @DylanWu6 @321ddi
+/scripts/run_deepseek_pilot.py                @StrawberryTreea @321ddi @DylanWu6
+/scripts/oncall_roster.py                     @StrawberryTreea @321ddi @DylanWu6
+/tests/                                       @StrawberryTreea @DylanWu6 @321ddi
