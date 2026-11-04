@@ -28,7 +28,7 @@
 | `federated_asr_benchmark/` | ✅ 已实大半 | `product_eval/` 下 8+ adapter（agentdojo/agentdyn/agentharm/agentleak/agentpoison/injecagent/msb/saber…）+ `run_product.py`/`aggregate_results.py`/`build_case_index.py`(5,384 条)/`preflight.py`/`score_*.py` |
 | `llm_eval/multi_model_rule_eval_prompt_only.py` | ✅ 已实 | 规则判分执行器（可直接接外部 benchmark 格式） |
 | `scripts/result_analysis.py` | ✅ 已实 | 四轨归一 + **八门控（GATES 元组已内置）** + 四件套（observations/failures/invalids/candidate_plans） |
-| `evolution/` 目录 | 🟡 部分 | 控制面框架在；Loop-A 分支（`loop-a-local-harness`）未合；Loop-B 的 LLM 生成式优化未接 |
+| `evolution/` 目录 | ✅ 已实（Loop-A 已合入 main，提交 `5527f81`） | 控制面 + 回路 A 落地：`orchestrator/`（budget/controller/execution_guard/fixture_cycle/registry/replay/workers）+ `evolution/`（admission/contracts/partitions/qualification/metrics 等）+ `protocol/loop_a_contracts.schema.json`；`pipeline.py loop-a plan` 实跑会诚实报出 5 个 blocker（协议未冻结、主指标未确认、被测/生成器未固定、付费预算未配置、调度与隔离未注册）——**这就是伦锋 P1 要逐个消解的清单** |
 | `driver/planner.py executor.py nl_bridge.py` | 🟡 骨架 | 编排逻辑占位，需接真实 registry 跑通 |
 
 **铁律（分发前再强调一次）**：5 标准产物（TaskSpec / TraceEvent / ResultSpec / 分析四件套 / 进化 manifest）是 4 人衔接的"铁轨"，所有人严格按 `schema.py` 与 `FRAMEWORK_CONTRACT.md` 第 5 章产出，否则代码接不上。分类体系（`taxonomy_ref`）与判分方法（`eval_method`）是**可配置变量**，不是写死。
@@ -52,7 +52,8 @@
 2. 优质模型的贯通测试必须**全量、可复现**（带源哈希 + 固定索引），且只在 P2 阶段启动。
 3. 最终对外报告/论文的数据，**只能来自优质模型贯通测试**，免费档的跑分不得混进结论。
 4. 模型 profile 由 `config/llm_roles.json`（under_test / harness_driver / generator 三角色）统一配置，切换"免费↔优质"只改配置、不改动 schema 与业务代码。
-5. **免费端点配置**已备好 `harness/config/free_endpoints.json`（10 个 profile：智谱 glm-4-flash / 硅基流动 Qwen2.5-7B / Groq / OpenRouter / Gemini / NVIDIA NIM / GitHub Models / 本地 Ollama 等），全部 OpenAI 兼容 → **零代码接入**，直接复制进 `config/models.json` 即可用。
+5. **免费端点配置**已备好 `harness/config/free_endpoints.json`（11 个 profile：智谱 glm-4-flash / 硅基流动 Qwen2.5-7B / Groq / OpenRouter / Gemini / NVIDIA NIM / GitHub Models / 本地 Ollama 等），全部 OpenAI 兼容 → **零代码接入**，直接复制进 `config/models.json` 即可用。
+6. **key 各自申请、各自测试**：谁跑评测谁自己申请对应 `api_key_env` 的 key，不等统一发放（王浩已确认）。**key 只写环境变量，不进仓库、不进配置文件、不发群里。**
 
 ---
 
@@ -83,6 +84,7 @@
 | 优先级 | 具体功能 | 产出 / 完成标准 | 衔接 |
 |---|---|---|---|
 | **P0** | 真实数据接入 + 真实跑出结果：取 ≥1 个真实产品 runtime/CLI + BYOK 凭证（受控 profile 锁 DeepSeek V4 Flash；Codex 0.122.0 / Claude Code 2.1.195 / Qoder 1.0.48 锁定版本），跑 `run_product.py`/`run_product_batch.py` + `aggregate_results.py` | 至少 1 个真实产品在真实数据上出**可复现 ASR**，带源哈希 + 固定索引入仓 | 产物 `failures.jsonl` → 伦锋（进化种子） |
+| **P0** | **被测产品 CLI 的安装/登录/版本确认由辰浩本人负责**（Codex CLI / Claude Code / Qoder 等），不需报备；版本须与 `product_registry.json` 的 pin 一致 | CLI 就绪 + preflight 通过 | 王浩（仅在需要经费/账号时协助） |
 | **P0** | 维护 `product_registry.json` / `benchmark_registry.json` 与各 benchmark 原生 scorer 的**版本 pin + preflight 证据**（可复现，preflight 不过不许跑） | preflight 通过记录入库 | 伦锋、王浩（复现审计） |
 | **P1** | **把"接入一个被测系统"做成注册式自动化机制**：新增系统 = 注册一个 adapter + 一条 product profile（runtime/CLI 形态、BYOK 凭证、版本 pin）；harness 据此（结合刘轲 `build_sandbox`）自动构建隔离 runtime、自动注入参数与凭证隔离 | 加系统只需加 adapter+profile，无需手工改代码 | 依赖刘轲 `build_sandbox`（可先用现有 BYOK 包装，非硬阻塞） |
 | **P1** | 扩展"完整产品/系统"定义：把**学术界自研 Agent**（有真实 CLI/运行时/API 入口）纳入可测对象 | 至少 1 个学术 Agent 端到端跑通 | 伦锋 |
@@ -124,7 +126,7 @@
 | **P0** | driver 端到端跑通：planner(指令→plan) → executor(顺序/条件执行，dry_run 安全模式) → 调 registry 真实函数 | `python -m agent_safety_harness.driver` 能跑通一条真实 plan（非占位） | 依赖刘轲（registry 真实现） |
 | **P0** | `nl_bridge.py` 白名单验证：自然语言 → plan，强制只调已批准函数（不 shell CLI 字符串） | 白名单拦截测试通过 | 王浩（安全边界） |
 | **P0** | 把 `evolve` stub 接 `evolution/`（先返回 pending/存档，等种子） | `evolve` 非占位 | 消费一迪/辰浩的 `failures.jsonl` |
-| **P1** | Loop-A（测试集进化）合入/实做：失败观察 → 八门控（source_and_license/replay/benign_solvability/private_oracle/deduplication/diversity/holdout_isolation/review）→ 出新测试集；**人工审批闸门必留** | 闭环可跑 + 审批节点 | 依赖一迪/辰浩 `failures.jsonl` |
+| **P1** | Loop-A 实做：**消解 `pipeline.py loop-a plan` 报出的 5 个 blocker**——① `protocol_not_frozen`（冻结 loop_a_experiment.json 协议）② `primary_metric_not_confirmed`（确认主指标）③ `target_or_generator_not_fixed`（固定被测对象与生成器）④ `paid_budget_not_configured`（配置预算与闸门）⑤ `real_dispatcher_and_isolation_qualification_not_registered`（注册真实调度与隔离）。**代码已在 main（提交 `5527f81`），不需要再做分支合并**；**八门控 + 人工审批闸门必留** | `formal_ready` 从 false 逐项变 true，**且每项都有可核查证据** | 依赖一迪/辰浩 `failures.jsonl` |
 | **P1** | Loop-B（方法进化）控制面接 LLM 生成式优化（受控、带人工在环），**禁止全自动** | 控制面 + 审批流 | 王浩（研究赌注标注） |
 | **P2** | CI：四轨 schema 校验 + registry 签名变更告警 + 进化 manifest 落库 | CI 绿 + 看板 | 刘轲 |
 
@@ -169,7 +171,7 @@
 - 刘轲：新增 ≥2 benchmark（第二轮：InjecAgent / MSB），harden `build_sandbox`。
 - 辰浩：注册式自动化接入（adapter+profile），扩到学术自研 Agent。
 - 一迪：`analyze` stub 接 `result_analysis`；四轨聚合质量校验；**自有 668,820 题聚合集（我们自建的 19 维体系）**接外部 benchmark 口径做交叉映射。
-- 伦锋：Loop-A 合入/实做（八门控 + 人工审批）；Loop-B 控制面接 LLM 生成（带闸门）。
+- 伦锋：Loop-A 消解 5 个 blocker（协议冻结/主指标确认/被测与生成器固定/预算配置/调度隔离注册）；Loop-B 控制面接 LLM 生成（带闸门）。
 
 ### 第 4 周+（P2 · 自进化研究赌注 + CI/看板 — 此阶段启动优质模型贯通测试）
 - **优质模型贯通测试**：切到 `config/llm_roles.json` 的旗舰/优质 profile，对全部已打通的管道做全量、可复现出分（带源哈希 + 固定索引）；**只有这阶段的产物才进白皮书/论文**。

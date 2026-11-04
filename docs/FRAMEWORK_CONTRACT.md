@@ -78,7 +78,7 @@
 - 结构契约按模态走：llm 自动忽略 tools/initial_state/user_goal；agent 必须有 user_goal 或 tools/initial_state。
 - 分类体系不写死：维度标签经 `taxonomy_ref` 引用，benchmark 原生体系直接注册引用即可，不必套默认体系。
 
-> **代码现状 gap（刘轲 必须落地）**：当前 `schema.py` 的 TaskSpec 仍是 **agent-only**（含 `user_goal`/`tools`/`initial_state`，缺 `modality` 与 LLM 字段）。刘轲 须：① `modality` 改为可注册可扩展枚举（默认集存于配置而非关闭的 Literal）；② 新增 LLM 模态字段，**维度不再硬编码进 schema，改由 `taxonomy_ref` 引用 `config/taxonomies`**；③ `from_record` 按 modality 校验必填；④ 所有旧 adapter/importer 的 TaskSpec 产出须补 `modality=agent`。这是 4 人开工前必须先落地的契约基础。
+> **代码现状 gap（刘轲 必须落地 · 王浩已确认归属）**：当前 `schema.py` 的 TaskSpec 仍是 **agent-only**（含 `user_goal`/`tools`/`initial_state`，缺 `modality` 与 LLM 字段）。刘轲 须：① `modality` 改为可注册可扩展枚举（默认集存于配置而非关闭的 Literal）；② 新增 LLM 模态字段，**维度不再硬编码进 schema，改由 `taxonomy_ref` 引用 `config/taxonomies`**；③ `from_record` 按 modality 校验必填；④ 所有旧 adapter/importer 的 TaskSpec 产出须补 `modality=agent`。这是 4 人开工前必须先落地的契约基础，**归属已确认是刘轲 P0 首位**——不做则 llm_qa 轨产出的 TaskSpec 缺字段，一迪的工作会白做。
 
 ### 2.2 TraceEvent（执行轨迹）
 **字段**：`event_id` `task_id` `step` `role`(user/agent/tool/environment/judge/policy) `event_type`(message/tool_call/tool_result/state_diff/refusal/policy_check/judge_verdict) `content` `timestamp`。

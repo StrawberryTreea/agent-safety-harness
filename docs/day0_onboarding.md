@@ -78,7 +78,8 @@ wc -l federated_asr_benchmark/case_index.jsonl
 
 **run_request 的结构**：看 `federated_asr_benchmark/schemas/run_request.schema.json`（这是唯一权威来源，仓库里没有现成样例 JSON，你要自己按 schema 造一份）。
 **自证成功**：preflight 输出通过记录；`run_product.py --dry-run` 能解析你的 request。
-**卡住**：产品 CLI 没装（如 Codex/Claude Code）→ 这属 P0 阻塞项，立即报王浩，不要自己硬凑。
+**关于被测产品 CLI 的安装**：Codex CLI / Claude Code 等的**安装、登录、版本确认由你自己负责**——不需要等批准、不需要报备，装好后确认版本号与 `product_registry.json` 里 pin 的版本一致（Codex 0.122.0 / Claude Code 2.1.195 / Qoder 1.0.48）即可。这是你的工作项，不是等待外部依赖的阻塞理由。
+**卡住**：preflight 报错指向版本不匹配 → 装对版本或更新 profile 的 pin（并说明理由）；指向凭证缺失 → 按 `product_registry.json` 的 BYOK 字段配置 `api_key_env`。
 
 ---
 
@@ -173,8 +174,44 @@ grep -rn "GATES" scripts/result_analysis.py
 
 ---
 
-## 8. 分发前王浩要确认的三件事
+## 8. 分发前王浩已确认的四件事
 
-1. **免费端点 key 谁去申请？** `harness/config/free_endpoints.json` 里 11 个 profile 都需要对应 `api_key_env` 的真 key。**建议：智谱 GLM-4-Flash + 硅基流动 Qwen2.5-7B 两个先申请**（国内直连、永久免费档），够第 1 周全部冒烟用。
-2. **`loop-a-local-harness` 分支合不合并进 main？** 伦锋的 Loop-A P1 直接建在这个分支上（提交 `4075f469`、`9acdf52c`）。**建议先合**，否则伦锋要跨分支开发，联调时容易出乱。
-3. **schema.py 的 modality 扩展谁做？** 契约第 5 章标注：`schema.py` 目前仍是 agent-only，缺 `modality` 字段与 LLM 模态字段（`FRAMEWORK_CONTRACT.md:81`）。这是**刘轲 P0 的隐藏前置项**——建议明确写进他的任务，否则 llm_qa 轨产出的 TaskSpec 会缺字段。**本条已在本轮补入 work_assignment.md。**
+1. **免费端点 key：各自申请、各自测试。** `harness/config/free_endpoints.json` 里 11 个 profile 都需要对应 `api_key_env` 的真 key。**谁跑评测谁自己申请**，不要等统一发放。推荐先用**智谱 GLM-4-Flash**（`ZHIPUAI_API_KEY`）或**硅基流动 Qwen2.5-7B**（`SILICONFLOW_API_KEY`）——国内直连、永久免费档，够第 1 周全部冒烟用。**key 只写环境变量，不进仓库、不进配置文件、不发群里。**
+2. **`loop-a-local-harness` 已合入 main**（提交 `5527f81`）。所有人从 main 直接开分支，**不要再切 loop-a 分支**。Loop-A 的代码位置：`orchestrator/`（budget / controller / execution_guard / fixture_cycle / registry / replay / workers）、`evolution/`（admission / contracts / partitions / qualification / metrics 等）、`protocol/loop_a_contracts.schema.json`。
+3. **`schema.py` 的 modality 扩展确认归刘轲**（P0 首位）。契约第 5 章已标注：`schema.py` 目前仍是 agent-only，缺 `modality` 字段与 LLM 模态字段（`FRAMEWORK_CONTRACT.md:81`）。**这是刘轲 P0 的前置项**——不做，llm_qa 轨产出的 TaskSpec 会缺字段，一迪的活就白干。
+4. **被测产品的 CLI 辰浩自己装。** Codex CLI / Claude Code 等的安装、登录、版本确认由**辰浩本人**负责，不需要等任何人批准，也不需要报备；装好后确认版本号与 `product_registry.json` 里 pin 的版本一致即可。**注意**：这部分是辰浩自己的工作项，不构成"等待外部依赖"的阻塞理由。
+
+---
+
+## 9. 合并 Loop-A 后新增的可执行命令（伦锋优先看）
+
+```bash
+# 9.1 看 Loop-A 的就绪检查（会诚实报出还差什么）
+./.venv/Scripts/python.exe pipeline.py loop-a plan
+
+# 9.2 看 Loop-A 的全部子动作
+./.venv/Scripts/python.exe pipeline.py loop-a --help
+#   action: plan / qualify / partitions / metrics / smoke / cycle / compare / run
+
+# 9.3 Loop-A 相关文档（讲清了当前实现边界与哪些还没做）
+cat docs/integration/loop_a_implementation.md
+cat docs/integration/loop_a_phase2.md
+```
+
+**`loop-a plan` 的实际输出**（2026-11-04 实测）：
+
+```json
+{
+  "formal_ready": false,
+  "blockers": [
+    "protocol_not_frozen",
+    "primary_metric_not_confirmed",
+    "target_or_generator_not_fixed",
+    "paid_budget_not_configured",
+    "real_dispatcher_and_isolation_qualification_not_registered"
+  ],
+  "paid_calls_dispatched": 0
+}
+```
+
+**这是设计好的诚实输出，不是故障**——它明确告诉你"还差什么才能跑正式实验"。伦锋的 P1 就是在逐个消解这 5 个 blocker。**不要为了让 `formal_ready` 变 true 而绕过其中任何一项。**

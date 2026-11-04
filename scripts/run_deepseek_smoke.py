@@ -70,6 +70,24 @@ def validate_usage(usage: dict) -> tuple[dict, int]:
     return values, int(cost.to_integral_value(rounding=ROUND_CEILING))
 
 
+def _replace_with_retry(temporary: Path, path: Path, attempts: int = 8) -> None:
+    """Atomically move the temp file onto the target, retrying transient Windows sharing violations.
+
+    On Windows, os.replace raises PermissionError [WinError 5] when a scanner or
+    another process briefly holds the destination file open. The write itself is
+    already complete and fsync'ed, so retrying the rename is safe and preserves
+    the atomic-write guarantee.
+    """
+    for attempt in range(attempts):
+        try:
+            os.replace(temporary, path)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
 def write_json(path: Path, value):
     content = json.dumps(value, ensure_ascii=False, indent=2) + "\n"
     temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
@@ -78,7 +96,7 @@ def write_json(path: Path, value):
             handle.write(content)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(temporary, path)
+        _replace_with_retry(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
 
