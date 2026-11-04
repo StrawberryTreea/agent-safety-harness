@@ -4,7 +4,9 @@
 > 之前 `day0_onboarding.md` 里只散着几条命令，很多人打开仓库根本不知道 `pipeline.py` 是什么，
 > 所以这份单独写清楚。
 >
-> 配套：[上手清单](day0_onboarding.md) · [分工与推进顺序](work_assignment.md) · [框架契约](FRAMEWORK_CONTRACT.md) · [GitHub 怎么用](github_collaboration.md)
+> 想知道**整个项目是干什么的、有哪些功能、推进规划是什么** → 看 [项目总纲](project_overview.md)。
+>
+> 配套：[项目总纲](project_overview.md) · [上手清单](day0_onboarding.md) · [分工与推进顺序](work_assignment.md) · [框架契约](FRAMEWORK_CONTRACT.md) · [GitHub 怎么用](github_collaboration.md)
 
 ---
 
