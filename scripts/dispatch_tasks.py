@@ -57,7 +57,7 @@ DEFAULT_ROSTER = ROOT / "docs" / "roster.json"
 
 # Files that define the contract. If these are missing or untracked, no task
 # can be handed out safely: every track depends on them.
-# Paths match .github/CODEOWNERS and the CI gate "契约变更需王浩评审".
+# Paths match .github/CODEOWNERS and the CI gate "契约变更需王浩知悉".
 CONTRACT_FILES = (
     "harness/src/agent_safety_harness/schema.py",
     "harness/src/agent_safety_harness/registry.py",
@@ -184,11 +184,11 @@ def check_roster(root: Path = ROOT, roster_path: Path = DEFAULT_ROSTER) -> Tuple
         roster = oncall_roster.load_roster(roster_path)
     except ValueError as exc:
         return False, f"名册不合法：{exc}"
-    problems = oncall_roster.codeowners_coverage(root / ".github" / "CODEOWNERS", roster, 3)
+    problems = oncall_roster.codeowners_coverage(root / ".github" / "CODEOWNERS", roster, 2)
     if problems:
         first = problems[0]
         return False, f"CODEOWNERS 覆盖度不达标（{len(problems)} 处）：{first['pattern']}"
-    return True, f"{len(roster['members'])} 名成员，每条路径 owner 不少于 3 人"
+    return True, f"{len(roster['members'])} 名成员，每条路径至少 2 个知情人（主 owner + 代理人）"
 
 
 def check_tasks(tasks: Sequence[Dict[str, Any]]) -> Tuple[bool, str]:

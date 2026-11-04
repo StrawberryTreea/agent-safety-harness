@@ -233,7 +233,7 @@ git ls-files '*.md' '*.py' '*.json' '*.yaml'   # 受管文件全集
 | 全盘 grep 命中 `.tmp/` 旧副本 | 得出"模块存在""项目名如此"的错误结论 | 用 `git ls-files` 限定范围 |
 | 用系统 `python` 跑验收 | 缺 `jsonschema`，产生**假失败** | 用 `./.venv/Scripts/python.exe`（Windows） |
 | 把 `docs/integration/` 当现行规范 | 引用已过期的数字与设计 | 走第 3 节裁决顺序 |
-| 直接改 `protocol/` 下的文件 | 越过契约仲裁 | 需王浩评审（CI 门禁 `契约变更需王浩评审`） |
+| 直接改 `protocol/` 下的文件 | 越过契约仲裁 | 需王浩知悉（CI 门禁 `契约变更需王浩知悉`） |
 | 在文件里写 API key | 泄密（CI 有扫描门禁） | 只写 `api_key_env` 环境变量名 |
 | 覆盖非空输出目录 | 毁掉已有运行证据 | 需显式 overwrite 选项 |
 | 把 mock / 样例结果当真实成绩 | 结论失真 | 以真实运行证据 + 官方 scorer 为准 |

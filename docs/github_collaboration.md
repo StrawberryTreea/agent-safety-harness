@@ -13,10 +13,10 @@
 
 | 情况 | 怎么办 | 详见 |
 |---|---|---|
-| **你自己临时有事（几天）** | 什么都不用改配置。3-owner 设计保证你的目录仍有人能审。把 open issue 改派给你的代理人即可。 | [第 1.1 节](governance_and_continuity.md#2-有人临时有事几天内回来) |
+| **你自己临时有事（几天）** | 什么都不用改配置。代理人机制保证你的目录仍有人知情。把 open issue 改派给你的代理人即可。 | [第 1.1 节](governance_and_continuity.md#2-有人临时有事几天内回来) |
 | **某人长期不上线（>30 天）** | 跑 `python scripts/oncall_roster.py --apply`，自动改派 issue。CODEOWNERS 条目替换与权限移除由王浩手动做。 | [第 3 节](governance_and_continuity.md#3-有人长期不上线超过-30-天) |
 | **王浩需要拍板但审批没人** | 王浩是唯一 admin，可强制合并。但必须在 PR 里写清为什么破例。 | [第 1 节](governance_and_continuity.md#1-王浩的绝对权具体指什么) |
-| **PR 卡住等不到 approve** | 看该目录的 CODEOWNERS，找列表里的另一位（每人配 3 个 owner）。 | 本文第 3 节 |
+| **PR 提交后没人看** | 这不是阻塞——CI 绿就能合。要让某人看，在 PR 描述里手写 `@某人`，或等 CODEOWNERS 自动把他列为评审人。 | 本文第 3 节 |
 
 ---
 
@@ -30,11 +30,14 @@
 | 一迪 | `@321ddi` | write | 同上 |
 | 伦锋 | `@DylanWu6` | write | 同上 |
 
-**谁能合并到 `main`**：只有走 PR 且通过保护规则的人（见第 3 节）。
+**谁能合并到 `main`**：**任何一个成员**，只要走 PR 且 CI 全绿（见第 3 节）。
+**不需要任何人 approve**——仓库已取消"必须有人点头才能合并"的门槛。
 **谁都不能直接推 `main`** —— 保护规则对 admin 同样生效（`enforce_admins: true`），王浩自己也要走 PR。
 （王浩作为唯一 admin，保留强制合并与关闭保护规则的能力，用于应急；用的时候要在 PR 里留痕。细则见[决策权与缺席机制](governance_and_continuity.md#1-王浩的绝对权具体指什么)。）
 
-**谁能改契约**：改 `schema.py` / `registry.py` / `protocol/` 的 PR，CODEOWNERS 会自动要求 `@StrawberryTreea` 批准。
+**谁能改契约**：改 `schema.py` / `registry.py` / `protocol/` 的 PR，CODEOWNERS 会自动把
+`@StrawberryTreea` 加进评审人，CI 也会打上"契约变更需王浩知悉"的标记。
+这是**知会**——王浩会收到提醒，但不构成合并阻塞。
 
 **账号换了怎么办**：在仓库 Settings → Collaborators 里改；CODEOWNERS 里的账号名要同步改。
 
@@ -111,59 +114,55 @@ type(scope): 描述
 
 例：`feat(engine): 接通 bench_intake 到 source_intake`
 
-**PR 合并必须同时满足 4 个条件**（仓库已配置，缺一不可合）：
+**PR 合并必须同时满足 3 个条件**（仓库已配置，缺一不可合）：
 
-1. ✅ 至少 **1 人 approve**，且 approve 的人必须是**该目录的 CODEOWNER**
-2. ✅ CI 全绿（`Portable checks` 的 `tests` 任务 + `PR 规范门禁` 的三个任务）
-3. ✅ PR 里的**所有讨论已被解决**（`required_conversation_resolution`）
-4. ✅ **不能 force push**、不能删 `main`（`allow_force_pushes: false`）
+1. ✅ CI 全绿（`Portable checks` 的 `tests` 任务 + `PR 规范门禁` 的三个任务）
+2. ✅ PR 里的**所有讨论已被解决**（`required_conversation_resolution`）——注意这条是**你自己 resolve**，
+   不需要等对方点头；对方不回应时你自行处理完即可合并
+3. ✅ **不能 force push**、不能删 `main`（`allow_force_pushes: false`）
 
-额外两条：`dismiss_stale_reviews`（你又推了新 commit，之前的 approve 作废，需要重审）、
-`require_last_push_approval`（**不能自己 approve 自己最后推的代码——王浩也一样**，所以每条路径配了 ≥2 个 CODEOWNER）。
+**不需要任何人 approve。** 仓库已取消"必须有人 approve 才能合并"的门槛，
+任何成员的 PR 只要 CI 绿就能合上。这是 5 人小组该有的样子：多一道签字就多一天的等待。
 
-**谁能 approve**：必须是**该目录的 CODEOWNER**，且**不是你最后推的那个人**。
-所以你的 PR 该找谁批，看上面那张表里的第二位。
+> **评审是知会，不是审批。** 仓库仍然保留 CODEOWNERS，但它的作用从"谁能批"变成了"谁该知道"：
+> 改到某目录时，GitHub 会自动把该目录的 owner 加进评审人列表，他会收到提醒。
+> **提醒到了就行，回不回是他的事。** 要让某人一定看到，在 PR 描述里手写 `@某人`。
 
 > **CODEOWNER 是谁，看这个表**（`.github/CODEOWNERS` 是唯一权威）：
 >
-> | 你改的目录 | 自动找谁审 |
+> | 你改的目录 | 自动知会谁 |
 > |---|---|
-> | `harness/src/agent_safety_harness/`（除 driver）、`harness/config/`、`scripts/source_intake.py` | 刘轲 + 伦锋 + 王浩 |
-> | `federated_asr_benchmark/` | 辰浩 + 一迪 + 王浩 |
-> | `llm_eval/`、`scripts/result_analysis.py` | 一迪 + 刘轲 + 王浩 |
-> | `evolution/`、`orchestrator/`、`harness/src/agent_safety_harness/driver/` | 伦锋 + 一迪 + 刘轲 + 王浩 |
-> | `docs/`、`protocol/`、`references/`、`scripts/` 其余、`tests/` | 王浩 + 一迪 + 伦锋 |
+> | `harness/src/agent_safety_harness/`（除 driver）、`harness/config/`、`scripts/source_intake.py` | 刘轲 + 伦锋 |
+> | `federated_asr_benchmark/` | 辰浩 + 一迪 |
+> | `llm_eval/`、`scripts/result_analysis.py` | 一迪 + 刘轲 |
+> | `evolution/`、`orchestrator/`、`harness/src/agent_safety_harness/driver/` | 伦锋 + 刘轲 + 一迪 |
+> | `docs/`、`protocol/`、`references/`、`scripts/` 其余、`tests/` | 王浩 + 一迪 |
 >
 > **实测已验证**（2026-11-04）：改 `docs/` → 自动请求 `DylanWu6` + `321ddi`；
 > 改 `federated_asr_benchmark/` → 自动请求 `ennnnn3232`。
 > 注意：**PR 作者本人不会被自动列为评审人**（GitHub 行为），
-> 所以你看到只有 1 个 owner 被请求时，先看自己是不是那个 owner。
+> 所以你看到只有 1 个人被请求时，先看自己是不是那个 owner。
 
 
-> **为什么每条路径都有 3 个 owner**：仓库开了 `require_last_push_approval`（**作者不能 approve 自己最后推的代码**）。
-> 如果某个目录只有 1 个 owner，就会死锁——比如刘轲改 `harness/`，而他自己就是唯一 CODEOWNER，没人能批他的 PR。
-> 配 2 个 owner 时，如果这 2 个里恰好一个是 PR 作者，同样可能没人能批。
-> **配 3 个之后，任意 1 人缺席（有事、长期不上线）都还剩 2 人可批，不需要临时改任何配置。**
-> 第 3 个 owner 就是该成员的**代理人**（见 `docs/roster.json`），接手其未完成的工作。
+> **为什么每条路径都有 2 个 owner**：这两人是**知情人**，各配一个"主 owner + 代理人"：
+> - **主 owner** 是这块的实际负责人，改动第一时间该让他知道；
+> - **代理人**（见 `docs/roster.json` 的 `backup` 字段）是主 owner 有事或长期不上线时的接手人。
+>
+> 为什么不能只配 1 个：**GitHub 不会把 PR 作者列为自动评审人**。
+> 只配 1 人时，如果那人正好是这次改动的作者，就完全没人被提醒到了。
+> 配 2 个则保证"另一个人一定在名单上"。
 >
 > ✅ **CODEOWNERS 已进 `main`（PR #8，2026-11-04），自动指派已实测生效，无需任何手工操作。**
-> ✅ **覆盖度自检已接入 CI**（`在岗与代理覆盖度` 为合并必需项）：任何一条路径 owner 少于 3 人，
-> 或 CODEOWNERS 里的账号不在名册中，CI 直接失败——保证"有人缺席就卡死"这种事不会悄悄发生。
->
-> **只有王浩自己的 PR 特殊**：因为王浩也是所有目录的兜底 owner，而规则禁止作者批准自己最后推的 commit，
-> 所以王浩提的 PR 必须等 **321ddi 或 DylanWu6** 中的另一位点同意（GitHub 会自动 @ 上他们）。
-> 其他人提的 PR 不受此影响——只要不是该目录的唯一 owner，都能自己找到人批。>
-> 历史备注（已解决，留作记录）：PR #8 是**引入门禁本身的那一个 PR**，
-> 它的 base 分支还没有 CODEOWNERS，所以 GitHub 不会自动指派评审人，
-> 同时它又被「必须 CODEOWNER approve」卡住——这是 bootstrap 死锁。
-> 当时的解法是临时把 `enforce_admins` 关掉、用管理员权限合并该 PR，**合并后立刻恢复了**。
-> 从此以后所有 PR 都走正常流程，不需要任何人再手动干预。
+> ✅ **覆盖度自检已接入 CI**（`在岗与代理覆盖度` 为合并必需项）：任何一条路径知情人少于 2 人，
+> 或 CODEOWNERS 里的账号不在名册中，CI 直接失败。
 
-
+> **契约类 PR 仍然要当心**：虽然没人 approve 才卡你，但 `schema.py` / `registry.py` / `protocol/`
+> 是全项目的地基，改错了要回滚很多地方。所以 CODEOWNERS 会把王浩加进评审人、
+> CI 会打上"契约变更需王浩知悉"。**该问就问，但问完不等**——王浩没回你也可以合。
 
 > ⚠️ **`driver/registrations.py` 是双人交接点**：registry 函数由刘轲提供、driver 编排由伦锋提供。
-> 这个文件归两人共同 owner——**刘轲或伦锋提的 PR，都需要对方或王浩批准**。
-> 提 PR 时在描述里写清"registry 部分归刘轲 / 编排部分归伦锋"，并 @ 对方。
+> 这个文件归两人共同 owner。提 PR 时在描述里写清"registry 部分归刘轲 / 编排部分归伦锋"，
+> 并 @ 对方——这是**让对方知情**，不是等对方批准。
 
 **PR 描述要填什么**：仓库已配置 PR 模板（`.github/PULL_REQUEST_TEMPLATE.md`），
 每个勾选框都有具体要求，最关键的三项：
@@ -298,10 +297,10 @@ gh pr create --fill
 gh pr view                 # 看自己 PR 状态
 gh pr checkout <编号>      # 拉别人的 PR 到本地看
 
-# 评审别人的 PR
+# 评审别人的 PR（评审是知会，不阻塞合并；你可以只留评论不 approve）
 gh pr list --label "P0"
 gh pr review <编号> --approve --body "看过了，schema 改动 OK"
-gh pr review <编号> --request-changes --body "..."
+gh pr review <编号> --comment --body "这里我不太确定，建议确认下口径"
 
 # Issue
 gh issue list --label "owner:liuke" --state open
@@ -378,7 +377,7 @@ python -m venv .venv
 | 仓库公开 | ✅ | — |
 | `main` 分支保护 | ✅ | Settings → Branches |
 | 禁止直推 / force push / 删分支 | ✅ | 同上 |
-| 必须 PR + CODEOWNER approve | ✅ | 同上 + `.github/CODEOWNERS` |
+| **必须 PR + CI 全绿（不需要任何人 approve）** | ✅ | 同上 + `.github/CODEOWNERS` |
 | CI 必过（`tests` + `pr-policy` 三任务） | ✅ | `.github/workflows/` |
 | Squash / Rebase 合并，禁止 merge commit | ✅ | Settings → General |
 | 合并后自动删分支 | ✅ | 同上 |
@@ -389,12 +388,12 @@ python -m venv .venv
 | Issue 模板（任务 / 缺陷） | ✅ | `.github/ISSUE_TEMPLATE/` |
 | 标签体系（23 个） | ✅ | Issues → Labels |
 | 里程碑（3 个） | ✅ | Issues → Milestones |
-| CODEOWNERS 目录归属 | ✅ | `.github/CODEOWNERS` |
-| **CODEOWNERS 三 owner（任一人缺席不卡死）** | ✅ | 同上 + `docs/roster.json` |
+| CODEOWNERS 目录归属（= 谁会被知会） | ✅ | `.github/CODEOWNERS` |
+| **CODEOWNERS 每路径 2 个知情人（主 owner + 代理人）** | ✅ | 同上 + `docs/roster.json` |
 | **名册与覆盖度 CI 自检** | ✅ | `.github/workflows/portable-checks.yml` 的 `在岗与代理覆盖度` |
 | **在岗巡检与自动改派** | ✅ | `scripts/oncall_roster.py` |
 | **派工就绪判据 + 一次性派工入口** | ✅ | `scripts/dispatch_tasks.py`，见[通知节流与派工节奏](notification_and_dispatch.md) |
 | PR 标题 / 分支名格式校验 | ✅ | `.github/workflows/pr-policy.yml` |
 | PR 新增行密钥 / 路径 / 邮箱扫描 | ✅ | 同上 |
-| 全部 5 项检查设为合并必需 | ✅ | Settings → Branches |
+| 全部 6 项检查设为合并必需 | ✅ | Settings → Branches |
 | **决策权 / 代理 / 缺席机制文档** | ✅ | `docs/governance_and_continuity.md` |

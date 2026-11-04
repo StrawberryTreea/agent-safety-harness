@@ -10,9 +10,9 @@
   },
   "notes": {
     "joined_meaning": "joined 是该成员开通本仓库 GitHub 权限、开始协作的日期（2026-11-04），用于给'尚无任何提交'的新成员一个基线，避免刚上手就被判为需移交。",
-    "backup_meaning": "backup 是该成员离线时接手其未完成工作的人（接 issue、继续做），不是额外增加一个 approve 权限。approve 权限由 .github/CODEOWNERS 的三 owner 设计保证。",
+    "backup_meaning": "backup 是该成员离线时接手其未完成工作的人（接 issue、继续做）。在 CODEOWNERS 里，他作为该路径的第二知情人——主 owner 有事或长期不上线时，改这个目录仍有人知情、有人接手。合并权不在 CODEOWNERS 上：仓库已取消「必须有人 approve」的门槛，谁的 PR 只要 CI 全绿就能合上。",
     "single_arbiter": "契约与口径仲裁权只在王浩手上；王浩离线超过阈值时由 backup 代行，范围仅限仲裁与口径裁决，不含仓库权限与分支保护变更。",
-    "coverage_rule": "每条路径配 3 个 owner，才能保证任意 1 人缺席时仍有 2 人可批（作者不能 approve 自己最后推的 commit）。"
+    "coverage_rule": "每条路径配 2 个知情人（主 owner + 代理人），保证改动这个目录时至少有人被提醒到——GitHub 不会把 PR 作者列为自动评审人，只配 1 人时若那人正好是作者就无人知情。"
   },
   "members": [
     {

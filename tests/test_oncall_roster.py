@@ -142,25 +142,25 @@ class TimestampTests(unittest.TestCase):
 class CodeownersCoverageTests(unittest.TestCase):
     def test_shipped_codeowners_meets_minimum(self):
         roster = oncall_roster.load_roster(ROOT / "docs" / "roster.json")
-        problems = oncall_roster.codeowners_coverage(ROOT / ".github" / "CODEOWNERS", roster, 3)
+        problems = oncall_roster.codeowners_coverage(ROOT / ".github" / "CODEOWNERS", roster, 2)
         self.assertEqual(problems, [], f"CODEOWNERS 覆盖度不达标: {problems}")
 
     def test_rule_with_too_few_owners_is_reported(self):
         roster = oncall_roster.load_roster(ROOT / "docs" / "roster.json")
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "CODEOWNERS"
-            path.write_text("/docs/ @StrawberryTreea @321ddi\n", encoding="utf-8")
-            problems = oncall_roster.codeowners_coverage(path, roster, 3)
+            path.write_text("/docs/ @StrawberryTreea\n", encoding="utf-8")
+            problems = oncall_roster.codeowners_coverage(path, roster, 2)
         self.assertEqual(len(problems), 1)
-        self.assertEqual(problems[0]["owner_count"], 2)
-        self.assertEqual(problems[0]["required"], 3)
+        self.assertEqual(problems[0]["owner_count"], 1)
+        self.assertEqual(problems[0]["required"], 2)
 
     def test_account_outside_roster_is_reported(self):
         roster = oncall_roster.load_roster(ROOT / "docs" / "roster.json")
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "CODEOWNERS"
-            path.write_text("/docs/ @StrawberryTreea @321ddi @DylanWu6 @stranger\n", encoding="utf-8")
-            problems = oncall_roster.codeowners_coverage(path, roster, 3)
+            path.write_text("/docs/ @StrawberryTreea @321ddi @stranger\n", encoding="utf-8")
+            problems = oncall_roster.codeowners_coverage(path, roster, 2)
         self.assertTrue(any("stranger" in item["reason"] for item in problems))
 
     def test_parse_ignores_comments_and_blank_lines(self):
@@ -170,13 +170,22 @@ class CodeownersCoverageTests(unittest.TestCase):
             rules = oncall_roster.parse_codeowners(path)
         self.assertEqual(rules, [("/docs/", ["a", "b", "c"])])
 
-    def test_any_single_absence_still_leaves_two_approvers(self):
-        """Three owners per path: the author cannot approve their own last push,
-        and one absent member must not block the merge."""
+    def test_every_path_keeps_someone_else_informed(self):
+        """Every path needs at least two owners: GitHub never auto-requests the
+        PR author, so a single-owner path would leave nobody notified when that
+        owner happens to be the one pushing."""
         rules = oncall_roster.parse_codeowners(ROOT / ".github" / "CODEOWNERS")
         self.assertTrue(rules)
         for pattern, owners in rules:
-            self.assertGreaterEqual(len(owners), 3, f"{pattern} owners={owners}")
+            self.assertGreaterEqual(len(owners), 2, f"{pattern} owners={owners}")
+
+    def test_driver_path_keeps_both_hands_in_the_loop(self):
+        """driver/registrations.py is a two-party handover (registry by 刘轲,
+        orchestration by 伦锋), so both must stay on its owner list."""
+        rules = dict(oncall_roster.parse_codeowners(ROOT / ".github" / "CODEOWNERS"))
+        driver = rules.get("/harness/src/agent_safety_harness/driver/", [])
+        self.assertIn("DylanWu6", driver)
+        self.assertIn("deep-fry-xiaopengyou", driver)
 
 
 class JoinDateBaselineTests(unittest.TestCase):

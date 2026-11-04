@@ -270,12 +270,13 @@ def parse_codeowners(path: Path) -> List[Tuple[str, List[str]]]:
     return rules
 
 
-def codeowners_coverage(codeowners_path: Path, roster: Dict[str, Any], min_owners: int = 3) -> List[Dict[str, Any]]:
-    """Check every CODEOWNERS rule has enough owners to survive one absence.
+def codeowners_coverage(codeowners_path: Path, roster: Dict[str, Any], min_owners: int = 2) -> List[Dict[str, Any]]:
+    """Check every CODEOWNERS rule has enough owners to keep someone informed.
 
-    The branch protection requires a CODEOWNER approval and forbids approving your
-    own last push, so a path needs at least three owners: the author cannot approve
-    their own commit, and one absent member must not block the merge.
+    Since the approve gate was removed, CODEOWNERS no longer decides who may merge --
+    it decides who gets *told*. Two owners are therefore the floor rather than three:
+    GitHub never auto-requests the PR author, so a single-owner path would leave
+    nobody notified whenever that owner happens to be the author.
     """
     rules = parse_codeowners(codeowners_path)
     problems: List[Dict[str, Any]] = []
@@ -286,7 +287,7 @@ def codeowners_coverage(codeowners_path: Path, roster: Dict[str, Any], min_owner
                 "owners": owners,
                 "owner_count": len(owners),
                 "required": min_owners,
-                "reason": "owner 数量不足，任一人缺席或作者本人即无法完成评审",
+                "reason": "owner 数量不足，主 owner 恰好是 PR 作者时将无人被提醒",
             })
     known = {str(member.get("github", "")) for member in roster["members"]}
     for pattern, owners in rules:
@@ -370,7 +371,7 @@ def main() -> int:
     parser.add_argument("--repo", help="owner/name override")
     parser.add_argument("--out", type=Path, help="directory for report files")
     parser.add_argument("--codeowners", type=Path, default=ROOT / ".github" / "CODEOWNERS")
-    parser.add_argument("--min-owners", type=int, default=3, help="minimum owners per CODEOWNERS rule")
+    parser.add_argument("--min-owners", type=int, default=2, help="minimum owners per CODEOWNERS rule")
     parser.add_argument("--offline", action="store_true",
                         help="skip GitHub lookups; verify roster and CODEOWNERS coverage only")
     args = parser.parse_args()

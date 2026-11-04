@@ -177,7 +177,7 @@
 |---|---|---|---|---|
 | H1 | 统一验收 | `scripts/check_repo.py` | 一次跑完：绑定协议 + 三套测试 + 3 个 fixture + LLM 自检 + 分析 + Loop-A 对比 + 文档链接 | ✅ |
 | H2 | CI | `.github/workflows/portable-checks.yml` | 检查名 `tests`，分支保护要求它必过 | ✅ |
-| H3 | PR 规范门禁 | `.github/workflows/pr-policy.yml` | 标题/分支名校验 + 密钥/路径/邮箱扫描 + 契约变更需王浩评审 | ✅ |
+| H3 | PR 规范门禁 | `.github/workflows/pr-policy.yml` | 标题/分支名校验 + 密钥/路径/邮箱扫描 + 契约变更需王浩知悉 | ✅ |
 | H4 | CODEOWNERS | `.github/CODEOWNERS` | 按目录自动指派评审人，**每条路径 ≥2 owner** | ✅ |
 | H5 | 外部数据登记 | `federated_asr_benchmark/benchmark_registry.json` + `product_registry.json` | benchmark 与产品的版本 pin | ✅ |
 

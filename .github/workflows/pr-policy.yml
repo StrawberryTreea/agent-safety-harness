@@ -70,7 +70,7 @@ jobs:
           exit 0
 
   contract-touch:
-    name: 契约变更需王浩评审
+    name: 契约变更需王浩知悉
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

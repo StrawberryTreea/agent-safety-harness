@@ -36,7 +36,7 @@
 | **第一次分工 / 拿任务** | **[上手清单](day0_onboarding.md)**、**[四人分工与推进顺序](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
 | **提交代码 / 提 PR / 找谁审** | **[GitHub 协作规范](github_collaboration.md)**（权限矩阵、分支模型、PR 流程、CODEOWNERS、泄密红线、命令速查） |
 | **收到一堆邮件 / 想知道任务什么时候派** | **[通知节流与派工节奏](notification_and_dispatch.md)**（哪些操作会触发通知、模板已改掉的通知源、draft PR 规则、派工就绪的 6 条判据与一次性派工入口） |
-| **自己有事 / 别人长期不上线 / 谁来接手** | **[决策权、缺席与长期不上线](governance_and_continuity.md)**（王浩的最终决定权、三 owner 覆盖、代理人接手与自动改派） |
+| **自己有事 / 别人长期不上线 / 谁来接手** | **[决策权、缺席与长期不上线](governance_and_continuity.md)**（王浩的最终决定权、代理人接手与自动改派） |
 | **第一轮跑哪个 benchmark、怎么拿数据** | **[benchmark 获取指南](benchmark_acquisition.md)**、**[跑通样例选型](rampup_samples.md)** |
 | **免费 API 端点（先用免费档跑通）** | [免费端点配置](../harness/config/free_endpoints.json) |
 | 回路A当前代码与本地验证 | [基础实现与限制](integration/loop_a_implementation.md) |
