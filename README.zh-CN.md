@@ -144,12 +144,20 @@ python -m venv .venv
 
 ## 多人协作：GitHub 怎么用
 
-本仓库为**公开**仓库，`main` 已开启分支保护：不能直接推 `main`，必须走 PR，且需该目录的 CODEOWNER 批准 + CI 全绿。
+本仓库为**公开**仓库，`main` 已开启分支保护：不能直接推 `main`，必须走 PR，**CI 全绿即可合并，不需要任何人 approve**。
 
 - 分支命名 `feat/xxx` `fix/xxx` `docs/xxx`，PR 标题 `type(scope): 描述`，CI 自动校验
-- 每个目录归谁审，见 `.github/CODEOWNERS`
+- 每个目录配 2 名知情人，见 `.github/CODEOWNERS`——**是"该让谁知道"，不是"谁来批"**
 - 密钥 / 本机路径 / 内网地址一律不入库，CI 会扫描 PR 新增行
 - 完整规范（权限矩阵、PR 流程、泄密红线、命令速查）见 **[GitHub 协作规范](docs/github_collaboration.md)**
+
+**5 个人，一个微信群**：GitHub 存代码和记录，微信群才是聊天的地方。
+
+- **谁都能提交**：开 PR → CI 绿 → 合并。不用等任何人点头（5 人小组多一道签字就多一天）
+- **邮件不用当回事**：GitHub 通知默认走邮件，但我们不围着它设计——群里说过了就不用再点开 PR
+- **没有截止时间、不用截图**：按自己节奏做，做完在 issue 里留言；卡住就写清卡在哪、需要谁配合
+
+哪些 GitHub 操作真会发邮件、派工判据见[通知渠道与派工节奏](docs/notification_and_dispatch.md)；谁拍板、谁接手见[决策权与缺席机制](docs/governance_and_continuity.md)。
 
 ## 图 3：协作者运行流程
 

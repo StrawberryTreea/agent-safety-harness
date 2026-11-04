@@ -166,6 +166,7 @@ gh api --method DELETE repos/StrawberryTreea/agent-safety-harness/collaborators/
 |---|---|
 | 2026-11-04 | 建立本机制：`docs/roster.json` 名册与代理表、CODEOWNERS 目录归属、`scripts/oncall_roster.py` 巡检与自动改派、`tests/test_oncall_roster.py` 单测 |
 | 2026-11-04 | **取消 approve 门槛**：分支保护去掉 `required_pull_request_reviews`，谁都能独立提交，CI 全绿即合。CODEOWNERS 随之从"批准人名单"改为"知情人名单"（每路径 2 人：主 owner + 代理人），覆盖度判据由 3 降为 2 |
+| 2026-11-04 | **通知渠道定稿**：确认 5 人团队以微信群为主渠道，GitHub 通知只做"谁该知道"的兜底留痕，邮件可当噪音。据此**废除"PR 先开 draft、再转 ready"**（draft 不能合并、且已无节流必要），PR 改为直接开 ready |
 
 ---
 
