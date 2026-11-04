@@ -1,0 +1,86 @@
+name: 任务
+description: 认领或派发一个具体开发任务（对应 docs/work_assignment.md 的工作项）
+title: "[任务] "
+labels: ["track:tbd"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        认领前请先读 `docs/work_assignment.md` 里你的章节和 `docs/day0_onboarding.md`。
+        每个任务都需要能落到具体文件和具体命令，不要写"优化代码"这类无法验收的描述。
+
+  - type: input
+    id: owner
+    attributes:
+      label: 负责人
+      placeholder: 例：@321ddi
+    validations:
+      required: true
+
+  - type: dropdown
+    id: track
+    attributes:
+      label: 所属评测轨
+      multiple: true
+      options:
+        - llm_qa（模型问答评测）
+        - agent_execution（Agent 执行轨）
+        - agent_product（完整产品轨）
+        - trace_judge（轨迹判分轨）
+        - engine（评测引擎 / 函数层）
+        - evolution（自进化）
+        - infra（CI / 脚本 / 文档）
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - P0（第 1 周，铁轨必须通）
+        - P1（第 2–3 周，扩展与加固）
+        - P2（第 4 周+，研究与产出）
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: 具体交付物
+      description: 写清产出什么文件 / 什么接口 / 什么数字结果，以及怎么验收。
+      placeholder: |
+        例：driver/registrations.py 的 bench_intake 接 scripts/source_intake.py，
+        跑通 SafetyBench 后产出 dataset_catalog.json 且 status=ready。
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收命令与成功标准
+      description: 评审人照着敲就能确认你做完了。必须是可以直接执行的命令。
+      placeholder: |
+        PYTHONPATH=harness/src python -m agent_safety_harness.driver --dry-run
+        成功标准：打印 plan 且不调用未注册函数
+    validations:
+      required: true
+
+  - type: textarea
+    id: depends_on
+    attributes:
+      label: 依赖与衔接
+      description: 依赖谁的产出、你的产出要交给谁。写不清楚的说明尚未确定。
+      placeholder: 例：依赖 @deep-fry-xiaopengyou 的 registry 真实现；产出 failures.jsonl 交给 @DylanWu6
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 开工前确认
+      options:
+        - label: 我已读 docs/day0_onboarding.md 并跑通 dry_run
+          required: true
+        - label: 我已确认自己要改的文件在现有代码里的真实状态（复用还是新增）
+          required: true
+        - label: 我知道 API key 只走 api_key_env，不入库、不发群
+          required: true
