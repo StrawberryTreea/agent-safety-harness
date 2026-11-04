@@ -13,7 +13,7 @@ body:
     id: owner
     attributes:
       label: 负责人
-      placeholder: 例：@321ddi
+      placeholder: 例：一迪（321ddi）
     validations:
       required: true
 
@@ -71,7 +71,7 @@ body:
     attributes:
       label: 依赖与衔接
       description: 依赖谁的产出、你的产出要交给谁。写不清楚的说明尚未确定。
-      placeholder: 例：依赖 @deep-fry-xiaopengyou 的 registry 真实现；产出 failures.jsonl 交给 @DylanWu6
+      placeholder: 例：依赖刘轲（deep-fry-xiaopengyou）的 registry 真实现；产出 failures.jsonl 交给伦锋（DylanWu6）
 
   - type: checkboxes
     id: checks

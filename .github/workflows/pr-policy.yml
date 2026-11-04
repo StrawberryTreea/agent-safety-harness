@@ -64,7 +64,7 @@ jobs:
             | grep -E '^\+' | grep -vE '^\+\+\+' \
             | grep -nE '[A-Za-z0-9._%+-]+@(qq|gmail|163|126|outlook|hotmail|sina)\.(com|cn)'
           if [ $? -eq 0 ]; then
-            echo "::error title=检测到个人邮箱，请移除或改用 GitHub 用户名（如 @321ddi）"
+            echo "::error title=检测到个人邮箱，请移除或改用 GitHub 用户名（如 321ddi）"
             exit 1
           fi
           exit 0
@@ -82,6 +82,6 @@ jobs:
           git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
             | grep -E '^(harness/src/agent_safety_harness/(schema|registry)\.py|protocol/|docs/FRAMEWORK_CONTRACT\.md)$'
           if [ $? -eq 0 ]; then
-            echo "::notice title=本 PR 触碰契约文件，CODEOWNERS 会自动要求 @StrawberryTreea 批准"
+            echo "::notice title=本 PR 触碰契约文件，CODEOWNERS 会自动要求王浩（StrawberryTreea）批准"
           fi
           exit 0

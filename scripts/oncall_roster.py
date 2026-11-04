@@ -342,7 +342,9 @@ def render_markdown(rows: Sequence[Dict[str, Any]], actions: Sequence[Dict[str, 
         else:
             last = "无记录"
         days = "—" if row["inactive_days"] is None else str(row["inactive_days"])
-        lines.append(f"| {row['name']} | @{row['github']} | {row['role']} | {last} | {days} | "
+        # 账号写成纯文本而不是 @username：看板正文每次刷新都会重发，
+        # 裸 @提及会给当事人发通知，而这里只需要让人看懂"这是谁的账号"。
+        lines.append(f"| {row['name']} | {row['github']} | {row['role']} | {last} | {days} | "
                      f"{STATUS_LABELS[row['status']]} | {backup_text} |")
     lines.append("")
     if actions:
@@ -422,10 +424,12 @@ def main() -> int:
             if row["id"] == roster.get("arbiter"):
                 continue
             for issue in open_issues_for(roster["repo"], row["github"], token):
-                note = (f"值班移交：{row['name']}（@{row['github']}）已 {row['inactive_days']} 天无仓库活动，"
-                        f"按 docs/roster.json 约定由 {backup['name']}（@{backup['github']}）接手。")
+                # 备注里不用 @username：改派本身已经通过 assignee 变更通知了当事人，
+                # 再加一个 @ 提及会重复打扰。正文写清姓名与账号即可。
+                note = (f"值班移交：{row['name']}（{row['github']}）已 {row['inactive_days']} 天无仓库活动，"
+                        f"按 docs/roster.json 约定由 {backup['name']}（{backup['github']}）接手。")
                 if reassign_issue(roster["repo"], int(issue["number"]), backup["github"], token, note):
-                    print(f"reassigned issue #{issue['number']} -> @{backup['github']}")
+                    print(f"reassigned issue #{issue['number']} -> {backup['github']}")
         board = find_board_issue(roster["repo"], token)
         if board:
             api_request("PATCH", f"/repos/{roster['repo']}/issues/{board['number']}", token, {"body": markdown})

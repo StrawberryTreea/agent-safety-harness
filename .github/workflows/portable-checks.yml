@@ -1,6 +1,9 @@
 name: Portable checks
 on:
+  # 只在 main 上跑 push：PR 分支上的 push 已经由 pull_request 事件覆盖，
+  # 两个事件都挂会让每个 PR 的同一批检查跑两遍（既浪费额度，也让 PR 页面出现重复的检查项）。
   push:
+    branches: [main]
   pull_request:
 jobs:
   tests:

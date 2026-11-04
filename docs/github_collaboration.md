@@ -2,7 +2,7 @@
 
 > **仓库**：https://github.com/StrawberryTreea/agent-safety-harness （公开）
 > **适用对象**：王浩、刘轲、辰浩、一迪、伦锋
-> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md) · **[决策权与缺席机制](governance_and_continuity.md)**
+> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md) · **[决策权与缺席机制](governance_and_continuity.md)** · **[通知节流与派工节奏](notification_and_dispatch.md)**
 
 这份文档回答一个具体问题：**5 个人同时改一个仓库，怎么用 GitHub 才不会乱。**
 每一条规则都对应仓库里已经配置好的机制，不是"应该这样做"的口号。
@@ -74,8 +74,34 @@ git checkout -b feat/你的功能名
 git add <明确的文件>          # 不要 git add -A（会把 .workbuddy/ 之类的临时文件带进去）
 git commit -m "feat(scope): 一句话说明"
 git push -u origin feat/你的功能名
-gh pr create --fill --title "feat(scope): 一句话说明"
+gh pr create --fill --draft --title "feat(scope): 一句话说明"
 ```
+
+### 3.0 先开成 draft，要评审了再转 ready
+
+**PR 一律先以 draft 状态开**（`gh pr create --draft`）。
+
+| PR 状态 | 会不会自动请求 CODEOWNER 评审 | 会不会发邮件 |
+|---|---|---|
+| **draft** | ❌ 不会 | ❌ 不会 |
+| ready for review | ✅ 会 | ✅ 会，且没处理会持续催 |
+
+**这不是形式主义**：CODEOWNERS 触发的评审请求**删不掉**——
+`DELETE /pulls/{n}/requested_reviewers` 返回 200 但请求还在，时间线里没有 `review_request_removed` 事件（已实测）。
+唯一可靠的开关就是 draft（GitHub 官方行为：draft PR 不请求 code owner）。
+
+所以流程是：**内容写完 → 确认 CI 绿 → 转 ready for review → 这时才请人来审**。
+draft 期间 CI 照跑（CI 看提交，不看 draft 状态），可以放心先挂着。
+
+转 ready 的命令：
+
+```bash
+gh pr ready <编号>          # 转 ready for review
+gh pr ready <编号> --undo   # 转回 draft（发现问题时先撤回，免得继续催）
+```
+
+**代价**：draft PR 不能直接合并（GitHub 对 draft 的 merge 返回 405）。
+这是有意的——"转 ready"就是"我要人评审了"这个明确动作。
 
 **PR 标题格式**（CI 强制）：
 ```
@@ -180,7 +206,7 @@ type(scope): 一句话说明
 
 **里程碑**：任务按里程碑推进 —— `P0 第1周：铁轨贯通` / `P1 第2-3周：扩展与加固` / `P2 第4周+：优质模型贯通与自进化`。
 
-**当前已派发的 P0 任务**：
+**当前已准备好的 P0 任务**（**待派发**：交付物与验收标准已写全，指派动作等仓库就绪后一次性发出）：
 
 | # | 负责人 | 任务 |
 |---|---|---|
@@ -189,6 +215,12 @@ type(scope): 一句话说明
 | [#5](https://github.com/StrawberryTreea/agent-safety-harness/issues/5) | 一迪 | 接入外部 benchmark 出官方口径分数 + result_analysis 产 failures.jsonl |
 | [#6](https://github.com/StrawberryTreea/agent-safety-harness/issues/6) | 伦锋 | driver 端到端跑通 + nl_bridge 白名单拦截 + evolve 接 evolution/ |
 | [#7](https://github.com/StrawberryTreea/agent-safety-harness/issues/7) | 王浩 | 契约仲裁响应 + 白皮书口径把关 + 免费额度协调 |
+
+> **怎么知道什么时候该开工**：等派工通知。
+> 仓库就绪后由王浩一次性统一派工（`python scripts/dispatch_tasks.py --dispatch`），
+> 届时你的 issue 会被指派给你。**在收到指派之前不用开工**——这是有意为之，
+> 避免在仓库还没准备好时收到一堆半成品方向的返工。
+> 判据与流程见[通知节流与派工节奏](notification_and_dispatch.md)。
 
 **开 issue 的规则**：
 - 领任务前先看有没有现成 issue，别重复开
@@ -352,6 +384,8 @@ python -m venv .venv
 | 合并后自动删分支 | ✅ | 同上 |
 | 仓库公开协作 + Issues + Discussions | ✅ | — |
 | PR 模板（含泄密自查） | ✅ | `.github/PULL_REQUEST_TEMPLATE.md` |
+| **PR / Issue 模板不含裸 @提及**（不每次开 PR 都发通知） | ✅ | 同上 + `.github/ISSUE_TEMPLATE/` |
+| **PR 先开 draft，要评审再转 ready**（不产生评审请求邮件） | ✅ | 本文档 §3.0 |
 | Issue 模板（任务 / 缺陷） | ✅ | `.github/ISSUE_TEMPLATE/` |
 | 标签体系（23 个） | ✅ | Issues → Labels |
 | 里程碑（3 个） | ✅ | Issues → Milestones |
@@ -359,6 +393,7 @@ python -m venv .venv
 | **CODEOWNERS 三 owner（任一人缺席不卡死）** | ✅ | 同上 + `docs/roster.json` |
 | **名册与覆盖度 CI 自检** | ✅ | `.github/workflows/portable-checks.yml` 的 `在岗与代理覆盖度` |
 | **在岗巡检与自动改派** | ✅ | `scripts/oncall_roster.py` |
+| **派工就绪判据 + 一次性派工入口** | ✅ | `scripts/dispatch_tasks.py`，见[通知节流与派工节奏](notification_and_dispatch.md) |
 | PR 标题 / 分支名格式校验 | ✅ | `.github/workflows/pr-policy.yml` |
 | PR 新增行密钥 / 路径 / 邮箱扫描 | ✅ | 同上 |
 | 全部 5 项检查设为合并必需 | ✅ | Settings → Branches |
