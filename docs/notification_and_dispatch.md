@@ -157,9 +157,26 @@ python scripts/dispatch_tasks.py --dispatch --dry-run
 | 派工时机 | 等 `python scripts/dispatch_tasks.py` 判定就绪后，一次性发出 |
 | 派工入口 | `python scripts/dispatch_tasks.py --dispatch` |
 | PR 通知 | 所有 PR 保持 draft 直到要评审为止 |
+| 待审 PR | **只剩 #16 一个**（#12、#14 内容已被它完全包含，已关闭） |
+| #16 的评审请求 | 在 DylanWu6 与 321ddi 名下，等其中一人 approve |
 
 **任务内容一个字没删**——退回待派发只是把"指派"这个动作推迟，
 交付物、验收命令、红线、依赖关系全部原样保留在 issue 里。
+
+### 派工为什么必须排在 #16 合并之后
+
+#3–#7 的正文里链向 `docs/project_overview.md`、`docs/pipeline_guide.md`、
+`docs/notification_and_dispatch.md`——这些文档随 #16 才进 `main`。
+在 #16 合并前派工，收到任务的人点进去全是 404。
+
+### 顺带修掉的两个真问题（已随 #16 提交）
+
+- **闸门用错解释器**：原用 `sys.executable` 跑验收套件，而套件依赖 `jsonschema` 等装在项目 `.venv` 里的包。
+  宿主机 Python 缺依赖时报 `ModuleNotFoundError`，闸门据此判"未就绪"——这是环境问题，却会挡住派工。
+  现改为优先使用 `.venv`（兼容 POSIX 布局），无 `.venv` 才回退当前解释器。
+- **stub 服务器在 Windows 上偶发断连**：`tests/test_oncall_roster.py` 的 stub 在 PATCH 时不读请求体就响应并关连接，
+  Windows 因接收缓冲区残留未读数据触发 RST，客户端收到 `ConnectionAbortedError (WinError 10053)`。
+  该测试**单独跑通过、全量跑偶发失败**。现改为先按 `Content-Length` 读掉请求体，与另两个 stub 保持一致。
 
 ---
 
