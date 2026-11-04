@@ -109,11 +109,16 @@ type(scope): 描述
 >
 > ✅ **CODEOWNERS 已进 `main`（PR #8，2026-11-04），自动指派已实测生效，无需任何手工操作。**
 >
+> **只有王浩自己的 PR 特殊**：因为王浩也是所有目录的兜底 owner，而规则禁止作者批准自己最后推的 commit，
+> 所以王浩提的 PR 必须等 **321ddi 或 DylanWu6** 中的另一位点同意（GitHub 会自动 @ 上他们）。
+> 其他人提的 PR 不受此影响——只要不是该目录的唯一 owner，都能自己找到人批。
+>
 > 历史备注（已解决，留作记录）：PR #8 是**引入门禁本身的那一个 PR**，
 > 它的 base 分支还没有 CODEOWNERS，所以 GitHub 不会自动指派评审人，
 > 同时它又被「必须 CODEOWNER approve」卡住——这是 bootstrap 死锁。
 > 当时的解法是临时把 `enforce_admins` 关掉、用管理员权限合并该 PR，**合并后立刻恢复了**。
 > 从此以后所有 PR 都走正常流程，不需要任何人再手动干预。
+
 
 
 > ⚠️ **`driver/registrations.py` 是双人交接点**：registry 函数由刘轲提供、driver 编排由伦锋提供。
