@@ -1,5 +1,14 @@
 # 协作指南
 
+## GitHub 怎么用
+
+仓库是**公开**仓库，`main` 已开启分支保护：不能直接推 `main`，必须走 PR，且需要该目录的 CODEOWNER 批准 + CI 全绿。
+
+- 完整规范（权限矩阵、分支命名、PR 流程、CODEOWNERS 目录归属、泄密红线、命令速查）见 **[docs/github_collaboration.md](docs/github_collaboration.md)**
+- 分支命名：`feat/xxx` `fix/xxx` `docs/xxx`，CI 会校验
+- PR 标题：`type(scope): 描述`，CI 会校验
+- 提交前必跑本地验收：`python scripts/check_repo.py`
+
 ## 安装与提交前检查
 
 从仓库根目录操作，Windows + Python 3.11/3.14 是当前验证环境：

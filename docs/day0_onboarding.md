@@ -1,6 +1,6 @@
 # 第 0 天上手清单（分发当天照着做，2 小时内可自证跑通）
 
-> 配套：`docs/work_assignment.md`（分工）、`docs/FRAMEWORK_CONTRACT.md`（契约）、`docs/rampup_samples.md`（选型）、`docs/benchmark_acquisition.md`（获取方式）。
+> 配套：`docs/work_assignment.md`（分工）、`docs/FRAMEWORK_CONTRACT.md`（契约）、`docs/rampup_samples.md`（选型）、`docs/benchmark_acquisition.md`（获取方式）、`docs/github_collaboration.md`（**GitHub 怎么用**）。
 > 本文只解决一件事：**你今天下午打开仓库，第一个小时到底敲什么命令、看到什么算成功、卡住了怎么办。**
 
 ---
@@ -22,17 +22,24 @@
 
 ```bash
 # 1.1 clone
-git clone <repo-url> && cd llm-safety-eval-research-pipeline
+git clone https://github.com/StrawberryTreea/agent-safety-harness.git && cd agent-safety-harness
 
 # 1.2 用仓库自带解释器（系统 python 缺 PyYAML，会在验收时失败）
 ./.venv/Scripts/python.exe -c "import yaml; print('deps OK')"
 
 # 1.3 确认 driver 骨架能跑（期望：打印 4 步 dry_run，exit 0）
 PYTHONPATH=harness/src ./.venv/Scripts/python.exe -m agent_safety_harness.driver
+
+# 1.4 配好 git 身份（否则 commit 作者名不对，PR 不会自动关联你）
+git config user.name "你的名字"
+git config user.email "你的 GitHub 邮箱"
 ```
 
 **自证成功**：看到 `bench_intake → build_sandbox → run_capture → analyze` 四个 `[ok]` 行。
 **卡住**：报 `ModuleNotFoundError: yaml` → 换 `.venv`；报其它错 → 截图发王浩。
+
+> ⚠️ **仓库现在是公开仓库**，你的 git 身份要设成 GitHub 账号邮箱，否则 PR 不会显示是你的贡献。
+> 完整 GitHub 用法（分支命名、PR 流程、CODEOWNER 找谁审、泄密红线）见 **[docs/github_collaboration.md](github_collaboration.md)**。
 
 ---
 
