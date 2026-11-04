@@ -29,7 +29,9 @@ During development, run the pipeline against **free-tier endpoints** (see `harne
 
 ## Team work plan
 
-[docs/work_assignment.md](docs/work_assignment.md) splits the work across four evaluators (P0–P2 tasks, dependencies, and the weekly plan), with the framework contract in [docs/FRAMEWORK_CONTRACT.md](docs/FRAMEWORK_CONTRACT.md).
+Start with [docs/day0_onboarding.md](docs/day0_onboarding.md) — the exact commands each evaluator runs on day one, what "working" looks like, and where things commonly get stuck.
+
+[docs/work_assignment.md](docs/work_assignment.md) splits the work across four evaluators (P0–P2 tasks, dependencies, the weekly plan, and what each person hands in on day one), with the framework contract in [docs/FRAMEWORK_CONTRACT.md](docs/FRAMEWORK_CONTRACT.md).
 
 ## Original design reference
 

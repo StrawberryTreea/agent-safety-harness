@@ -1,6 +1,7 @@
 # 四人分工与排期 · 分发版（agent-safety-harness）
 
-> 配套规范：`docs/FRAMEWORK_CONTRACT.md`（契约死规定）、`docs/project_architecture.html`（看板）。
+> **配套规范**：`docs/FRAMEWORK_CONTRACT.md`（契约死规定）、`docs/project_architecture.html`（看板）。
+> **第 0 天必读**：`docs/day0_onboarding.md`（今天下午打开仓库第一个小时敲什么命令、看到什么算成功、卡住怎么办）。
 > 本文是**执行分发版**——给刘轲 / 辰浩 / 一迪 / 伦锋 每人一份，标明"具体实现什么、优先做哪、跟谁衔接"。
 > 王浩 = 总体框架与设计，定契约 + 仲裁，**不写具体评测业务代码**。
 
@@ -62,6 +63,7 @@
 | 优先级 | 具体功能 | 产出 / 完成标准 | 衔接 |
 |---|---|---|---|
 | **P0** | 把 `registrations.py` 的 4 个 stub 接成真实调用：`bench_intake`(GitHub @固定revision+哈希校验) / `build_sandbox`(读环境声明自动构建隔离runtime) / `run_capture`(公开执行只产轨迹) / `score`(注入私有规则产 ResultSpec) | 6 函数中至少 4 个非占位；现有 1 个真实 benchmark（AgentSafetyBench）端到端打通 | 供给伦锋（registry 底座）、一迪（run_capture 调 llm_eval）、辰浩（build_sandbox 供隔离 runtime） |
+| **P0** | **`schema.py` 扩展 modality**（契约第 5 章标注的隐藏前置项）：① `modality` 改为可注册可扩展枚举（默认集 `{llm, agent}` 存配置，不用关闭的 Literal）；② 新增 LLM 模态字段；③ 维度不再硬编码进 schema，改由 `taxonomy_ref` 引用；④ `from_record` 按 modality 校验必填；⑤ 旧 adapter/importer 产出的 TaskSpec 补 `modality=agent` | llm_qa 轨产出的 TaskSpec 不缺字段；旧 adapter 全量回归绿 | 一迪（llm_qa 产 TaskSpec）、伦锋（driver 调 TaskSpec） |
 | **P0** | 守住"公开执行 + 私有评分分离"：capture 阶段 `evaluation` 字段必须为空，评分规则绝不进 capture | 代码层强制校验，有单测 | 全体（安全边界） |
 | **P1** | 新增 ≥2 个真实 benchmark（除 AgentSafetyBench 外，优先 InjecAgent / AgentDojo），每个走 `build_sandbox` 自动构建 | 一键 `build_sandbox` + 跑通 ≥3 个 benchmark | 辰浩（产品轨可复用其 scorer）、一迪 |
 | **P1** | 扩展 `adapters/`（native_environment / unified_scenario）覆盖新 benchmark 的环境与任务格式 | adapter 注册可插拔 | 伦锋（driver 调） |
@@ -69,6 +71,8 @@
 | **P2** | CI：registry 函数签名变更告警 + 四轨 schema 校验 | CI 绿 | 伦锋 |
 
 **刘轲的明确红线**：只填真实引擎，**不要重写** `adapters/ sandbox/ evaluation/ importers/` 等已实模块；它们能用就复用。
+
+**刘轲今天下班前交**：① `registrations.py` 6 个 stub 的**替换计划**（哪个接哪个现有模块 + 写清函数签名）；② `source_intake` 在选定 benchmark 上跑出的 catalog 文件。命令见 `docs/day0_onboarding.md` 第 2 节。
 
 ---
 
@@ -85,6 +89,8 @@
 | **P2** | 跨 benchmark 的 `Macro-ASR` 报告（覆盖率门槛 + AgentPoison 官方 ASR-r 单位不互转） | 报告产物 | 王浩（白皮书/论文数据） |
 
 **辰浩的明确红线**：判别标准是"真实入口 + 真实系统行为"，不只商用产品；产品原生 ASR **不得**和模型排行榜混排（测量单元是系统不是模型）。
+
+**辰浩今天下班前交**：① 一份符合 `federated_asr_benchmark/schemas/run_request.schema.json` 的 `run_request.json`（能 `--dry-run` 通过）；② preflight 输出。命令见 `docs/day0_onboarding.md` 第 3 节。
 
 ---
 
@@ -103,6 +109,10 @@
 
 **一迪的明确红线**：执行器 `multi_model_rule_eval_prompt_only.py` 是 2026.03 实测验证过的方案，**不要重写**，直接接数据跑。**但要分清两件事**：① 外部 benchmark 复现（HarmBench / SafetyBench / AgentDojo / ToolEmu，用各自官方判分口径）；② 我们自建的 19 维评测体系（668,820 题聚合集）。两者在文档和论文里**必须分开陈述**，不能混为"我们测了这些 benchmark"。判分方法是默认配置（规则法），后期可换 `eval_method=llm_judge`，不是铁律。
 
+**一迪今天下班前交**：① 一份填好的 `run_config.yaml`（含免费端点，照 `assets/templates/run_config.yaml` 改）；② `source_intake` 产出的 pending manifest + 你填好的 mapping。命令见 `docs/day0_onboarding.md` 第 4、5 节。
+
+> **重要**：执行器只有 `--config` 一个参数，数据路径写在 config 的 `evaluator_config.input_jsonl` 里。外部 benchmark **必须先经 `source_intake` 转成 canonical 格式**（唯一正规路径，见 `day0_onboarding.md` 第 5 节），不要自己写转换脚本。
+
 ---
 
 ## 5. 伦锋 · 自进化组（研究赌注，带闸门）
@@ -119,6 +129,8 @@
 | **P2** | CI：四轨 schema 校验 + registry 签名变更告警 + 进化 manifest 落库 | CI 绿 + 看板 | 刘轲 |
 
 **伦锋的明确红线**：自进化是**研究赌注**，能做成"受控生成 + 八门控 + 人工审批"的循环，但"自动产出更优评测数据"是否有效是开放问题——**绝不承诺全自动**，必须人在环。driver 编排只调 registry 函数，不拼 CLI 字符串。
+
+**伦锋今天下班前交**：① driver 链路图（哪个函数是 stub、哪个是真实现）；② 白名单规则清单。命令见 `docs/day0_onboarding.md` 第 6 节。
 
 ---
 
@@ -166,6 +178,7 @@
 ---
 
 ## 8. 分发检查清单（每人领任务前确认）
+- [ ] 已读 `docs/day0_onboarding.md`（**第 0 天必读**：你的第一条命令、自证成功标准、卡住怎么办）
 - [ ] 已读 `FRAMEWORK_CONTRACT.md` 第 3/4/5/10 章（四轨接口、分类/判分可配置、各人章节）。
 - [ ] 已读本文 **1.5 节测试与模型资源策略**：P0/P1 只用免费 API 打通，P2 才用优质模型贯通，且最终结论只取优质模型产物。
 - [ ] 已读 `docs/rampup_samples.md`（第一轮跑哪些 benchmark / 哪些产品 / 5 天执行顺序），并从 `harness/config/free_endpoints.json` 里挑好本轮要用的免费端点。

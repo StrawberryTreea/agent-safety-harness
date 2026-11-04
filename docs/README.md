@@ -8,7 +8,8 @@
 4. [架构与原始思路图](integration/architecture.md)：模块职责、评分边界、反馈链。
 5. [协作指南](../CONTRIBUTING.md)：扩展代码、测试和提交要求。
 
-**四位评测者第一次上手，先读这三份**：
+**四位评测者第一次上手，先读这四份**：
+[第 0 天上手清单](day0_onboarding.md)（今天敲什么命令、看到什么算成功、卡住怎么办）→
 [四人分工与排期](work_assignment.md)（每人 P0–P2 做什么、跟谁衔接）→
 [跑通样例选型](rampup_samples.md)（第一轮用哪几个 benchmark、哪些产品）→
 [benchmark 获取指南](benchmark_acquisition.md)（从哪下、下到哪、怎么登记与验收）。
@@ -18,7 +19,7 @@
 
 | 工作 | 文档 |
 |---|---|
-| **第一次分工 / 拿任务** | **[四人分工与排期](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
+| **第一次分工 / 拿任务** | **[第 0 天上手清单](day0_onboarding.md)**、**[四人分工与排期](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
 | **第一轮跑哪个 benchmark、怎么拿数据** | **[benchmark 获取指南](benchmark_acquisition.md)**、**[跑通样例选型](rampup_samples.md)** |
 | **免费 API 端点（先用免费档跑通）** | [免费端点配置](../harness/config/free_endpoints.json) |
 | Agent 执行与私有评分 | [Harness](../harness/README.md)、[adapter 状态契约](../harness/BENCHMARK_ADAPTER_STATUS.md) |
