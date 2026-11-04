@@ -1,4 +1,4 @@
-# 四人分工与排期 · 分发版（agent-safety-harness）
+# 四人分工与推进顺序 · 分发版（agent-safety-harness）
 
 > **配套规范**：`docs/FRAMEWORK_CONTRACT.md`（契约死规定）、`docs/project_architecture.html`（看板）。
 > **第 0 天必读**：`docs/day0_onboarding.md`（今天下午打开仓库第一个小时敲什么命令、看到什么算成功、卡住怎么办）。
@@ -73,7 +73,7 @@
 
 **刘轲的明确红线**：只填真实引擎，**不要重写** `adapters/ sandbox/ evaluation/ importers/` 等已实模块；它们能用就复用。
 
-**刘轲今天下班前交**：① `registrations.py` 6 个 stub 的**替换计划**（哪个接哪个现有模块 + 写清函数签名）；② `source_intake` 在选定 benchmark 上跑出的 catalog 文件。命令见 `docs/day0_onboarding.md` 第 2 节。
+**刘轲 P0 交付**：① `registrations.py` 6 个 stub 的**替换计划**（哪个接哪个现有模块 + 写清函数签名）；② `source_intake` 在选定 benchmark 上跑出的 catalog 文件。命令见 `docs/day0_onboarding.md` 第 2 节。
 
 ---
 
@@ -92,7 +92,7 @@
 
 **辰浩的明确红线**：判别标准是"真实入口 + 真实系统行为"，不只商用产品；产品原生 ASR **不得**和模型排行榜混排（测量单元是系统不是模型）。
 
-**辰浩今天下班前交**：① 一份符合 `federated_asr_benchmark/schemas/run_request.schema.json` 的 `run_request.json`（能 `--dry-run` 通过）；② preflight 输出。命令见 `docs/day0_onboarding.md` 第 3 节。
+**辰浩 P0 交付**：① 一份符合 `federated_asr_benchmark/schemas/run_request.schema.json` 的 `run_request.json`（能 `--dry-run` 通过）；② preflight 输出。命令见 `docs/day0_onboarding.md` 第 3 节。
 
 ---
 
@@ -111,7 +111,7 @@
 
 **一迪的明确红线**：执行器 `multi_model_rule_eval_prompt_only.py` 是 2026.03 实测验证过的方案，**不要重写**，直接接数据跑。**但要分清两件事**：① 外部 benchmark 复现（HarmBench / SafetyBench / AgentDojo / ToolEmu，用各自官方判分口径）；② 我们自建的 19 维评测体系（668,820 题聚合集）。两者在文档和论文里**必须分开陈述**，不能混为"我们测了这些 benchmark"。判分方法是默认配置（规则法），后期可换 `eval_method=llm_judge`，不是铁律。
 
-**一迪今天下班前交**：① 一份填好的 `run_config.yaml`（含免费端点，照 `assets/templates/run_config.yaml` 改）；② `source_intake` 产出的 pending manifest + 你填好的 mapping。命令见 `docs/day0_onboarding.md` 第 4、5 节。
+**一迪 P0 交付**：① 一份填好的 `run_config.yaml`（含免费端点，照 `assets/templates/run_config.yaml` 改）；② `source_intake` 产出的 pending manifest + 你填好的 mapping。命令见 `docs/day0_onboarding.md` 第 4、5 节。
 
 > **重要**：执行器只有 `--config` 一个参数，数据路径写在 config 的 `evaluator_config.input_jsonl` 里。外部 benchmark **必须先经 `source_intake` 转成 canonical 格式**（唯一正规路径，见 `day0_onboarding.md` 第 5 节），不要自己写转换脚本。
 
@@ -132,7 +132,7 @@
 
 **伦锋的明确红线**：自进化是**研究赌注**，能做成"受控生成 + 八门控 + 人工审批"的循环，但"自动产出更优评测数据"是否有效是开放问题——**绝不承诺全自动**，必须人在环。driver 编排只调 registry 函数，不拼 CLI 字符串。
 
-**伦锋今天下班前交**：① driver 链路图（哪个函数是 stub、哪个是真实现）；② 白名单规则清单。命令见 `docs/day0_onboarding.md` 第 6 节。
+**伦锋 P0 交付**：① driver 链路图（哪个函数是 stub、哪个是真实现）；② 白名单规则清单。命令见 `docs/day0_onboarding.md` 第 6 节。
 
 ---
 
@@ -157,23 +157,27 @@
 
 ---
 
-## 7. 分期排期（先打通铁轨，再扩展，最后自进化）
+## 7. 推进顺序（先打通铁轨，再扩展，最后自进化）
 
-### 第 1 周（P0 · 各自跑通 + 铁轨联调 — 全程用免费/低价 API，见 1.5 节）
+> **这不是 deadline 表。** 下面三档是**依赖顺序**：P1 依赖 P0 的产物，P2 依赖 P1。
+> 每一档内部各人之间**没有先后要求**，各自按自己的时间推进。
+> 卡住时该做的是**换轨或拆分**，不是等人。
+
+### P0（第一优先级：各自跑通 + 铁轨联调 — 全程用免费/低价 API，见 1.5 节）
 - 王浩：发布契约 + 建立答疑机制（接口分歧即时仲裁）。
 - 刘轲：替换 4 个 registry stub 为真实调用；确认 ≥1 个真实 benchmark 端到端跑通。
 - 辰浩：取真实产品 runtime/凭证，用现有 federated 跑通 ≥1 产品端到端出 ASR（**不等刘轲**）。
 - **一迪**：接外部 benchmark（HarmBench + SafetyBench），50 条冒烟 → 200/500 条扩量；验证 `result_analysis` 产 `failures.jsonl`。
 - 伦锋：driver dry_run 端到端跑通；nl_bridge 白名单拦截测试；`evolve` 先存档不生成。
-- **第一周联调（关键）**：用一迪/辰浩 的 `failures.jsonl` 喂给伦锋 `evolve`，哪怕只打印/存档，验证铁轨贯通。
+- **P0 联调（关键）**：用一迪/辰浩 的 `failures.jsonl` 喂给伦锋 `evolve`，哪怕只打印/存档，验证铁轨贯通。
 
-### 第 2–3 周（P1 · 扩展 + 衔接加固）
+### P1（第二优先级：扩展 + 衔接加固 — 依赖 P0 产物）
 - 刘轲：新增 ≥2 benchmark（第二轮：InjecAgent / MSB），harden `build_sandbox`。
 - 辰浩：注册式自动化接入（adapter+profile），扩到学术自研 Agent。
 - 一迪：`analyze` stub 接 `result_analysis`；四轨聚合质量校验；**自有 668,820 题聚合集（我们自建的 19 维体系）**接外部 benchmark 口径做交叉映射。
 - 伦锋：Loop-A 消解 5 个 blocker（协议冻结/主指标确认/被测与生成器固定/预算配置/调度隔离注册）；Loop-B 控制面接 LLM 生成（带闸门）。
 
-### 第 4 周+（P2 · 自进化研究赌注 + CI/看板 — 此阶段启动优质模型贯通测试）
+### P2（第三优先级：自进化研究赌注 + CI/看板 — 此阶段启动优质模型贯通测试）
 - **优质模型贯通测试**：切到 `config/llm_roles.json` 的旗舰/优质 profile，对全部已打通的管道做全量、可复现出分（带源哈希 + 固定索引）；**只有这阶段的产物才进白皮书/论文**。
 - Loop-A/B 闭环调优；CI（schema 校验 + registry 签名告警 + 进化 manifest 落库）；对外看板/报告。
 
@@ -186,5 +190,5 @@
 - [ ] 已读 `docs/rampup_samples.md`（第一轮跑哪些 benchmark / 哪些产品 / 5 天执行顺序），并从 `harness/config/free_endpoints.json` 里挑好本轮要用的免费端点。
 - [ ] 已 clone 仓库并 `PYTHONPATH=harness/src python -m agent_safety_harness.driver` 跑通 dry_run。
 - [ ] 确认自己负责的模块**哪些是已有代码复用、哪些是 stub/TODO**（见第 1 节），不重写已有。
-- [ ] 认领第 7 节第 1 周 P0 任务，并登记到看板 `project_architecture.html`。
+- [ ] 认领第 7 节 P0 任务，并登记到看板 `project_architecture.html`。
 - [ ] 接口有分歧 → 找王浩仲裁，不私自改 schema。
