@@ -1,7 +1,13 @@
-# 第 0 天上手清单（分发当天照着做，2 小时内可自证跑通）
+# 上手清单（照着做即可，没有截止时间）
 
-> 配套：`docs/work_assignment.md`（分工）、`docs/FRAMEWORK_CONTRACT.md`（契约）、`docs/rampup_samples.md`（选型）、`docs/benchmark_acquisition.md`（获取方式）、`docs/github_collaboration.md`（**GitHub 怎么用**）。
-> 本文只解决一件事：**你今天下午打开仓库，第一个小时到底敲什么命令、看到什么算成功、卡住了怎么办。**
+> 配套：`docs/pipeline_guide.md`（**pipeline 是什么、在哪、怎么跑**）、`docs/work_assignment.md`（分工）、`docs/FRAMEWORK_CONTRACT.md`（契约）、`docs/rampup_samples.md`（选型）、`docs/benchmark_acquisition.md`（获取方式）、`docs/github_collaboration.md`（**GitHub 怎么用**）。
+> 本文只解决一件事：**你打开仓库，先敲什么命令、看到什么算成功、卡住了怎么办。**
+>
+> 📌 **先搞清 pipeline 在哪**：这个仓库的总入口是根目录的 `pipeline.py`，
+> 它有 11 个子命令（`inventory` / `plan` / `smoke` / `analyze` / `loop-a` / `target-*`），
+> 对应四条评测轨。**完整说明见 [docs/pipeline_guide.md](pipeline_guide.md)**，
+> 下面第 3–6 节里的命令全部是这个 pipeline 的一部分。
+
 
 ---
 
@@ -18,7 +24,7 @@
 
 ---
 
-## 1. 环境准备（所有人，30 分钟）
+## 1. 环境准备（所有人，一次性）
 
 ```bash
 # 1.1 clone
@@ -36,7 +42,7 @@ git config user.email "你的 GitHub 邮箱"
 ```
 
 **自证成功**：看到 `bench_intake → build_sandbox → run_capture → analyze` 四个 `[ok]` 行。
-**卡住**：报 `ModuleNotFoundError: yaml` → 换 `.venv`；报其它错 → 截图发王浩。
+**卡住**：报 `ModuleNotFoundError: yaml` → 换 `.venv`；报其它错 → 在自己名下的 Issue 留言说明「报什么错、试过什么」，会有人回。
 
 > ⚠️ **仓库现在是公开仓库**，你的 git 身份要设成 GitHub 账号邮箱，否则 PR 不会显示是你的贡献。
 > 完整 GitHub 用法（分支命名、PR 流程、CODEOWNER 找谁审、泄密红线）见 **[docs/github_collaboration.md](github_collaboration.md)**。
@@ -168,16 +174,21 @@ grep -rn "GATES" scripts/result_analysis.py
 
 ---
 
-## 7. 今天下班前，每人交一样东西（验收标准）
+## 7. 你的 P0 交付物（没有统一截止时间，按自己的节奏推进）
 
-| 人 | 今天下班前必须交 |
-|---|---|
-| 刘轲 | ① `registrations.py` 6 个 stub 的**替换计划**（哪个接哪个现有模块，写清函数签名）② `source_intake` 在你选的 benchmark 上跑出的 catalog 截图/文件 |
-| 辰浩 | ① 一份符合 `run_request.schema.json` 的 `run_request.json`（能 `--dry-run` 通过）② preflight 输出 |
-| 一迪 | ① 一份填好的 `run_config.yaml`（含免费端点）② `source_intake` 产出的 pending manifest + 你填好的 mapping |
-| 伦锋 | ① driver 链路图（哪个函数是 stub、哪个是真实现）② 白名单规则清单 |
+**这一节没有"今天下班前"的要求。** 各自按自己的时间安排推进，做完在对应 Issue 上留言说明即可。
+下面是**你这条轨最终要交的东西**（用于对齐预期，不是当天截止）：
 
-**共同要求**：产物放到 `work/<你的名字>/`，不要散在仓库根目录；卡住的写清楚"卡在哪、试过什么、需要谁配合"。
+| 人 | P0 交付物 | 放在哪 |
+|---|---|---|
+| 刘轲 | ① `registrations.py` 6 个 stub 的**替换计划**（哪个接哪个现有模块，写清函数签名）② `source_intake` 在选定 benchmark 上跑出的 catalog 文件 | `work/liuke/` |
+| 辰浩 | ① 一份符合 `run_request.schema.json` 的 `run_request.json`（能 `--dry-run` 通过）② preflight 输出 | `work/chenhao/` |
+| 一迪 | ① 一份填好的 `run_config.yaml`（含免费端点）② `source_intake` 产出的 pending manifest + 填好的 mapping | `work/yidi/` |
+| 伦锋 | ① driver 链路图（哪个函数是 stub、哪个是真实现）② 白名单规则清单 | `work/lunfeng/` |
+
+**共同要求**：产物放到 `work/<你的名字>/`，不要散在仓库根目录；卡住的写清楚"卡在哪、试过什么、需要谁配合"，不需要等别人批准。
+
+**进度怎么同步**：在自己名下的 Issue 上留言就行（`gh issue comment <编号> --body "..."`，或网页 Issue 页直接回复）。不用向任何人单独汇报，也不用截图。
 
 ---
 

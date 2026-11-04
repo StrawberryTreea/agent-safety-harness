@@ -9,8 +9,9 @@
 5. [协作指南](../CONTRIBUTING.md)：扩展代码、测试和提交要求。
 
 **四位评测者第一次上手，先读这四份**：
-[第 0 天上手清单](day0_onboarding.md)（今天敲什么命令、看到什么算成功、卡住怎么办）→
-[四人分工与排期](work_assignment.md)（每人 P0–P2 做什么、跟谁衔接）→
+[上手清单](day0_onboarding.md)（先敲什么命令、看到什么算成功、卡住怎么办）→
+**[Pipeline 全景说明](pipeline_guide.md)**（**这个仓库的 pipeline 到底长什么样、11 个子命令、四条轨、数据怎么流**）→
+[四人分工与推进顺序](work_assignment.md)（每人 P0–P2 做什么、跟谁衔接）→
 [GitHub 协作规范](github_collaboration.md)（**分支怎么开、PR 怎么提、代码找谁审、密钥红线**）→
 [跑通样例选型](rampup_samples.md)（第一轮用哪几个 benchmark、哪些产品）→
 [benchmark 获取指南](benchmark_acquisition.md)（从哪下、下到哪、怎么登记与验收）。
@@ -20,7 +21,8 @@
 
 | 工作 | 文档 |
 |---|---|
-| **第一次分工 / 拿任务** | **[第 0 天上手清单](day0_onboarding.md)**、**[四人分工与排期](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
+| **不知道 pipeline 是什么、在哪、怎么跑** | **[Pipeline 全景说明](pipeline_guide.md)**（**总入口、11 个子命令、四条轨、数据流向、产物目录、代码在哪**） |
+| **第一次分工 / 拿任务** | **[上手清单](day0_onboarding.md)**、**[四人分工与推进顺序](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
 | **提交代码 / 提 PR / 找谁审** | **[GitHub 协作规范](github_collaboration.md)**（权限矩阵、分支模型、PR 流程、CODEOWNERS、泄密红线、命令速查） |
 | **第一轮跑哪个 benchmark、怎么拿数据** | **[benchmark 获取指南](benchmark_acquisition.md)**、**[跑通样例选型](rampup_samples.md)** |
 | **免费 API 端点（先用免费档跑通）** | [免费端点配置](../harness/config/free_endpoints.json) |

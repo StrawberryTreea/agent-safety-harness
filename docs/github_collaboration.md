@@ -2,7 +2,7 @@
 
 > **仓库**：https://github.com/StrawberryTreea/agent-safety-harness （公开）
 > **适用对象**：王浩、刘轲、辰浩、一迪、伦锋
-> **配套文档**：[分工与排期](work_assignment.md) · [第 0 天上手](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md)
+> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md)
 
 这份文档回答一个具体问题：**5 个人同时改一个仓库，怎么用 GitHub 才不会乱。**
 每一条规则都对应仓库里已经配置好的机制，不是"应该这样做"的口号。
@@ -206,20 +206,26 @@ type(scope): 一句话说明
 
 ---
 
-## 7. 日常节奏
+## 7. 建议节奏（不是硬性规定）
 
-| 频率 | 做什么 | 谁 |
+**没有打卡、没有日报、没有截图、不需要向任何人单独汇报。**
+下面是"如果按这个节奏做会顺一点"建议，你自己安排时间即可：
+
+| 建议 | 做什么 | 谁 |
 |---|---|---|
-| **每天开工** | 拉 `main`（`git pull --rebase`），看自己名下的 issue 是否有新评论 | 各人 |
-| **每天收工前** | 提交当天改动 + 开 PR（不要攒超过一天） | 各人 |
-| **每天一次** | 回应所有 PR 评论、resolve 讨论 | 各人 |
-| **每周一次** | 看 `P0` 里程碑进度，更新看板 | 王浩 |
+| **每次开工** | 拉 `main`（`git pull --rebase`），看自己名下的 issue 有无新评论 | 各人 |
+| **做完一段** | 提交 + 开 PR（别攒太大，一次 PR 一件事更好评审） | 各人 |
+| **有空时** | 回应 PR 评论、resolve 讨论 | 各人 |
+| **阶段推进时** | 看 `P0` 里程碑进度，更新看板 | 王浩 |
 | **随时** | 契约有分歧 → 开 Discussion 并 @王浩 | 任何人 |
+
+**进度同步的唯一方式**：在自己名下的 Issue 上留言。没人会来催你，也没人需要你截图。
 
 **冲突处理**：
 - `git pull --rebase origin main` 能解决就用它，别一上来就 merge
 - rebase 解决不了 → `git merge origin/main`，手动解冲突，**解完再跑一遍验收命令**
 - 冲突文件是别人 owner 的目录 → **在 PR 里 @ 对方**，别自己硬解
+
 
 ---
 
@@ -266,9 +272,9 @@ PR 列表在 `/pulls`，Issue 列表在 `/issues`，设置在 `/settings`。
 
 ---
 
-## 8.5 新人第一周照做清单（照抄即可）
+## 8.5 上手清单（照抄即可，没有截止时间）
 
-**Day 1（今天，一次性）**
+**一次性环境准备**
 
 ```bash
 git clone https://github.com/StrawberryTreea/agent-safety-harness.git
@@ -281,7 +287,7 @@ python -m venv .venv
 然后打开 `https://github.com/StrawberryTreea/agent-safety-harness/issues`，
 找到标题带 **`[P0][你的名字]`** 的那个 issue（已指派给你），点开看交付物清单。
 
-**Day 1 之后，每个工作日循环**
+**之后每次干活时的循环**（顺序固定，节奏自定）
 
 | 步骤 | 命令 / 动作 | 完成标志 |
 |---|---|---|
@@ -299,6 +305,9 @@ python -m venv .venv
 1. **永远不要直接 `git push origin main`** —— 会被拒绝，这是设计。
 2. **永远不要用 `git add -A`** —— 会把别人的目录、你本地的 `runs/`、`.workbuddy/` 一起带进去。逐个文件 `git add`。
 3. **API key 只写环境变量名**（`api_key_env`），真 key 绝不进仓库、绝不发群。
+
+**不需要做的事**：不用打卡、不用交截图、不用向谁单独汇报。做完在 Issue 上留一句就行。
+
 
 ---
 
