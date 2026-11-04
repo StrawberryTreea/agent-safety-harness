@@ -36,12 +36,21 @@ PYTHONPATH=harness/src python -m agent_safety_harness.driver
 
 <!-- 勾选所有涉及的项。没勾选的项视为未改动。 -->
 
-- [ ] 改了数据契约 / schema（`schema.py`、`protocol/`、`canonical_schema.yaml`）→ **必须由 @StrawberryTreea 评审**
-- [ ] 改了统一函数层签名（`registry.py`、`driver/registrations.py` 的 6 个函数）→ **必须通知 @DylanWu6（driver 调用方）**
-- [ ] 改了 `failures.jsonl` 字段 → **必须通知 @DylanWu6（evolve 消费方）**
-- [ ] 改了 `eval_method` / `taxonomy_ref` 相关默认行为 → **必须由 @StrawberryTreea 确认**（这两项是配置变量，不是铁律）
+- [ ] 改了数据契约 / schema（`schema.py`、`protocol/`、`canonical_schema.yaml`）→ **必须知会王浩（StrawberryTreea）**
+- [ ] 改了统一函数层签名（`registry.py`、`driver/registrations.py` 的 6 个函数）→ **必须知会伦锋（DylanWu6，driver 调用方）**
+- [ ] 改了 `failures.jsonl` 字段 → **必须知会伦锋（DylanWu6，evolve 消费方）**
+- [ ] 改了 `eval_method` / `taxonomy_ref` 相关默认行为 → **必须知会王浩（StrawberryTreea）**（这两项是配置变量，不是铁律）
 - [ ] 改了产品 registry / benchmark registry 的版本 pin → **必须附 preflight 证据**
 - [ ] 只改文档
+
+<!--
+上面写"必须知会某人"时，**在你自己写的 PR 描述里手写 @某人**，GitHub 才会把他拉进评审。
+本模板刻意不写 @username：模板里的 @提及会在每次开 PR 时都发通知，
+而这份模板每份 PR 都要复用，不该每次都打扰当事人。
+
+注意：评审是**知会**，不是**审批**。仓库已取消"必须有人 approve 才能合并"的门槛——
+CI 全绿就能合上，上面几项是"该让谁看一眼"，不是"等谁点头才能合"。
+-->
 
 ## 接口 / 版本变化
 

@@ -4,9 +4,13 @@
 
 2026-10-15: Loop A now has local foundation modules and a fixture entry point. See [implementation boundaries](docs/integration/loop_a_implementation.md). Real generator, isolation qualification and experiment protocol remain pending; this does not establish an operational real-world evolution loop.
 
-[中文说明](README.zh-CN.md) · [Documentation](docs/README.md) · [Contributing](CONTRIBUTING.md)
+[中文说明](README.zh-CN.md) · [Documentation](docs/README.md) · [Contributing](CONTRIBUTING.md) · **[Project overview](docs/project_overview.md)**
 
 This is the primary project repository. The integrated platform starts at **V1 (1.0.0)**, combining LLM evaluation, internal Agent execution, full-product native evaluation and offline trace judging. Failure evidence informs new tests and subsequent improvements.
+
+> 📌 **New here? Read these two first**:
+> ① [Project overview](docs/project_overview.md) — goals, scope, the full feature list with status, the three-phase plan, and what counts as done
+> ② [Pipeline guide](docs/pipeline_guide.md) — the single entry point `pipeline.py`, its 11 subcommands, the four tracks, and how data flows
 
 **Implemented:** native entry points, public execution with separate private scoring, result analysis, unaccepted test plans, bounded recipe-based prompt/policy candidates, non-executing model/CLI target preflight, prompt/policy runtime adapters, paired internal-Agent evaluation jobs, and evidence-gated target comparison. **Not implemented:** general experiment scheduling outside the internal-Agent track, replay diagnosis, automatic test-set evolution, model-generated target optimization, deployment and rollback.
 

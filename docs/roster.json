@@ -1,0 +1,93 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-11-04",
+  "repo": "StrawberryTreea/agent-safety-harness",
+  "arbiter": "wanghao",
+  "arbiter_github": "StrawberryTreea",
+  "thresholds_days": {
+    "warn": 14,
+    "escalate": 30
+  },
+  "notes": {
+    "joined_meaning": "joined 是该成员开通本仓库 GitHub 权限、开始协作的日期（2026-11-04），用于给'尚无任何提交'的新成员一个基线，避免刚上手就被判为需移交。",
+    "backup_meaning": "backup 是该成员离线时接手其未完成工作的人（接 issue、继续做）。在 CODEOWNERS 里，他作为该路径的第二知情人——主 owner 有事或长期不上线时，改这个目录仍有人知情、有人接手。合并权不在 CODEOWNERS 上：仓库已取消「必须有人 approve」的门槛，谁的 PR 只要 CI 全绿就能合上。",
+    "single_arbiter": "契约与口径仲裁权只在王浩手上；王浩离线超过阈值时由 backup 代行，范围仅限仲裁与口径裁决，不含仓库权限与分支保护变更。",
+    "coverage_rule": "每条路径配 2 个知情人（主 owner + 代理人），保证改动这个目录时至少有人被提醒到——GitHub 不会把 PR 作者列为自动评审人，只配 1 人时若那人正好是作者就无人知情。"
+  },
+  "members": [
+    {
+      "id": "wanghao",
+      "name": "王浩",
+      "github": "StrawberryTreea",
+      "joined": "2026-11-04",
+      "role": "总体框架与设计 · 契约与口径仲裁 · 唯一 admin",
+      "owns": [
+        "docs/",
+        "protocol/",
+        "references/",
+        "tests/",
+        "scripts/"
+      ],
+      "backup": "yidi",
+      "backup_scope": "契约分歧仲裁、口径裁决、里程碑与文档口径把关；不含仓库权限与分支保护变更",
+      "can_act_for": null
+    },
+    {
+      "id": "liuke",
+      "name": "刘轲",
+      "github": "deep-fry-xiaopengyou",
+      "joined": "2026-11-04",
+      "role": "评测引擎组 · 统一函数层 registry · sandbox",
+      "owns": [
+        "harness/src/agent_safety_harness/",
+        "harness/config/",
+        "scripts/source_intake.py"
+      ],
+      "backup": "lunfeng",
+      "backup_scope": "registry 六函数编排与 driver 侧调用，可接手函数层接线类工作；schema 字段级改动需回到仲裁流程",
+      "can_act_for": null
+    },
+    {
+      "id": "chenhao",
+      "name": "辰浩",
+      "github": "ennnnn3232",
+      "joined": "2026-11-04",
+      "role": "产品评测组 · 完整产品原生评测 · product registry",
+      "owns": [
+        "federated_asr_benchmark/"
+      ],
+      "backup": "yidi",
+      "backup_scope": "failures.jsonl 字段口径与四轨分析接线；产品 CLI 预检与 ASR 口径需回到仲裁流程",
+      "can_act_for": null
+    },
+    {
+      "id": "yidi",
+      "name": "一迪",
+      "github": "321ddi",
+      "joined": "2026-11-04",
+      "role": "LLM QA + 四轨统一分析 · 外部 benchmark 接入",
+      "owns": [
+        "llm_eval/",
+        "scripts/result_analysis.py"
+      ],
+      "backup": "liuke",
+      "backup_scope": "数据接入与来源哈希校验；评测口径与统计结论需回到仲裁流程",
+      "can_act_for": null
+    },
+    {
+      "id": "lunfeng",
+      "name": "伦锋",
+      "github": "DylanWu6",
+      "joined": "2026-11-04",
+      "role": "自进化组 · driver 编排 · CI 与门禁",
+      "owns": [
+        "evolution/",
+        "orchestrator/",
+        "harness/src/agent_safety_harness/driver/"
+      ],
+      "backup": "yidi",
+      "backup_scope": "CI 门禁与 driver 编排；自进化闸门策略与预算口径需回到仲裁流程",
+      "can_act_for": null
+    }
+  ]
+}
