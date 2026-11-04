@@ -1,4 +1,4 @@
-"""nl_bridge · 用 harness_driver LLM 角色把自然语言转成 plan（成员4 负责）
+"""nl_bridge · 用 harness_driver LLM 角色把自然语言转成 plan（伦锋 负责）
 
 复用包内已有的 OpenAICompatibleChatClient（llm.py），密钥只走 api_key_env 环境变量。
 关键点：system_prompt 里把 ToolRegistry 当前所有可用函数列给 LLM，

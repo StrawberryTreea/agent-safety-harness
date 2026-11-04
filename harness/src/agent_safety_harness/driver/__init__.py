@@ -10,11 +10,11 @@
     driver 按 plan 自主串联即可。
 
 分工：
-    - 成员1（引擎组）：registry.py + 各引擎函数（bench_intake / build_sandbox / run_capture / score / analyze / evolve_*）
-    - 成员4（自进化组）：本子包的 planner / executor / nl_bridge
+    - 刘轲（引擎组）：registry.py + 各引擎函数（bench_intake / build_sandbox / run_capture / score / analyze / evolve_*）
+    - 伦锋（自进化组）：本子包的 planner / executor / nl_bridge
 
 导入本包会自动注册 registrations.py 里的占位工具，使整条链路在 dry_run 下可跑通；
-成员1/4 用真实引擎函数替换占位实现即可。
+刘轲/伦锋 用真实引擎函数替换占位实现即可。
 """
 
 from __future__ import annotations

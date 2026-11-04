@@ -1,4 +1,4 @@
-"""executor · 顺序/条件执行 plan（成员4 负责）
+"""executor · 顺序/条件执行 plan（伦锋 负责）
 
 直接调 ToolRegistry.call（Python 函数调用，不是 subprocess）。
 默认行为安全：出错不中断整条链路（记录 error 继续），便于自进化长链路稳健运行。

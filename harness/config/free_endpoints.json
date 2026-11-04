@@ -1,0 +1,132 @@
+{
+  "_comment": "免费/低价端点 profile 集合（供功能打通阶段使用，2026-11 核实）。harness 的 OpenAICompatibleChatClient 只认 base_url + api_key_env + /chat/completions，所以这里每个 profile 都能零代码接入。密钥一律只写环境变量名。免费额度政策会变，注册与使用前以各平台控制台为准。",
+  "_usage": "1) 把需要的 profile 复制进 harness/config/models.json 的 models 字典（刘轲负责合并）；2) 在系统里设置对应环境变量；3) 在 work_assignment.md 1.5 节的分阶段策略下使用：P0/P1 只用这里的免费档，P2 切优质模型。",
+  "endpoints": {
+    "free_zhipu_glm4_flash": {
+      "provider": "openai_compatible",
+      "display_name": "智谱 GLM-4-Flash（永久免费不限量）",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "api_key_env": "ZHIPU_API_KEY",
+      "model": "glm-4-flash",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "注册地址 open.bigmodel.cn；新用户 2000 万 token（永久有效，非 3 个月）；GLM-4-Flash 宣称永久免费不限调用量（受 30 并发/QPS 限速）；支持 ToolCalling，适合测 driver 编排与 agent 工具调用；中文任务表现比 7B 小模型稳，适合当被测模型的中档备选。"
+    },
+    "free_zhipu_glm47_flash": {
+      "provider": "openai_compatible",
+      "display_name": "智谱 GLM-4.7-Flash（永久免费，200K 上下文）",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "api_key_env": "ZHIPU_API_KEY",
+      "model": "glm-4.7-flash",
+      "temperature": 0.0,
+      "max_tokens": 4096,
+      "timeout_seconds": 120,
+      "notes": "200K 上下文，编程/工具调用更强；同一家、同一把 key，可与 glm-4-flash 做能力对照（同一被测对象的两个档位）。"
+    },
+    "free_siliconflow_qwen25_7b": {
+      "provider": "openai_compatible",
+      "display_name": "硅基流动 Qwen2.5-7B-Instruct（永久免费不限量）",
+      "base_url": "https://api.siliconflow.cn/v1",
+      "api_key_env": "SILICONFLOW_API_KEY",
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "注册地址 cloud.siliconflow.cn；新用户 2000 万 token；官方承诺 9B 及以下参数模型永久免费不限量（仅 RPM 限速）；国内低延迟、微信/支付宝可实名。模型多，适合横向扫多个免费档。"
+    },
+    "free_siliconflow_r1_distill": {
+      "provider": "openai_compatible",
+      "display_name": "硅基流动 DeepSeek-R1-Distill-Llama-8B（永久免费，推理型）",
+      "base_url": "https://api.siliconflow.cn/v1",
+      "api_key_env": "SILICONFLOW_API_KEY",
+      "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 180,
+      "notes": "推理型，适合测多步攻击链与思考型被测对象；注意长思考会吃 token，跑 668k 全量前先算预算。"
+    },
+    "free_siliconflow_glm4_9b": {
+      "provider": "openai_compatible",
+      "display_name": "硅基流动 GLM-4-9B-Chat（永久免费，长文本）",
+      "base_url": "https://api.siliconflow.cn/v1",
+      "api_key_env": "SILICONFLOW_API_KEY",
+      "model": "THUDM/glm-4-9b-chat",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "9B 长上下文备选。"
+    },
+    "free_groq_llama": {
+      "provider": "openai_compatible",
+      "display_name": "Groq Llama 系列（免费，速度最快）",
+      "base_url": "https://api.groq.com/openai/v1",
+      "api_key_env": "GROQ_API_KEY",
+      "model": "llama-3.3-70b-versatile",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 60,
+      "notes": "注册地址 console.groq.com，邮箱即发 key、免信用卡、免手机验证；免费档约 30 RPM / 14,400 RPD；推理速度极快，适合大规模冒烟压测；也托管 GPT-OSS 120B。"
+    },
+    "free_openrouter": {
+      "provider": "openai_compatible",
+      "display_name": "OpenRouter 免费模型池（一把 key 覆盖多模型）",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "deepseek/deepseek-r1-0528:free",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "注册地址 openrouter.ai，邮箱注册、免卡；模型名带 :free 后缀的才是免费档（当前约 35-40 个，含 Qwen/DeepSeek/Llama/GPT-OSS）；免费档约 200 RPD；换模型只改 model 字段，不用重新注册。"
+    },
+    "free_gemini_ai_studio": {
+      "provider": "openai_compatible",
+      "display_name": "Google AI Studio Gemini（免费，1M 上下文）",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "api_key_env": "GEMINI_API_KEY",
+      "model": "gemini-2.5-flash",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "申请地址 aistudio.google.com/api-keys，Google 账号即发 key、免卡；免费档约 10 RPM / 250 RPD；1M 上下文是免费方案里唯一能吃超长 prompt 的，适合测长上下文注入场景（AgentLeak/SABER 类）。国内需网络条件，纳入备选而非首选。"
+    },
+    "free_nvidia_nim": {
+      "provider": "openai_compatible",
+      "display_name": "NVIDIA NIM（免费、40 RPM、无每日 token 上限）",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "api_key_env": "NVIDIA_API_KEY",
+      "model": "meta/llama-3.3-70b-instruct",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "build.nvidia.com 申请，邮箱即可，部分区域要手机验证；约 40 RPM 且无每日 token 上限，模型 100+（含 DeepSeek/Qwen/Llama），适合长期跑批。"
+    },
+    "free_github_models": {
+      "provider": "openai_compatible",
+      "display_name": "GitHub Models（免费用 GPT-4.1 / o3 / 有限 Claude 额度）",
+      "base_url": "https://models.github.ai/inference",
+      "api_key_env": "GITHUB_TOKEN",
+      "model": "openai/gpt-4.1",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 120,
+      "notes": "用 GitHub 账号 token 直接调，永久可用但限速；官方 OpenAI 与 Anthropic 均无免费 API 档，所谓“免费 GPT/Claude key”多为共享/泄露 key，随时失效——不要用于正式评测。"
+    },
+    "free_local_ollama": {
+      "provider": "openai_compatible",
+      "display_name": "本地 Ollama（完全免费、无外网依赖、数据不出机）",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "model": "qwen2.5:7b-instruct",
+      "temperature": 0.0,
+      "max_tokens": 2048,
+      "timeout_seconds": 300,
+      "notes": "装 Ollama 后 ollama pull qwen2.5:7b-instruct；key 可填任意非空串（客户端强制要求环境变量存在）。适合离线冒烟与敏感数据场景；但吞吐低，668k 全量不现实，只用于跑通管道。"
+    }
+  },
+  "policy": {
+    "free_tier_for": ["functional_smoke", "schema_validation", "pipeline_debug"],
+    "paid_tier_for": ["final_full_run", "paper_and_whitepaper_numbers"],
+    "rule": "管道没跑通时禁止用优质模型 debug；最终结论只能取优质模型全量可复现产物。"
+  }
+}

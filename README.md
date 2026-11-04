@@ -6,6 +6,31 @@ This is the primary project repository. The integrated platform starts at **V1 (
 
 **Implemented:** native entry points, public execution with separate private scoring, result analysis, unaccepted test plans, bounded recipe-based prompt/policy candidates, non-executing model/CLI target preflight, prompt/policy runtime adapters, paired internal-Agent evaluation jobs, and evidence-gated target comparison. **Not implemented:** general experiment scheduling outside the internal-Agent track, replay diagnosis, automatic test-set evolution, model-generated target optimization, deployment and rollback.
 
+## First-round benchmark selection and data acquisition
+
+The first round targets **external public benchmarks with their official scorers**, not self-aggregated data. Two tracks, two benchmarks each:
+
+| Track | Benchmark | Official scoring | External judge needed |
+|---|---|---|---|
+| `llm_qa` | **SafetyBench** (bilingual, 11,435 multiple-choice questions) | option-index matching (rule-based) | No |
+| `llm_qa` | **HarmBench** | `cais/HarmBench-Llama-2-13b-cls` classifier ASR + AdvBench refusal rate | Yes (classifier) |
+| `agent_execution` | **AgentDojo** | official deterministic validators (`security` field) | No |
+| `agent_execution` | **ToolEmu** | official LM-based safety/helpfulness evaluators | Yes (LLM judge) |
+
+Acquisition, directory layout, intake command and acceptance criteria are documented in [benchmark acquisition](docs/benchmark_acquisition.md). Register datasets with:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/source_intake.py --benchmark-root "<DATA_ROOT>" --protocol-dir protocol --output-dir work/phase1
+```
+
+A benchmark counts as acquired only when its catalog entry is `ready` and its SHA-256 and row count are recorded.
+
+During development, run the pipeline against **free-tier endpoints** (see `harness/config/free_endpoints.json`) and switch to premium models for the final full run. Benchmark data itself is not committed to this repository; only configuration and indices are.
+
+## Team work plan
+
+[docs/work_assignment.md](docs/work_assignment.md) splits the work across four evaluators (P0–P2 tasks, dependencies, and the weekly plan), with the framework contract in [docs/FRAMEWORK_CONTRACT.md](docs/FRAMEWORK_CONTRACT.md).
+
 ## Original design reference
 
 ![Original evaluation and evolution concept (Chinese): test data, environments, Agent execution, scoring, analysis and test-data feedback](assets/figures/evaluation-evolution-concept.png)

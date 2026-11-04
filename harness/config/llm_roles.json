@@ -1,5 +1,5 @@
 {
-  "_comment": "LLM 三角色配置（总体框架定死）。密钥一律只写环境变量名 api_key_env，绝不出现 key 明文。字段含义与包内 llm.py 的 OpenAICompatibleChatClient 对齐。under_test 当前实际来自 harness/config/models.json，成员1 负责把两套合并进本文件。",
+  "_comment": "LLM 三角色配置（总体框架定死）。密钥一律只写环境变量名 api_key_env，绝不出现 key 明文。字段含义与包内 llm.py 的 OpenAICompatibleChatClient 对齐。under_test 当前实际来自 harness/config/models.json，刘轲 负责把两套合并进本文件。",
   "roles": {
     "under_test": {
       "description": "被评对象：被测的模型 / Agent（llm_qa 与 agent_execution 轨的目标）",

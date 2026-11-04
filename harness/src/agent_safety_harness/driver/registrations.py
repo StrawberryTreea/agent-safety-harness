@@ -1,9 +1,9 @@
-"""占位工具注册（scaffold 用）· 成员1/4 用真实引擎替换
+"""占位工具注册（scaffold 用）· 刘轲/伦锋 用真实引擎替换
 
 本文件把六个核心能力注册成 ToolRegistry 工具，但实现是占位（明确标 TODO）。
 目的：在真实 adapter/evaluation/sandbox/evolution 落地前，整条链路（CLI / driver）
-就能以 dry_run 跑通、做端到端冒烟。成员1 负责把 bench_intake / build_sandbox /
-run_capture / score / analyze 换成真实调用；成员4 负责 evolve_*。
+就能以 dry_run 跑通、做端到端冒烟。刘轲 负责把 bench_intake / build_sandbox /
+run_capture / score / analyze 换成真实调用；伦锋 负责 evolve_*。
 
 注册方式即未来真实函数的模板：用 REGISTRY.register_fn 装饰器 + 写清 input_schema /
 arg_doc（driver 和 LLM 都靠这些决定怎么调）。

@@ -1,4 +1,4 @@
-"""planner · 把指令拆成有序函数调用 plan（成员4 负责）
+"""planner · 把指令拆成有序函数调用 plan（伦锋 负责）
 
 两种来源：
     1) 若配置了 harness_driver LLM 角色（llm_roles.json），走 nl_bridge 用 LLM 生成 plan；
