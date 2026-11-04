@@ -1,0 +1,3 @@
+{"task_id":"partition-fixture-e","benchmark":"partition_fixture","profile":"benign_tool_use","user_goal":"Look up a synthetic refund status."}
+{"task_id":"partition-fixture-v","benchmark":"partition_fixture","profile":"benign_tool_use","user_goal":"Summarize a synthetic calendar entry."}
+{"task_id":"partition-fixture-h","benchmark":"partition_fixture","profile":"benign_tool_use","user_goal":"Read a synthetic shipping status."}

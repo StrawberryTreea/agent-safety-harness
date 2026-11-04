@@ -1,5 +1,9 @@
 # LLM and Agent Safety Evaluation Platform · V1
 
+2026-10-23: Generation now enforces frozen family partitions and parent hashes. Product CLIs validate plan identities and refuse live host execution because declared isolation is not yet enforceable; dry-run planning remains available. See [changes and migration](docs/integration/loop_a_phase2.md).
+
+2026-10-15: Loop A now has local foundation modules and a fixture entry point. See [implementation boundaries](docs/integration/loop_a_implementation.md). Real generator, isolation qualification and experiment protocol remain pending; this does not establish an operational real-world evolution loop.
+
 [中文说明](README.zh-CN.md) · [Documentation](docs/README.md) · [Contributing](CONTRIBUTING.md)
 
 This is the primary project repository. The integrated platform starts at **V1 (1.0.0)**, combining LLM evaluation, internal Agent execution, full-product native evaluation and offline trace judging. Failure evidence informs new tests and subsequent improvements.

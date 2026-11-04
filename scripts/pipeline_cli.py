@@ -324,9 +324,64 @@ def main(argv: list[str] | None = None) -> int:
     )
     command = sub.add_parser("target-smoke", help="Run the synthetic local candidate-build and paired-comparison loop")
     command.add_argument("--out", type=Path)
+    command = sub.add_parser("loop-a", help="Local test-evolution contracts, fixtures and formal-readiness checks")
+    command.add_argument("action", choices=("plan", "qualify", "partitions", "metrics", "smoke", "cycle", "compare", "run"))
+    command.add_argument("--config", type=Path, default=ROOT / "protocol/loop_a_experiment.json")
+    command.add_argument("--out", type=Path)
+    command.add_argument("--data-root", type=Path)
+    command.add_argument("--results", type=Path)
+    command.add_argument("--tasks", type=Path, help="Public task JSONL for a partition manifest")
+    command.add_argument("--assignments", type=Path, help="Explicit task-ID to family/partition JSON mapping")
+    command.add_argument("--primary", choices=("net_independent_discoveries", "benign_gated_discoveries"))
+    command.add_argument("--resume", action="store_true")
+    command.add_argument("--strategy", choices=("random", "feedback", "wording"), default="feedback")
+    command.add_argument("--seed", type=int, default=0)
     args = parser.parse_args(argv)
     try:
-        if args.command == "inventory":
+        if args.command == "loop-a":
+            from orchestrator.controller import readiness, smoke as loop_smoke
+            from evolution.qualification import inventory as qualify
+            from evolution.metrics import summarize_discoveries
+            if args.action in {"plan", "run"}:
+                config = json.loads(args.config.read_text(encoding="utf-8"))
+                result = readiness(config)
+                if args.action == "run":
+                    print(json.dumps(result, ensure_ascii=False, indent=2))
+                    return 2
+            elif args.action == "qualify":
+                result = qualify(ROOT, args.data_root)
+            elif args.action == "partitions":
+                if args.tasks is None or args.assignments is None or args.out is None:
+                    raise ValueError("loop-a partitions requires --tasks, --assignments and a new --out directory")
+                from evolution.partitions import build_manifest
+                from orchestrator.workers import read_rows
+                manifest = build_manifest(read_rows(args.tasks), json.loads(args.assignments.read_text(encoding="utf-8-sig")))
+                result = {"schema_version": "partition_build_report_v1", "manifest_hash": manifest["manifest_hash"],
+                          "counts": {p: sum(row["partition"] == p for row in manifest["entries"]) for p in ("E", "V", "H")},
+                          "formal_ready": False}
+            elif args.action == "metrics":
+                if args.results is None:
+                    raise ValueError("loop-a metrics requires --results")
+                from orchestrator.workers import read_rows
+                result = summarize_discoveries(read_rows(args.results), primary=args.primary)
+            elif args.action in {"cycle", "compare"}:
+                if args.out is None:
+                    raise ValueError("loop-a cycle/compare requires a new --out directory")
+                from orchestrator.fixture_cycle import run as fixture_cycle, compare
+                output = args.out.expanduser().resolve()
+                result = (compare(output, seed=args.seed, resume=args.resume) if args.action == "compare" else
+                          fixture_cycle(output, strategy=args.strategy, seed=args.seed, resume=args.resume))
+            else:
+                if args.out is None:
+                    raise ValueError("loop-a smoke requires a new --out directory")
+                result = loop_smoke(args.out.expanduser().resolve(), resume=args.resume)
+            if args.out is not None and args.action not in {"smoke", "cycle", "compare"}:
+                from orchestrator.workers import write_json as write_once
+                empty_output(args.out)
+                write_once(args.out / "summary.json", result)
+                if args.action == "partitions":
+                    write_once(args.out / "partitions.json", manifest)
+        elif args.command == "inventory":
             result = inventory()
         elif args.command == "plan":
             result = plan(args)

@@ -116,8 +116,22 @@ def main() -> int:
             analysis = json.loads((out / "llm-analysis/summary.json").read_text(encoding="utf-8"))
             if analysis["candidate_plan_count"] or analysis["unknown_count"] or analysis["admitted_candidate_count"]:
                 raise RuntimeError("Unexpected LLM fixture analysis")
+            loop_out = out / "loop-a"
+            run("loop-a-comparison", ["pipeline.py", "loop-a", "compare", "--out", str(loop_out), "--seed", "0"])
+            comparison = json.loads((loop_out / "summary.json").read_text(encoding="utf-8"))
+            if (comparison["formal_ready"] or comparison["paid_calls_dispatched"] or comparison["total_executions"] != 18
+                    or not comparison["equal_execution_limits"] or not comparison["equal_cost_limits"]
+                    or not comparison["frozen_components_match"]):
+                raise RuntimeError("Unexpected Loop A fixture comparison")
+            for arm in comparison["arms"].values():
+                if (arm["replay_outcome"] != "reproducible" or not arm["benign_pair_valid"]
+                        or arm["admitted_candidate_count"] or arm["metrics"]["attack_new_discoveries"]
+                        or arm["budget"]["executions_committed_or_reserved"] != 6
+                        or arm["budget"]["unsettled_jobs"]):
+                    raise RuntimeError("Loop A fixture replay/control/admission invariant failed")
             summary["fixtures"] = {"safe_stub": {"pass": 3, "total": 3}, "unsafe_stub": {"pass": 1, "total": 3, "candidate_plans": 2},
-                                   "llm_reference": {"pass": 3, "total": 3}, "admitted_candidates": 0}
+                                   "llm_reference": {"pass": 3, "total": 3}, "admitted_candidates": 0,
+                                   "loop_a": {"arms": 3, "executions_per_arm": 6, "admitted": 0, "new_discoveries": 0, "paid_calls": 0}}
         summary["status"] = "passed"
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.TimeoutExpired) as exc:
         summary.update(status="failed", error=f"{type(exc).__name__}: {exc}")

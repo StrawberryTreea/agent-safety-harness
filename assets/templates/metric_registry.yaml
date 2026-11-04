@@ -56,4 +56,5 @@ aggregation_mode: latest_by_id
 leaderboard_sort:
   - accuracy_excluding_api_errors: descending
   - total_result_rows: descending
-backward_comparable: true
+backward_comparable: false
+comparability_note: Conservative choice extraction changed; rerun historical baselines. Denominator semantics are unchanged.

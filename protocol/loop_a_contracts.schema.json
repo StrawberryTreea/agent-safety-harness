@@ -1,0 +1,521 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:llm-safety:loop-a-contracts:v1",
+  "title": "Loop A execution and candidate contracts",
+  "$defs": {
+    "PartitionManifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "entries", "manifest_hash"],
+      "properties": {
+        "schema_version": {"const": "partition_manifest_v1"},
+        "manifest_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "entries": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["task_id", "family_id", "partition", "public_task_hash"],
+            "properties": {
+              "task_id": {"type": "string", "pattern": "\\S"},
+              "family_id": {"type": "string", "pattern": "\\S"},
+              "partition": {"enum": ["E", "V", "H"]},
+              "public_task_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+            }
+          }
+        }
+      }
+    },
+    "FeedbackView": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "public_task", "observed_signals", "root_cause"],
+      "properties": {
+        "schema_version": {"const": "feedback_view_v1"},
+        "root_cause": {"const": "unconfirmed"},
+        "observed_signals": {"type": "array", "uniqueItems": true, "items": {"enum": ["safety_violation", "attack_success", "task_failure", "rule_eval_failure"]}},
+        "public_task": {
+          "type": "object", "additionalProperties": false,
+          "required": ["task_id", "user_goal"],
+          "properties": {
+            "task_id": {"type": "string", "pattern": "\\S"},
+            "user_goal": {"type": "string"},
+            "benchmark": {"type": "string"},
+            "profile": {"type": "string"}
+          }
+        }
+      }
+    },
+    "AdmissionPolicy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "transform", "minimum_valid_replays", "dedup_threshold", "family_quotas"],
+      "properties": {
+        "version": {"type": "string", "minLength": 1},
+        "transform": {
+          "type": "object", "additionalProperties": false,
+          "required": ["spaces", "allowed_pointers"],
+          "properties": {
+            "spaces": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "allowed_pointers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^/.+"}},
+            "semantic_review_required": {"type": "boolean"}
+          }
+        },
+        "minimum_valid_replays": {"type": "integer", "minimum": 1},
+        "dedup_threshold": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "family_quotas": {"type": "object", "propertyNames": {"minLength": 1}, "additionalProperties": {"type": "integer", "minimum": 0}}
+      }
+    },
+    "LoopSpec": {
+      "type": "object",
+      "required": ["schema_version", "status", "scope", "primary_metric", "generator", "target", "transfer_targets", "budget", "stop_policy", "hypotheses", "partitions", "formal_execution_enabled"],
+      "properties": {
+        "schema_version": {"const": "loop_a_protocol_draft_v1"},
+        "status": {"enum": ["draft_requires_confirmation", "frozen"]},
+        "scope": {"const": "test_set_evolution_only"},
+        "primary_metric": {"enum": [null, "net_independent_discoveries", "benign_gated_discoveries"]},
+        "primary_choices": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "discovery_key": {"const": ["parent_family_id", "violation_rule_id", "condition_signature"]},
+        "net_metric_unit": {"type": "string"},
+        "unknown_pair_policy": {"const": "withhold_net_metric"},
+        "generator": {"type": ["object", "null"]},
+        "target": {"type": ["object", "null"]},
+        "transfer_targets": {"type": "array", "items": {"type": "object"}},
+        "budget": {
+          "type": "object", "additionalProperties": false,
+          "required": ["execution_limit", "cost_limit_microunits", "currency"],
+          "properties": {
+            "execution_limit": {"type": ["integer", "null"], "minimum": 1},
+            "cost_limit_microunits": {"type": ["integer", "null"], "minimum": 1},
+            "currency": {"type": ["string", "null"]}
+          }
+        },
+        "stop_policy": {"const": "stop_dispatch_when_any_limit_is_reached_or_cannot_reserve_next_job"},
+        "hypotheses": {"type": "object", "required": ["H1", "H2", "H3"], "additionalProperties": {"type": "string"}},
+        "partitions": {"const": ["E", "V", "H"]},
+        "formal_execution_enabled": {"const": false},
+        "publication_claim": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "RunIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "run_identity_v1"
+        },
+        "track": {
+          "enum": [
+            "llm_qa",
+            "agent_execution",
+            "agent_product",
+            "trace_judge"
+          ]
+        },
+        "inputs_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "effective_prompt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "target_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "environment_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "scorer_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dataset_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "identity_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "track",
+        "inputs_hash",
+        "effective_prompt_hash",
+        "target_hash",
+        "environment_hash",
+        "scorer_hash",
+        "dataset_version",
+        "seed",
+        "identity_hash"
+      ]
+    },
+    "TransformSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "space": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field_pointer": {
+          "type": "string",
+          "pattern": "^/.+"
+        },
+        "before_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "after_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "changed_factors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "space",
+        "field_pointer",
+        "before_hash",
+        "after_hash",
+        "changed_factors"
+      ]
+    },
+    "GateResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "pending",
+            "error"
+          ]
+        },
+        "reason_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "status",
+        "reason_code",
+        "evidence"
+      ]
+    },
+    "TestCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "test_candidate_v2"
+        },
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent_family_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "partition": {
+          "enum": [
+            "E",
+            "V",
+            "H"
+          ]
+        },
+        "partition_manifest_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "parent_task": {
+          "type": "object"
+        },
+        "public_task": {
+          "type": "object"
+        },
+        "transform_spec": {
+          "$ref": "#/$defs/TransformSpec"
+        },
+        "feedback_view_ref": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "generator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "backend": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "enum": [
+                "fixture",
+                "real"
+              ]
+            }
+          },
+          "required": [
+            "backend",
+            "version",
+            "kind"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "candidate_id",
+        "parent_family_id",
+        "partition",
+        "partition_manifest_hash",
+        "parent_task",
+        "public_task",
+        "transform_spec",
+        "feedback_view_ref",
+        "generator"
+      ]
+    },
+    "EvalJob": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "eval_job_v1"
+        },
+        "job_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "track": {
+          "enum": [
+            "llm_qa",
+            "agent_execution",
+            "agent_product",
+            "trace_judge"
+          ]
+        },
+        "identity": {
+          "$ref": "#/$defs/RunIdentity"
+        },
+        "budget_bucket": {
+          "enum": [
+            "baseline",
+            "generation",
+            "attack",
+            "benign",
+            "replay",
+            "admission",
+            "retry",
+            "transfer",
+            "ablation"
+          ]
+        },
+        "attempt_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_executions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_cost_microunits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "native_output_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "isolation_evidence_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_id",
+        "track",
+        "identity",
+        "budget_bucket",
+        "attempt_no",
+        "max_executions",
+        "max_cost_microunits",
+        "native_output_refs",
+        "isolation_evidence_ref"
+      ]
+    },
+    "FailureEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "failure_evidence_v1"
+        },
+        "parent_family_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "violation_rule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "identity_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "replay_attempts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "replay_outcome": {
+          "enum": [
+            "reproducible",
+            "not_reproduced",
+            "incomplete"
+          ]
+        },
+        "root_cause": {
+          "enum": [
+            "confirmed",
+            "unconfirmed"
+          ]
+        },
+        "benign_pair_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trace_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "parent_family_id",
+        "violation_rule_id",
+        "condition",
+        "identity_hash",
+        "replay_attempts",
+        "replay_outcome",
+        "root_cause",
+        "benign_pair_ref",
+        "trace_refs"
+      ]
+    },
+    "DatasetVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "dataset_version_v1"
+        },
+        "kind": {
+          "enum": [
+            "fixture",
+            "formal"
+          ]
+        },
+        "parent_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "admission_policy_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "candidate_hashes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "uniqueItems": true
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "admitted_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "diff": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "added_candidate_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "added_candidate_ids"
+          ]
+        },
+        "frozen_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "parent_version",
+        "admission_policy_hash",
+        "seed",
+        "candidate_hashes",
+        "version",
+        "admitted_count",
+        "diff",
+        "frozen_at",
+        "note"
+      ]
+    }
+  }
+}
