@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 协作流程与分支规范问题
+    url: https://github.com/StrawberryTreea/agent-safety-harness/blob/main/docs/github_collaboration.md
+    about: 分支命名、PR 流程、评审规则、权限问题的统一说明，先看这里
+  - name: 契约仲裁（王浩）
+    url: https://github.com/StrawberryTreea/agent-safety-harness/discussions
+    about: schema / 契约 / 评测轨接口有分歧时，在这里开讨论并 @StrawberryTreea

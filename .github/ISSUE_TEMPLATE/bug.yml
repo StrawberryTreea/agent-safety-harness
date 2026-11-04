@@ -1,0 +1,53 @@
+name: 缺陷
+description: 报告一个可复现的失败、错误结果或环境问题
+title: "[缺陷] "
+labels: ["type:bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 现象
+      description: 期望什么、实际什么。只写现象，不要写推测的原因。
+      placeholder: 期望 run_product.py 产出 100 条 case_result；实际在第 3 条因 AGENTDOJO_PYTHON 未设置直接退出
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      description: 完整的命令序列，包含环境变量设置。从仓库根目录执行。
+      placeholder: |
+        $ python scripts/run_product.py --request federated_asr_benchmark/examples/run_request.json
+        $ echo $?
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境
+      description: Python 版本、操作系统、关键依赖版本。只填和复现有关的。
+      placeholder: Windows 11 / Python 3.14 / 已安装 requirements-dev.txt
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 出问题的模块
+      options:
+        - harness（评测引擎）
+        - federated_asr_benchmark（产品评测）
+        - llm_eval（LLM 评测）
+        - evolution / orchestrator（自进化）
+        - scripts（工具脚本）
+        - docs（文档）
+        - CI
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或报错
+      description: 贴关键报错即可。注意先删掉里面的 API key、token、本机路径和他人个人信息。

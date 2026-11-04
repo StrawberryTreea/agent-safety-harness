@@ -37,6 +37,8 @@ Start with [docs/day0_onboarding.md](docs/day0_onboarding.md) — the exact comm
 
 [docs/work_assignment.md](docs/work_assignment.md) splits the work across four evaluators (P0–P2 tasks, dependencies, the weekly plan, and what each person hands in on day one), with the framework contract in [docs/FRAMEWORK_CONTRACT.md](docs/FRAMEWORK_CONTRACT.md).
 
+[docs/github_collaboration.md](docs/github_collaboration.md) covers the GitHub workflow itself: permission matrix, branch naming, the PR gate (CODEOWNER approval + CI), the code-ownership map by directory, the secret-leak red lines, and copy-pasteable commands for the daily loop.
+
 ## Original design reference
 
 ![Original evaluation and evolution concept (Chinese): test data, environments, Agent execution, scoring, analysis and test-data feedback](assets/figures/evaluation-evolution-concept.png)

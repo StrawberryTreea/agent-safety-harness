@@ -117,6 +117,15 @@ python -m venv .venv
 
 这些结果证明本地链路可运行。真实安全成绩需要另行配置模型与数据，并验证环境、覆盖率和 scorer。详见[上手指南](docs/getting_started.md)、[验收记录](docs/integration/validation.md)。
 
+## 多人协作：GitHub 怎么用
+
+本仓库为**公开**仓库，`main` 已开启分支保护：不能直接推 `main`，必须走 PR，且需该目录的 CODEOWNER 批准 + CI 全绿。
+
+- 分支命名 `feat/xxx` `fix/xxx` `docs/xxx`，PR 标题 `type(scope): 描述`，CI 自动校验
+- 每个目录归谁审，见 `.github/CODEOWNERS`
+- 密钥 / 本机路径 / 内网地址一律不入库，CI 会扫描 PR 新增行
+- 完整规范（权限矩阵、PR 流程、泄密红线、命令速查）见 **[GitHub 协作规范](docs/github_collaboration.md)**
+
 ## 图 3：协作者运行流程
 
 ```mermaid

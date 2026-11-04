@@ -11,6 +11,7 @@
 **四位评测者第一次上手，先读这四份**：
 [第 0 天上手清单](day0_onboarding.md)（今天敲什么命令、看到什么算成功、卡住怎么办）→
 [四人分工与排期](work_assignment.md)（每人 P0–P2 做什么、跟谁衔接）→
+[GitHub 协作规范](github_collaboration.md)（**分支怎么开、PR 怎么提、代码找谁审、密钥红线**）→
 [跑通样例选型](rampup_samples.md)（第一轮用哪几个 benchmark、哪些产品）→
 [benchmark 获取指南](benchmark_acquisition.md)（从哪下、下到哪、怎么登记与验收）。
 测试阶段先用免费 API 打通管道，全部跑通后再用优质模型做贯通测试——免费端点见 `harness/config/free_endpoints.json`。
@@ -20,6 +21,7 @@
 | 工作 | 文档 |
 |---|---|
 | **第一次分工 / 拿任务** | **[第 0 天上手清单](day0_onboarding.md)**、**[四人分工与排期](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
+| **提交代码 / 提 PR / 找谁审** | **[GitHub 协作规范](github_collaboration.md)**（权限矩阵、分支模型、PR 流程、CODEOWNERS、泄密红线、命令速查） |
 | **第一轮跑哪个 benchmark、怎么拿数据** | **[benchmark 获取指南](benchmark_acquisition.md)**、**[跑通样例选型](rampup_samples.md)** |
 | **免费 API 端点（先用免费档跑通）** | [免费端点配置](../harness/config/free_endpoints.json) |
 | 回路A当前代码与本地验证 | [基础实现与限制](integration/loop_a_implementation.md) |
