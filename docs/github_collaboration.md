@@ -171,9 +171,9 @@ type(scope): 一句话说明
 | 红线 | 正例 | 反例 |
 |---|---|---|
 | API key / token | `api_key_env: "ZHIPU_API_KEY"` | `api_key: "sk-xxxx"` |
-| 本机绝对路径 | `AGENT_EVAL_DATA_ROOT`（环境变量） | `C:\Users\xiaoz\Desktop\...` |
-| 内网地址 | 不写 | `211.81.55.158` / `a100-p22` |
-| 他人个人信息 | `@321ddi` | 真实邮箱 `xxx@qq.com` |
+| 本机绝对路径 | `AGENT_EVAL_DATA_ROOT`（环境变量） | `C:\Users\<你的用户名>\Desktop\...` |
+| 内网地址 | 不写 | `10.x.x.x` / `a100-p<host>` |
+| 他人个人信息 | `@321ddi` | 真实邮箱 `<someone>@qq.com` |
 | 原始数据集 | 登记来源 + hash | 整个 benchmark 数据文件 |
 | 运行输出 | 结论 + 指标 | `runs/` 整个目录 |
 
