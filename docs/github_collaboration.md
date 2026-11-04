@@ -86,6 +86,11 @@ type(scope): 描述
 **谁能 approve**：必须是**该目录的 CODEOWNER**，且**不是你最后推的那个人**。
 所以你的 PR 该找谁批，看上面那张表里的第二位。
 
+> ⚠️ **第一次 PR 的特例**：CODEOWNERS 文件是随 PR #8 一起进 `main` 的，
+> 而 GitHub 的自动指派读的是 **base 分支**的 CODEOWNERS——
+> 所以 PR #8 本身**不会自动指派任何人**，需要王浩手动 @ 评审人。
+> **从 PR #9 起就全自动了**，不用管这个特例。
+
 **CODEOWNER 是谁，看这个表**（`.github/CODEOWNERS` 是唯一权威）：
 
 | 你改的目录 | 自动找谁审 |
@@ -278,3 +283,4 @@ PR 列表在 `/pulls`，Issue 列表在 `/issues`，设置在 `/settings`。
 | CODEOWNERS 目录归属 | ✅ | `.github/CODEOWNERS` |
 | PR 标题 / 分支名格式校验 | ✅ | `.github/workflows/pr-policy.yml` |
 | PR 新增行密钥 / 路径 / 邮箱扫描 | ✅ | 同上 |
+| 全部 5 项检查设为合并必需 | ✅ | Settings → Branches |
