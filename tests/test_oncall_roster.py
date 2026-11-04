@@ -220,6 +220,15 @@ class ApiLayerTests(unittest.TestCase):
 
             def _respond(self):
                 calls.append((self.command, self.path))
+                # Read the request body before answering. A PATCH carries a
+                # JSON payload; if the server responds and closes while that
+                # payload is still sitting unread in the socket buffer, Windows
+                # aborts the connection and the client sees
+                # ConnectionAbortedError (WinError 10053) instead of the
+                # response. Reading it first makes the stub deterministic.
+                length = int(self.headers.get("Content-Length") or 0)
+                if length:
+                    self.rfile.read(length)
                 body = json.dumps([
                     {"number": 3, "title": "P0 task", "assignee": {"login": "deep-fry-xiaopengyou"}},
                     {"number": 9, "title": "a PR in disguise", "pull_request": {"url": "x"}},

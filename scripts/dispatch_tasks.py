@@ -99,6 +99,26 @@ def check_contract(root: Path = ROOT) -> Tuple[bool, str]:
     return True, f"{len(CONTRACT_FILES)} 个契约文件齐备且已入库"
 
 
+def project_python(root: Path = ROOT) -> str:
+    """The interpreter that actually has the project's dependencies installed.
+
+    The gate runs the acceptance suite in a subprocess, and that suite imports
+    third-party packages (jsonschema, requests, ...). Those live in the
+    project's own .venv, not in whatever interpreter happens to be running
+    this script. Using sys.executable therefore reports a false failure on any
+    machine where the ambient Python lacks the dependencies -- the gate would
+    then block dispatch for a reason that has nothing to do with the code.
+
+    Prefer .venv when it exists; fall back to the current interpreter so the
+    script still works in a bare checkout.
+    """
+    for relative in (".venv/Scripts/python.exe", ".venv/bin/python", ".venv/Scripts/python"):
+        candidate = root / relative
+        if candidate.exists():
+            return str(candidate)
+    return sys.executable
+
+
 def check_pipeline(root: Path = ROOT) -> Tuple[bool, str]:
     """The pipeline entry point must be runnable, or no task can be started."""
     entry = root / "pipeline.py"
@@ -106,7 +126,7 @@ def check_pipeline(root: Path = ROOT) -> Tuple[bool, str]:
         return False, "缺少 pipeline.py"
     try:
         result = subprocess.run(
-            [sys.executable, str(entry), "--help"], cwd=root,
+            [project_python(root), str(entry), "--help"], cwd=root,
             capture_output=True, text=True, timeout=120, check=False,
             env={**os.environ, "PYTHONUTF8": "1"},
         )
@@ -122,7 +142,7 @@ def check_acceptance(root: Path = ROOT) -> Tuple[bool, str]:
     out = root / "runs" / ("dispatch-acceptance-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S"))
     try:
         result = subprocess.run(
-            [sys.executable, "scripts/check_repo.py", "--out", str(out)],
+            [project_python(root), "scripts/check_repo.py", "--out", str(out)],
             cwd=root, capture_output=True, text=True, timeout=600, check=False,
             env={**os.environ, "PYTHONUTF8": "1"},
         )
@@ -141,7 +161,7 @@ def check_documentation(root: Path = ROOT) -> Tuple[bool, str]:
         return False, "缺少 scripts/check_doc_map.py"
     try:
         result = subprocess.run(
-            [sys.executable, "scripts/check_doc_map.py"], cwd=root,
+            [project_python(root), "scripts/check_doc_map.py"], cwd=root,
             capture_output=True, text=True, timeout=120, check=False,
         )
     except (OSError, subprocess.SubprocessError) as exc:

@@ -31,6 +31,38 @@ class DocumentationCheckTests(unittest.TestCase):
         self.assertTrue(passed, detail)
 
 
+class InterpreterTests(unittest.TestCase):
+    """The gate must run the suite with the interpreter that has the deps.
+
+    The acceptance suite imports jsonschema and friends, which live in the
+    project's .venv. Using the ambient interpreter reports a false failure on
+    any machine whose Python lacks them.
+    """
+
+    def test_venv_interpreter_is_preferred(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            venv = root / ".venv" / "Scripts"
+            venv.mkdir(parents=True)
+            (venv / "python.exe").write_text("", encoding="utf-8")
+            self.assertEqual(dispatch_tasks.project_python(root),
+                             str(venv / "python.exe"))
+
+    def test_posix_venv_layout_is_found(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            venv = root / ".venv" / "bin"
+            venv.mkdir(parents=True)
+            (venv / "python").write_text("", encoding="utf-8")
+            self.assertEqual(dispatch_tasks.project_python(root),
+                             str(venv / "python"))
+
+    def test_falls_back_to_current_interpreter_without_venv(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(dispatch_tasks.project_python(Path(tmp)),
+                             sys.executable)
+
+
 class RosterCheckTests(unittest.TestCase):
     def test_shipped_codeowners_covers_every_path(self):
         passed, detail = dispatch_tasks.check_roster()
