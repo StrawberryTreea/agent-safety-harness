@@ -34,3 +34,15 @@ jobs:
         with:
           name: oncall-report
           path: runs/oncall/
+
+  doc-map:
+    name: 文档地图一致性
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: 检查地图清单与实际文档一致
+        run: |
+          python scripts/check_doc_map.py

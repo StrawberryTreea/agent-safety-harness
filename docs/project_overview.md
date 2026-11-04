@@ -295,6 +295,7 @@ P0  各自跑通 + 铁轨联调      →  P1  扩展 + 衔接加固      →  P2
 
 | 你想知道 | 看哪份 |
 |---|---|
+| **不确定该读哪份、文档冲突时以谁为准** | **[DOCUMENT_MAP.md](DOCUMENT_MAP.md)**（文档地图：五层结构、阅读路径、权威性裁决） |
 | 怎么跑、命令是什么 | [pipeline_guide.md](pipeline_guide.md) |
 | 接口约定、数据契约、红线 | [FRAMEWORK_CONTRACT.md](FRAMEWORK_CONTRACT.md) |
 | 谁做什么、谁 block 谁 | [work_assignment.md](work_assignment.md) |
