@@ -86,25 +86,35 @@ type(scope): 描述
 **谁能 approve**：必须是**该目录的 CODEOWNER**，且**不是你最后推的那个人**。
 所以你的 PR 该找谁批，看上面那张表里的第二位。
 
-> ⚠️ **第一次 PR 的特例**：CODEOWNERS 文件是随 PR #8 一起进 `main` 的，
-> 而 GitHub 的自动指派读的是 **base 分支**的 CODEOWNERS——
-> 所以 PR #8 本身**不会自动指派任何人**，需要王浩手动 @ 评审人。
-> **从 PR #9 起就全自动了**，不用管这个特例。
+> **CODEOWNER 是谁，看这个表**（`.github/CODEOWNERS` 是唯一权威）：
+>
+> | 你改的目录 | 自动找谁审 |
+> |---|---|
+> | `harness/src/agent_safety_harness/`（除 driver）、`harness/config/`、`scripts/source_intake.py` | 刘轲 + 王浩 |
+> | `federated_asr_benchmark/` | 辰浩 + 王浩 |
+> | `llm_eval/`、`scripts/result_analysis.py` | 一迪 + 王浩（`result_analysis.py` 另有伦锋） |
+> | `evolution/`、`orchestrator/`、`harness/src/agent_safety_harness/driver/` | 伦锋 + 刘轲 + 王浩 |
+> | `docs/`、`protocol/`、`references/`、`scripts/` 其余、`tests/` | 王浩 + 一迪 + 伦锋 |
+>
+> **实测已验证**（2026-11-04）：改 `docs/` → 自动请求 `DylanWu6` + `321ddi`；
+> 改 `federated_asr_benchmark/` → 自动请求 `ennnnn3232`。
+> 注意：**PR 作者本人不会被自动列为评审人**（GitHub 行为），
+> 所以你看到只有 1 个 owner 被请求时，先看自己是不是那个 owner。
 
-**CODEOWNER 是谁，看这个表**（`.github/CODEOWNERS` 是唯一权威）：
-
-| 你改的目录 | 自动找谁审 |
-|---|---|
-| `harness/src/agent_safety_harness/`（除 driver）、`harness/config/`、`scripts/source_intake.py` | 刘轲 + 王浩 |
-| `federated_asr_benchmark/` | 辰浩 + 王浩 |
-| `llm_eval/`、`scripts/result_analysis.py` | 一迪 + 王浩 |
-| `evolution/`、`orchestrator/`、`harness/src/agent_safety_harness/driver/` | 伦锋 + 刘轲 + 王浩 |
-| `docs/`、`protocol/`、`references/`、`scripts/` 其余、`tests/` | 王浩 + 一迪 + 伦锋 |
 
 > **为什么每条路径都有 2 个以上 owner**：仓库开了 `require_last_push_approval`（**作者不能 approve 自己最后推的代码**）。
 > 如果某个目录只有 1 个 owner，就会死锁——比如刘轲改 `harness/`，而他自己就是唯一 CODEOWNER，没人能批他的 PR。
 > 所以每条路径都配了「主 owner + 兜底评审人」，保证你的 PR 一定有人能批。
 > 兜底人选是这么定的：改自己的目录时，找**该路径的另一位 owner**；不确定时找王浩。
+>
+> ✅ **CODEOWNERS 已进 `main`（PR #8，2026-11-04），自动指派已实测生效，无需任何手工操作。**
+>
+> 历史备注（已解决，留作记录）：PR #8 是**引入门禁本身的那一个 PR**，
+> 它的 base 分支还没有 CODEOWNERS，所以 GitHub 不会自动指派评审人，
+> 同时它又被「必须 CODEOWNER approve」卡住——这是 bootstrap 死锁。
+> 当时的解法是临时把 `enforce_admins` 关掉、用管理员权限合并该 PR，**合并后立刻恢复了**。
+> 从此以后所有 PR 都走正常流程，不需要任何人再手动干预。
+
 
 > ⚠️ **`driver/registrations.py` 是双人交接点**：registry 函数由刘轲提供、driver 编排由伦锋提供。
 > 这个文件归两人共同 owner——**刘轲或伦锋提的 PR，都需要对方或王浩批准**。
@@ -248,6 +258,42 @@ gh issue close <编号>
 **没装 `gh` 也能用**：所有操作都有网页界面，地址规律是
 `https://github.com/StrawberryTreea/agent-safety-harness/<路径>`。
 PR 列表在 `/pulls`，Issue 列表在 `/issues`，设置在 `/settings`。
+
+---
+
+## 8.5 新人第一周照做清单（照抄即可）
+
+**Day 1（今天，一次性）**
+
+```bash
+git clone https://github.com/StrawberryTreea/agent-safety-harness.git
+cd agent-safety-harness
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe scripts/check_repo.py      # 期望：全绿
+```
+
+然后打开 `https://github.com/StrawberryTreea/agent-safety-harness/issues`，
+找到标题带 **`[P0][你的名字]`** 的那个 issue（已指派给你），点开看交付物清单。
+
+**Day 1 之后，每个工作日循环**
+
+| 步骤 | 命令 / 动作 | 完成标志 |
+|---|---|---|
+| 1. 同步 | `git checkout main && git pull --rebase origin main` | 无输出 |
+| 2. 看任务 | `gh issue list --label "owner:你的标签" --state open` | 列出你的 issue |
+| 3. 开分支 | `git checkout -b feat/简短功能名` | 切到新分支 |
+| 4. 干活 | 改代码 → `.\.venv\Scripts\python.exe scripts/check_repo.py` | 全绿 |
+| 5. 提交 | `git add <具体文件>` → `git commit -m "feat(模块): 简短说明"` | 有 commit |
+| 6. 推送 | `git push -u origin feat/简短功能名` | 远端有分支 |
+| 7. 开 PR | `gh pr create --fill`（或网页 /compare） | PR 页面出现 |
+| 8. 等评审 | 看 PR 页面的 "Reviewers" 是否已自动填上 | 有人被 @ 到 |
+| 9. 回应评论 | `gh pr view <编号> --comments` | 评论已解决 |
+
+**红线（3 条）**
+1. **永远不要直接 `git push origin main`** —— 会被拒绝，这是设计。
+2. **永远不要用 `git add -A`** —— 会把别人的目录、你本地的 `runs/`、`.workbuddy/` 一起带进去。逐个文件 `git add`。
+3. **API key 只写环境变量名**（`api_key_env`），真 key 绝不进仓库、绝不发群。
 
 ---
 
