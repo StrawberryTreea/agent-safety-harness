@@ -87,7 +87,7 @@
 | A5 | 轨迹评审 | `harness/ash.py judge` | 离线 trace judge 任务 | ✅ |
 | A6 | 报告生成 | `harness/ash.py report` | 由已有 run 生成 markdown 报告 | ✅ |
 | A7 | 完整产品执行 | `federated_asr_benchmark/tools/run_product.py` | 真实产品 CLI + 原生环境 + 原生 scorer | ✅ |
-| A8 | 产品 preflight | `federated_asr_benchmark/tools/run_product.py --request <r> --case-id <id> --dry-run`<br/>（独立工具：`tools/preflight.py --data-root <目录>`） | **preflight 不过不许跑**；`--dry-run` 只出计划不执行 | ✅ |
+| A8 | 产品 preflight | `federated_asr_benchmark/tools/run_product.py --request <r> --case-id <id> --dry-run`（独立工具：`tools/preflight.py --data-root <目录>`） | **preflight 不过不许跑**；`--dry-run` 只出计划不执行 | ✅ |
 | A9 | 批量跑产品 | `federated_asr_benchmark/tools/run_product_batch.py --request <r>` | 多产品/多 benchmark 批跑 | ✅ |
 | A10 | 结果聚合 | `federated_asr_benchmark/tools/aggregate_results.py` | 汇总多产品 ASR | ✅ |
 | A11 | 来源校验 | `federated_asr_benchmark/tools/verify_sources.py` | 校验数据来源与哈希 | ✅ |
