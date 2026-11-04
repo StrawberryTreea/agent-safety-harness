@@ -51,7 +51,7 @@
 1. 任何"管道没跑通"的环节，都只允许用免费档，禁止用优质模型去 debug。
 2. 优质模型的贯通测试必须**全量、可复现**（带源哈希 + 固定索引），且只在 P2 阶段启动。
 3. 最终对外报告/论文的数据，**只能来自优质模型贯通测试**，免费档的跑分不得混进结论。
-4. 模型 profile 由 `config/llm_roles.json`（under_test / harness_driver / generator 三角色）统一配置，切换"免费↔优质"只改配置、不改动 schema 与业务代码。
+4. 模型 profile 由 `harness/config/llm_roles.json`（under_test / harness_driver / generator 三角色）统一配置，切换"免费↔优质"只改配置、不改动 schema 与业务代码。
 5. **免费端点配置**已备好 `harness/config/free_endpoints.json`（11 个 profile：智谱 glm-4-flash / 硅基流动 Qwen2.5-7B / Groq / OpenRouter / Gemini / NVIDIA NIM / GitHub Models / 本地 Ollama 等），全部 OpenAI 兼容 → **零代码接入**，直接复制进 `config/models.json` 即可用。
 6. **key 各自申请、各自测试**：谁跑评测谁自己申请对应 `api_key_env` 的 key，不等统一发放（王浩已确认）。**key 只写环境变量，不进仓库、不进配置文件、不发群里。**
 
@@ -178,7 +178,7 @@
 - 伦锋：Loop-A 消解 5 个 blocker（协议冻结/主指标确认/被测与生成器固定/预算配置/调度隔离注册）；Loop-B 控制面接 LLM 生成（带闸门）。
 
 ### P2（第三优先级：自进化研究赌注 + CI/看板 — 此阶段启动优质模型贯通测试）
-- **优质模型贯通测试**：切到 `config/llm_roles.json` 的旗舰/优质 profile，对全部已打通的管道做全量、可复现出分（带源哈希 + 固定索引）；**只有这阶段的产物才进白皮书/论文**。
+- **优质模型贯通测试**：切到 `harness/config/llm_roles.json` 的旗舰/优质 profile，对全部已打通的管道做全量、可复现出分（带源哈希 + 固定索引）；**只有这阶段的产物才进白皮书/论文**。
 - Loop-A/B 闭环调优；CI（schema 校验 + registry 签名告警 + 进化 manifest 落库）；对外看板/报告。
 
 ---

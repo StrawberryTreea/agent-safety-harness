@@ -1,12 +1,13 @@
 # 项目文档导航
 
-第一次加入项目，按这个顺序阅读：
+**第一次加入项目，按这个顺序读**：
 
-1. [项目入口](../README.zh-CN.md)：目标、当前实现、四条评测线、代码地图。
-2. [上手运行](getting_started.md)：安装、统一验收、独立示例、结果目录、排错。
-3. [配置](configuration.md)：模型 API、CLI、数据与专用环境。
-4. [架构与原始思路图](integration/architecture.md)：模块职责、评分边界、反馈链。
-5. [协作指南](../CONTRIBUTING.md)：扩展代码、测试和提交要求。
+1. **[项目总纲](project_overview.md)** ⭐ —— **目标是什么、有哪些功能、怎么规划、什么算做完**（全局视角，先读这份）
+2. [项目入口](../README.zh-CN.md)：目标、当前实现、四条评测线、代码地图。
+3. [上手运行](getting_started.md)：安装、统一验收、独立示例、结果目录、排错。
+4. [配置](configuration.md)：模型 API、CLI、数据与专用环境。
+5. [架构与原始思路图](integration/architecture.md)：模块职责、评分边界、反馈链。
+6. [协作指南](../CONTRIBUTING.md)：扩展代码、测试和提交要求。
 
 **四位评测者第一次上手，先读这四份**：
 [上手清单](day0_onboarding.md)（先敲什么命令、看到什么算成功、卡住怎么办）→
@@ -21,6 +22,7 @@
 
 | 工作 | 文档 |
 |---|---|
+| **想先搞清这个项目整体是什么样** | **[项目总纲](project_overview.md)**（**目标、边界、60+ 项功能清单与状态、三阶段规划、什么算做完**） |
 | **不知道 pipeline 是什么、在哪、怎么跑** | **[Pipeline 全景说明](pipeline_guide.md)**（**总入口、11 个子命令、四条轨、数据流向、产物目录、代码在哪**） |
 | **第一次分工 / 拿任务** | **[上手清单](day0_onboarding.md)**、**[四人分工与推进顺序](work_assignment.md)**、**[框架契约](FRAMEWORK_CONTRACT.md)**、**[架构看板](project_architecture.html)** |
 | **提交代码 / 提 PR / 找谁审** | **[GitHub 协作规范](github_collaboration.md)**（权限矩阵、分支模型、PR 流程、CODEOWNERS、泄密红线、命令速查） |

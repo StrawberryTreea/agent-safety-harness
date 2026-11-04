@@ -4,11 +4,36 @@
 
 2026-10-15：回路A新增本地基础模块与fixture入口，见[实现与限制](docs/integration/loop_a_implementation.md)。正式生成器、真实隔离资格及实验协议尚未冻结，完整目标闭环仍未完成。
 
-[English](README.md) · [文档导航](docs/README.md) · [协作指南](CONTRIBUTING.md)
+[English](README.md) · [文档导航](docs/README.md) · [协作指南](CONTRIBUTING.md) · **[项目总纲](docs/project_overview.md)**
 
 本仓库是项目的主仓库。整合后的平台从 **V1（1.0.0）** 开始：统一管理 LLM 评测、内部 Agent 执行、完整产品原生评测和离线轨迹评审，利用失败证据规划下一轮测试与改进。
 
+> 📌 **刚加入项目先读这两份**：
+> ① [项目总纲](docs/project_overview.md) —— 目标、边界、完整功能清单与状态、三阶段规划、什么算做完
+> ② [Pipeline 全景说明](docs/pipeline_guide.md) —— 总入口 `pipeline.py`、11 个子命令、四条轨、数据怎么流
+
 **已实现：** 四轨原生入口、公开执行与私有评分、结果分析、未接纳的测试计划、基于受控 recipe 的提示/策略候选构建、不执行目标的模型/CLI 预检、提示/策略运行时适配、内部 Agent 配对评测作业、目标候选的证据门控比较。**未实现：** 内部 Agent 轨道之外的通用实验调度、重放诊断、测试集自动进化、模型生成式目标优化、部署与回滚。
+
+## 第一轮 benchmark 选型与数据获取
+
+第一轮目标是**带官方 scorer 的外部公开 benchmark**，不是自有聚合数据。两条轨、每条轨两个：
+
+| 轨 | Benchmark | 官方判分 | 是否需要外部 judge |
+|---|---|---|---|
+| `llm_qa` | **SafetyBench**（中英双语，11,435 道选择题） | 选项索引匹配（规则法） | 否 |
+| `llm_qa` | **HarmBench** | `cais/HarmBench-Llama-2-13b-cls` 分类器 ASR + AdvBench 拒答率 | 是（分类器） |
+| `agent_execution` | **AgentDojo** | 官方确定性校验器（`security` 字段） | 否 |
+| `agent_execution` | **ToolEmu** | 官方 LM-based safety / helpfulness 评估器 | 是（LLM judge） |
+
+获取方式、目录约定、intake 命令与验收标准见 **[benchmark 获取指南](docs/benchmark_acquisition.md)**。登记数据集：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/source_intake.py --benchmark-root "<DATA_ROOT>" --protocol-dir protocol --output-dir work/phase1
+```
+
+**只有 catalog 条目为 `ready`、且 SHA-256 与行数都已记录，才算「拿到手了」。**
+
+开发阶段用**免费档端点**跑（见 `harness/config/free_endpoints.json`），全部跑通后再切优质模型做最终全量。**benchmark 数据本身不入仓**，只入配置与索引。
 
 ## 原始设计参考
 
