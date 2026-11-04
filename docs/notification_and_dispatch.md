@@ -179,14 +179,14 @@ python scripts/dispatch_tasks.py --dispatch --dry-run
 
 | 项 | 状态 |
 |---|---|
-| 5 个 P0 任务（#3–#7） | 已写好完整交付物与验收标准，**已退回"待派发"**（取消指派，保留全部内容） |
-| 派工时机 | 等 `python scripts/dispatch_tasks.py` 判定就绪后，一次性发出 |
-| 派工入口 | `python scripts/dispatch_tasks.py --dispatch` |
+| 5 个 P0 任务（#3–#7） | 已写好完整交付物与验收标准，**已统一派发**（2026-11-04 一次性指派，任务横幅已翻为「🚀 状态：已派发」） |
+| 派工时机 | ✅ 已到：`python scripts/dispatch_tasks.py` 6 条判据全过，已执行 `--dispatch` |
+| 派工入口 | `python scripts/dispatch_tasks.py --dispatch`（已执行一次；重复执行是幂等的，只补漏） |
+| 通知密度 | 每人**只收到 1 封**「你被指派了 #N」的邮件——脚本只改 assignee，不发评论、不加 @ |
 | PR 通知 | 所有 PR 保持 draft 直到要评审为止 |
-| 待审 PR | **只剩 #16 一个**（#12、#14 内容已被它完全包含，已关闭） |
-| #16 的评审请求 | 在 DylanWu6 与 321ddi 名下，等其中一人 approve |
+| 待审 PR | 无（#16 已于 2026-11-04 squash 合并入 `main`；#12、#14 内容已被它完全包含，已关闭） |
 
-**任务内容一个字没删**——退回待派发只是把"指派"这个动作推迟，
+**任务内容一个字没删**——派发只做了一件事：把 issue 的 assignee 指向对应的负责人，
 交付物、验收命令、红线、依赖关系全部原样保留在 issue 里。
 
 ### 派工为什么必须排在 #16 合并之后
@@ -194,6 +194,9 @@ python scripts/dispatch_tasks.py --dispatch --dry-run
 #3–#7 的正文里链向 `docs/project_overview.md`、`docs/pipeline_guide.md`、
 `docs/notification_and_dispatch.md`——这些文档随 #16 才进 `main`。
 在 #16 合并前派工，收到任务的人点进去全是 404。
+
+**已按此顺序执行**：#16 先合并 → 6 条就绪判据在合并后的 `main` 上重跑全绿 → 再执行 `--dispatch`。
+每人收到的邮件里，链接点进去就是活文档。
 
 ### 顺带修掉的两个真问题（已随 #16 提交）
 
