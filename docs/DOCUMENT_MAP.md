@@ -71,7 +71,7 @@ L4  记录层    docs/integration/*（9 篇）· validation / cleanup / 草案
 | 改判分方式或分类体系 | [docs/FRAMEWORK_CONTRACT.md](FRAMEWORK_CONTRACT.md) §4 → `protocol/default_taxonomies.yaml` → [docs/default_taxonomies.md](default_taxonomies.md) |
 | 接入一个新评测产品 | [docs/rampup_samples.md](rampup_samples.md) §3 → `federated_asr_benchmark/README.md` → `federated_asr_benchmark/schemas/run_request.schema.json` |
 | 提 PR / 提交代码 | [docs/github_collaboration.md](github_collaboration.md) → [.github/PULL_REQUEST_TEMPLATE.md](../.github/PULL_REQUEST_TEMPLATE.md) → [CONTRIBUTING.md](../CONTRIBUTING.md) |
-| 想知道为什么一直收到 GitHub 邮件 | [docs/notification_and_dispatch.md](notification_and_dispatch.md) |
+| 想知道通知从哪来、我们靠哪个渠道沟通 | [docs/notification_and_dispatch.md](notification_and_dispatch.md) |
 | 想知道任务什么时候派、怎么派 | [docs/notification_and_dispatch.md](notification_and_dispatch.md) §4 |
 | 做自进化或改候选生成 | [docs/FRAMEWORK_CONTRACT.md](FRAMEWORK_CONTRACT.md) §5 → [references/target-evolution-contract.md](../references/target-evolution-contract.md) → [docs/integration/research_plan.md](integration/research_plan.md) |
 | 我不在 / 别人长期不上线 | [docs/governance_and_continuity.md](governance_and_continuity.md) → `docs/roster.json` |
@@ -142,7 +142,7 @@ L4  记录层    docs/integration/*（9 篇）· validation / cleanup / 草案
 | 路径 | 读它的时机 | 它管什么 |
 |---|---|---|
 | `docs/github_collaboration.md` | 提 PR 前 | 权限矩阵、分支模型、PR 流程、CODEOWNERS、泄密红线、命令速查 |
-| `docs/notification_and_dispatch.md` | 想知道为什么收到邮件、任务什么时候派 | 哪些操作会触发 GitHub 通知、模板与脚本已改掉的通知源、draft PR 规则、派工就绪的 6 条判据与一次性派工入口 |
+| `docs/notification_and_dispatch.md` | 通知从哪来、任务什么时候派 | 微信群与邮件各管什么、哪些操作会触发 GitHub 通知、模板与脚本已改掉的通知源、派工就绪的 6 条判据与一次性派工入口 |
 | `docs/governance_and_continuity.md` | 决策权/缺席问题 | 王浩绝对权边界、代理人接手、长期不上线处置 |
 | `docs/benchmark_acquisition.md` | 拿 benchmark 数据 | 两条获取路径、目录约定、登记与验收、官方参考入口 |
 | `docs/rampup_samples.md` | 定第一轮跑什么 | HarmBench / SafetyBench / AgentDojo / ToolEmu / Codex CLI / Claude Code 的参数 |

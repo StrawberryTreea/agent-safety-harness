@@ -2,7 +2,7 @@
 
 > **仓库**：https://github.com/StrawberryTreea/agent-safety-harness （公开）
 > **适用对象**：王浩、刘轲、辰浩、一迪、伦锋
-> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md) · **[决策权与缺席机制](governance_and_continuity.md)** · **[通知节流与派工节奏](notification_and_dispatch.md)**
+> **配套文档**：[Pipeline 全景说明](pipeline_guide.md) · [分工与推进顺序](work_assignment.md) · [上手清单](day0_onboarding.md) · [框架契约](FRAMEWORK_CONTRACT.md) · **[决策权与缺席机制](governance_and_continuity.md)** · **[通知渠道与派工节奏](notification_and_dispatch.md)**
 
 这份文档回答一个具体问题：**5 个人同时改一个仓库，怎么用 GitHub 才不会乱。**
 每一条规则都对应仓库里已经配置好的机制，不是"应该这样做"的口号。
@@ -77,34 +77,20 @@ git checkout -b feat/你的功能名
 git add <明确的文件>          # 不要 git add -A（会把 .workbuddy/ 之类的临时文件带进去）
 git commit -m "feat(scope): 一句话说明"
 git push -u origin feat/你的功能名
-gh pr create --fill --draft --title "feat(scope): 一句话说明"
+gh pr create --fill --title "feat(scope): 一句话说明"
 ```
 
-### 3.0 先开成 draft，要评审了再转 ready
+### 3.0 PR 直接开，不要先开成 draft
 
-**PR 一律先以 draft 状态开**（`gh pr create --draft`）。
+**PR 直接开成 ready for review**（`gh pr create --fill` 即可，不要加 `--draft`）。
 
-| PR 状态 | 会不会自动请求 CODEOWNER 评审 | 会不会发邮件 |
-|---|---|---|
-| **draft** | ❌ 不会 | ❌ 不会 |
-| ready for review | ✅ 会 | ✅ 会，且没处理会持续催 |
-
-**这不是形式主义**：CODEOWNERS 触发的评审请求**删不掉**——
-`DELETE /pulls/{n}/requested_reviewers` 返回 200 但请求还在，时间线里没有 `review_request_removed` 事件（已实测）。
-唯一可靠的开关就是 draft（GitHub 官方行为：draft PR 不请求 code owner）。
-
-所以流程是：**内容写完 → 确认 CI 绿 → 转 ready for review → 这时才请人来审**。
-draft 期间 CI 照跑（CI 看提交，不看 draft 状态），可以放心先挂着。
-
-转 ready 的命令：
-
-```bash
-gh pr ready <编号>          # 转 ready for review
-gh pr ready <编号> --undo   # 转回 draft（发现问题时先撤回，免得继续催）
-```
-
-**代价**：draft PR 不能直接合并（GitHub 对 draft 的 merge 返回 405）。
-这是有意的——"转 ready"就是"我要人评审了"这个明确动作。
+> **为什么不再先开 draft**：早先的规矩是"先开 draft，要评审了再转 ready"，
+> 目的是**避开 CODEOWNERS 自动评审请求带来的邮件**。
+> 但 2026-11-04 仓库取消 approve 门槛之后，这条规矩的两个理由都不成立了：
+> 一是邮件本来就不是我们的主渠道（沟通在微信群，见下节）；
+> 二是 draft PR **不能合并**（GitHub 对 draft 的 merge 返回 405），
+> 还要多敲一条 `gh pr ready`——纯粹给自己添一步。
+> 留着 draft 只会让人以为"PR 还不能合"，反而拖慢节奏。
 
 **PR 标题格式**（CI 强制）：
 ```
@@ -172,6 +158,31 @@ type(scope): 描述
 
 ---
 
+## 3.5 通知走微信群，邮件不用当回事
+
+**5 个人一个微信群，这是我们说事情的地方。GitHub 只负责存代码和留痕。**
+
+GitHub 的通知默认走邮件，所以我们**不围着"少发邮件"设计流程**：
+
+| 渠道 | 用途 | 怎么看 |
+|---|---|---|
+| **微信群** | 讨论、同步进度、卡住时求助 | 主力渠道，天天看 |
+| **GitHub issue / PR** | 留痕、写清楚谁改了什么 | 需要时翻，不是消息中心 |
+| **GitHub 邮件** | 兜底提醒，告诉你"这块动过了" | **可以当噪音**；群里说过了就不用点开 |
+
+具体到操作上：
+
+- **CODEOWNERS 的评审请求 = 知会，不是作业。** 它会给你发一封邮件，意思是"你负责的目录被人改了"。
+  你在群里已经知道这事 → 不用回；想看就看一眼 diff；想回就写个评论。**不回也不影响任何人合并。**
+- **不要为了"少发邮件"而把 PR 开成 draft。** 那样 PR 反而不能合并（见 §3.0）。
+- **模板和脚本里不要写 `@某人`**（已经改掉了）。真要叫某人，在自己写的正文里手写 @——那时候才是真的需要打扰他。
+- **觉得邮件太吵**：GitHub 设置 → Notifications → 把邮件通知改成只保留"被指派"和"有人 @ 我"，
+  其余走网页端即可。**这是每个人自己的设置，仓库不强制。**
+
+哪些 GitHub 操作真会发邮件、哪些不会，见[通知渠道与派工节奏](notification_and_dispatch.md)。
+
+---
+
 ## 4. Commit 规范
 
 ```
@@ -218,7 +229,7 @@ type(scope): 一句话说明
 > **已经开工了吗**：是。这 5 个任务已于 2026-11-04 一次性指派，issue 顶部的横幅写的是「🚀 状态：已派发」。
 > 没有截止时间，按自己的节奏推进；做完了在 issue 里留言说明进展即可。
 > 卡住了写清楚「卡在哪、试过什么、需要谁配合」。
-> 判据与流程见[通知节流与派工节奏](notification_and_dispatch.md)。
+> 判据与流程见[通知渠道与派工节奏](notification_and_dispatch.md)。
 
 **开 issue 的规则**：
 - 领任务前先看有没有现成 issue，别重复开
@@ -383,7 +394,7 @@ python -m venv .venv
 | 仓库公开协作 + Issues + Discussions | ✅ | — |
 | PR 模板（含泄密自查） | ✅ | `.github/PULL_REQUEST_TEMPLATE.md` |
 | **PR / Issue 模板不含裸 @提及**（不每次开 PR 都发通知） | ✅ | 同上 + `.github/ISSUE_TEMPLATE/` |
-| **PR 先开 draft，要评审再转 ready**（不产生评审请求邮件） | ✅ | 本文档 §3.0 |
+| **PR 直接开 ready，不走 draft 两步走** | ✅ | 本文档 §3.0 |
 | Issue 模板（任务 / 缺陷） | ✅ | `.github/ISSUE_TEMPLATE/` |
 | 标签体系（23 个） | ✅ | Issues → Labels |
 | 里程碑（3 个） | ✅ | Issues → Milestones |
@@ -391,7 +402,7 @@ python -m venv .venv
 | **CODEOWNERS 每路径 2 个知情人（主 owner + 代理人）** | ✅ | 同上 + `docs/roster.json` |
 | **名册与覆盖度 CI 自检** | ✅ | `.github/workflows/portable-checks.yml` 的 `在岗与代理覆盖度` |
 | **在岗巡检与自动改派** | ✅ | `scripts/oncall_roster.py` |
-| **派工就绪判据 + 一次性派工入口** | ✅ | `scripts/dispatch_tasks.py`，见[通知节流与派工节奏](notification_and_dispatch.md) |
+| **派工就绪判据 + 一次性派工入口** | ✅ | `scripts/dispatch_tasks.py`，见[通知渠道与派工节奏](notification_and_dispatch.md) |
 | PR 标题 / 分支名格式校验 | ✅ | `.github/workflows/pr-policy.yml` |
 | PR 新增行密钥 / 路径 / 邮箱扫描 | ✅ | 同上 |
 | 全部 6 项检查设为合并必需 | ✅ | Settings → Branches |

@@ -3,13 +3,14 @@
 
 Why this exists
 ---------------
-Opening an issue and assigning it to someone sends that person a notification.
-Handing out five tasks one at a time therefore sends five separate emails at
-five different moments, which reads as noise rather than as a plan. The fix is
-not to send fewer emails by sending them more quietly -- it is to send them at
-one deliberate moment, after the repository is actually ready for the work.
+The five task issues link to documents that live in this repository -- the
+project overview, the pipeline guide, this very file. Those documents reach
+`main` through pull requests, so a task can be written long before the
+material it refers to is readable from the default branch. Dispatching early
+therefore hands people tasks whose acceptance criteria point at 404s.
 
-This script encodes that moment as two steps:
+The fix is to make "is the repository ready?" a question a program can answer,
+and to answer it once, immediately before handing the work out:
 
   --check    (default) evaluate the readiness criteria and print a verdict.
              Changes nothing. Exits 0 when every criterion passes.
@@ -22,10 +23,17 @@ the repository that can be checked by a program, not a judgement call:
   2. pipeline      the pipeline entry point answers --help
   3. acceptance    scripts/check_repo.py passes (full suite, no model calls)
   4. documentation the document map is consistent with the tracked files
-  5. roster        every CODEOWNERS path has >= 3 owners, all in the roster
+  5. roster        every CODEOWNERS path has >= 2 owners, all in the roster
   6. tasks         every prepared task issue names an owner and has content
 
 Only when all six pass does --dispatch write anything.
+
+Note on notifications
+---------------------
+--dispatch only changes the assignee field. It does not edit bodies, post
+comments, or mention anyone, so each person receives exactly one "you were
+assigned #N" email. The team also has a WeChat group, which is the actual
+conversation channel; GitHub mail is only a fallback reminder.
 
 Usage
 -----

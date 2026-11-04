@@ -39,9 +39,20 @@ During development, run the pipeline against **free-tier endpoints** (see `harne
 
 Start with [docs/day0_onboarding.md](docs/day0_onboarding.md) — the exact commands each evaluator runs on day one, what "working" looks like, and where things commonly get stuck.
 
-[docs/work_assignment.md](docs/work_assignment.md) splits the work across four evaluators (P0–P2 tasks, dependencies, the weekly plan, and what each person hands in on day one), with the framework contract in [docs/FRAMEWORK_CONTRACT.md](docs/FRAMEWORK_CONTRACT.md).
+[docs/work_assignment.md](docs/work_assignment.md) splits the work across five contributors (P0–P2 tasks, dependencies, the weekly plan, and what each person hands in on day one), with the framework contract in [docs/FRAMEWORK_CONTRACT.md](docs/FRAMEWORK_CONTRACT.md).
 
-[docs/github_collaboration.md](docs/github_collaboration.md) covers the GitHub workflow itself: permission matrix, branch naming, the PR gate (CODEOWNER approval + CI), the code-ownership map by directory, the secret-leak red lines, and copy-pasteable commands for the daily loop.
+[docs/github_collaboration.md](docs/github_collaboration.md) covers the GitHub workflow itself: permission matrix, branch naming, the PR gate (CI only — no approval required), the code-ownership map by directory, the secret-leak red lines, and copy-pasteable commands for the daily loop.
+
+### How we work together
+
+Five people, one WeChat group. GitHub holds the code and the record; the group holds the conversation.
+
+- **Anyone can submit.** Open a PR, CI goes green, merge. No one has to approve anyone else's PR — an approval gate on a five-person group costs a day for nothing.
+- **CODEOWNERS is a "who should know" list, not an "who may merge" list.** GitHub still asks the two owners of each directory for review on a PR that touches it. That is a heads-up, not a homework assignment; if the group chat already covers it, nobody has to open the PR.
+- **Email is not the channel.** GitHub notifications land in email by default. We do not design around that: the group chat is where we talk, GitHub is where we look things up afterwards. If a GitHub email reaches you and you already know about it, ignore it.
+- **No deadlines, no screenshots.** Finish at your own pace and leave a note on the issue. If you are stuck, write down what you tried and who you need.
+
+See [notification and dispatch](docs/notification_and_dispatch.md) for which GitHub actions actually send mail, and [governance and continuity](docs/governance_and_continuity.md) for who decides when someone is unavailable.
 
 ## Original design reference
 
