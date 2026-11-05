@@ -7,6 +7,7 @@ name = "agent-safety-harness"
 version = "1.0.0"
 description = "Source-derived Agent safety execution, private scoring and trace evaluation."
 requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0,<7", "jsonschema>=4.20,<5", "psutil>=6,<8"]
 
 [project.scripts]
 ash = "agent_safety_harness.cli:main"

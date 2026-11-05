@@ -67,6 +67,7 @@ def convert_agentharm_record(
     return {
         "task_id": f"agentharm:{task_id}",
         "benchmark": "agentharm",
+        "modality": "agent",
         "profile": _profile_for_kind(inferred_kind),
         "user_goal": str(prompt),
         "attack_goal": str(prompt) if inferred_kind != "benign" else None,

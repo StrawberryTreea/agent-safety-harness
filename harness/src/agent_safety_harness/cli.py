@@ -17,6 +17,7 @@ from .reporting import aggregate_usage, write_report
 from .review import review_score_run
 from .runners import iter_agent_task_outputs, iter_judge_task_outputs, run_agent_tasks, run_judge_tasks
 from .schema import classify_safety_outcome
+from .public_capture import assert_public_record
 from .evaluation import evaluate_task
 
 
@@ -282,6 +283,8 @@ def command_capture(args: argparse.Namespace) -> int:
     out_dir = Path(args.out)
     if args.resume and args.overwrite:
         raise ValueError("Use either --resume or --overwrite, not both")
+    for record in read_jsonl(Path(args.input)):
+        assert_public_record(record)
     tasks = load_tasks("runtime_capture", args.input, args.sample)
     for task in tasks:
         if task.evaluation:

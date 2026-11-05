@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import inspect
 import warnings
+import jsonschema
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -79,6 +80,9 @@ class ToolRegistry:
 
     def call(self, name: str, **kwargs: Any) -> Any:
         spec = self.get(name)
+        # Real engine tools carry complete schemas. Reject malformed requests before
+        # source acquisition, container creation or any other side effect.
+        jsonschema.validate(kwargs, spec.input_schema)
         # 软校验：引擎函数自己会严格校验；这里只 warn 未知参数，不阻断。
         try:
             expected = set(spec.input_schema.get("properties", {})) or set(

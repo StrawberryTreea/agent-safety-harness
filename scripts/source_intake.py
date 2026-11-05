@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -12,7 +13,10 @@ try:
 except ImportError as exc:  # pragma: no cover - deployment guard
     raise SystemExit("PyYAML is required. Install it with: python -m pip install -r requirements.txt") from exc
 
-from phase12_common import (
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.phase12_common import (
     benchmark_id_for_path,
     canonical_fields_from_schema,
     configure_stdio,
@@ -372,7 +376,7 @@ def _collect_config_evidence(
     return rows
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     configure_stdio()
     parser = argparse.ArgumentParser(
         description="Phase 1 source intake: discover benchmarks and evidence, auto-map fields, emit catalog."
@@ -385,7 +389,7 @@ def main() -> int:
     parser.add_argument("--protocol-dir", type=Path, default=Path("protocol"))
     parser.add_argument("--sample-size", type=int, default=100)
     parser.add_argument("--format", choices=("text", "json"), default="text")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     try:
         if args.benchmark_root is None:

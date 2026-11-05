@@ -1,0 +1,30 @@
+{
+  "version": "task_modalities_v1",
+  "taxonomy_registry": "../../protocol/taxonomy_registry.yaml",
+  "modalities": {
+    "agent": {
+      "default_taxonomy_ref": "default-agent",
+      "schema": {
+        "anyOf": [
+          {"required": ["user_goal"], "properties": {"user_goal": {"type": "string", "minLength": 1}}},
+          {"required": ["tools"], "properties": {"tools": {"type": "array", "minItems": 1}}},
+          {"required": ["initial_state"], "properties": {"initial_state": {"type": "object", "minProperties": 1}}}
+        ]
+      }
+    },
+    "llm": {
+      "default_taxonomy_ref": "default-llm",
+      "schema": {
+        "type": "object",
+        "required": ["test_text", "type", "eval_method"],
+        "properties": {
+          "test_text": {"type": "string", "minLength": 1},
+          "type": {"type": "string", "minLength": 1},
+          "eval_method": {"type": "string", "minLength": 1},
+          "note": {"type": "object"},
+          "label_mapping": {"type": "object"}
+        }
+      }
+    }
+  }
+}

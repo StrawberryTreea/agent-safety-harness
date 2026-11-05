@@ -13,8 +13,8 @@
     - 刘轲（引擎组）：registry.py + 各引擎函数（bench_intake / build_sandbox / run_capture / score / analyze / evolve_*）
     - 伦锋（自进化组）：本子包的 planner / executor / nl_bridge
 
-导入本包会自动注册 registrations.py 里的占位工具，使整条链路在 dry_run 下可跑通；
-刘轲/伦锋 用真实引擎函数替换占位实现即可。
+导入本包注册四个真实引擎工具及 analyze/evolve 两个待接入工具。
+真实调用按各工具的 input_schema 提供参数；关键词 dry_run 仍是编排演示。
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from .planner import Plan, PlanStep, plan_from_instruction
 from .executor import ExecutionResult, StepResult, execute_plan
 from .nl_bridge import NLBridge
 
-# 自动注册占位工具（见 registrations.py）。真实引擎接入后这些占位会被替换。
+# 注册共享工具（四个真实入口；analyze/evolve 仍由对应负责人接入）。
 from . import registrations  # noqa: F401,E402
 
 __all__ = [

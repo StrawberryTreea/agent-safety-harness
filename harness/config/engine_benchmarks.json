@@ -1,0 +1,23 @@
+{
+  "version": "engine_benchmarks_v1",
+  "benchmarks": {
+    "agent_safetybench": {
+      "repository": "https://github.com/thu-coai/Agent-SafetyBench.git",
+      "revision": "74feea8de601b3a1449a93fcf70017fe61556f73",
+      "data_directory": "data",
+      "required_files": {
+        "data/released_data.json": "59dd0333001ef767766d803e97086ec02af0fbf7ff1f7070b3797863b0dacbe2",
+        "environments/BaseEnv.py": "0d49e4a76d429212b01037b0fed08576c3ec15f27cf59884e6118395edfc2d4f",
+        "LICENSE": "cc45bc9fabaaf069de75ab9bab51212bf244589af1c96a4de28173f713a87f61"
+      },
+      "environment": {
+        "backend": "docker",
+        "base_image": "python:3.13.9-slim@sha256:326df678c20c78d465db501563f3492d17c42a4afe33a1f2bf5406a1d56b0e86",
+        "network": "none",
+        "memory": "512m",
+        "cpus": "1",
+        "pids_limit": 128
+      }
+    }
+  }
+}

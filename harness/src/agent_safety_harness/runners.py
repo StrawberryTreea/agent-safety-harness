@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from copy import deepcopy
+
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from datetime import datetime, timezone
@@ -130,6 +132,8 @@ class AgentExecutionRunner:
         self.agent = agent
 
     def run_task(self, task: TaskSpec) -> tuple[list[TraceEvent], ResultSpec]:
+        if task.modality != "agent":
+            raise ValueError("Agent execution requires modality=agent; LLM prompt tasks use the llm_qa track")
         started_at = utc_now()
         started_ns = time.perf_counter_ns()
         official_adapter = adapter_for_task(task)
@@ -206,7 +210,14 @@ class AgentExecutionRunner:
                     elif not self.agent.agent_id.startswith("cli:"):
                         if official_runtime is None:
                             official_runtime = official_adapter.create_runtime(task)
+                            descriptor = official_runtime.descriptor
+                            turn.artifacts = {**(turn.artifacts or {}),
+                                "benchmark_tools_available": True,
+                                "benchmark_environment_validated": descriptor.environment_validated,
+                                "benchmark_environment_adapter": descriptor.adapter_id,
+                                "benchmark_environment_source_revision": descriptor.source_revision}
                         outcome = official_runtime.call_tool(action.target, action.args)
+                        observation = deepcopy(outcome.observation)
                         step_record = {
                             "action": {
                                 "action_type": action.action_type,
@@ -215,7 +226,7 @@ class AgentExecutionRunner:
                                 "risk": action.risk,
                             },
                             "ok": outcome.ok,
-                            "observation": outcome.observation,
+                            "observation": observation,
                             "policy_verdict": "unknown",
                             "error": outcome.error,
                             "source": "official_direct_environment",
@@ -228,7 +239,7 @@ class AgentExecutionRunner:
                                 "args": action.args,
                                 "risk": action.risk,
                                 "ok": outcome.ok,
-                                "observation": outcome.observation,
+                                "observation": observation,
                                 "error": outcome.error,
                             }
                         )
@@ -260,6 +271,9 @@ class AgentExecutionRunner:
                         "policy_verdict": step_result.policy_verdict,
                         "error": step_result.error,
                     }
+                # Native tools may return references to mutable environment state.
+                # Freeze each observation at the moment the call completes.
+                step_record = deepcopy(step_record)
                 sandbox_step_results.append(step_record)
                 trace.append(
                     TraceEvent(

@@ -140,12 +140,11 @@
 | E1 | 自然语言 → plan | `PYTHONPATH=harness/src python -m agent_safety_harness.driver` | 指令解析成函数调用序列 | ✅ |
 | E2 | 安全执行 | 同上 | 顺序/条件执行，支持 `dry_run` 安全模式 | ✅ |
 | E3 | 白名单拦截 | `driver/nl_bridge.py` | **强制只调已批准函数，绝不拼 CLI 字符串** | 🟡 |
-| E4 | 统一函数层 | `harness/src/agent_safety_harness/registry.py` + `driver/registrations.py` | CLI 与自然语言是**兄弟壳**，都直接调函数层 | 🟡 **6 个函数目前全是 stub**（刘轲 P0 替换 4 个） |
+| E4 | 统一函数层 | `harness/src/agent_safety_harness/registry.py` + `driver/registrations.py` | 共享函数层与输入校验；现有自然语言 planner 仍需对接真实参数 | 🟡 4 个真实引擎接口、2 个待接入 |
 
 **registry 六个函数**（`driver/registrations.py`）：`bench_intake` / `build_sandbox` / `run_capture` / `score` / `analyze` / `evolve`
-—— **当前 6 个全部是占位实现**（文件头注明「占位工具注册（scaffold 用）· 刘轲/伦锋 用真实引擎替换」，每个函数带 `TODO` 标记）。
-这是刘轲 P0 的核心任务：**替换 4 个**（`bench_intake` / `build_sandbox` / `run_capture` / `score`），
-`analyze` 与 `evolve` 分别由一迪与伦锋接。
+—— intake/build/capture/score 已连接既有来源处理、Docker 构建、原生捕获和私有评分；
+`analyze` 与 `evolve` 仍分别由一迪与伦锋接入。真实参数及工程验收见[统一引擎接口](engine_registry.md)，不能把旧 driver 的 dry-run 成功当成真实联调完成。
 
 #### F. 沙箱与隔离
 
@@ -187,7 +186,7 @@
 |---|---|---|
 | **TaskSpec** | 任务定义（单个 benchmark 也必须套） | `harness/.../schema.py` + `protocol/canonical_schema.yaml` |
 | **TraceEvent** | 执行轨迹 | `harness/.../schema.py` |
-| **ResultSpec** | 评分结果 | `harness/.../evaluation/schema.py` |
+| **ResultSpec** | 评分结果 | `harness/src/agent_safety_harness/schema.py`（evaluation/schema.py 校验规则） |
 | **分析四件套** | observations / failures / invalids / candidate_plans | `scripts/result_analysis.py` |
 | **进化 manifest** | 自进化产物登记 | `evolution/` + `protocol/loop_a_contracts.schema.json` |
 
@@ -251,7 +250,7 @@ P0  各自跑通 + 铁轨联调      →  P1  扩展 + 衔接加固      →  P2
 | 项 | 状态 |
 |---|---|
 | 四轨执行器 | ✅ 全部就位（`pipeline.py inventory` 的 `executor_exists` 全为 true） |
-| registry 6 函数 | 🟡 **6 个全是 stub**，待刘轲替换 4 个（+ 一迪 `analyze`、伦锋 `evolve`） |
+| registry 6 函数 | 🟡 4 个真实接口已有实现，`analyze`、`evolve` 待对应负责人接入；自然语言参数联调仍需完成 |
 | 外部 benchmark | 🟡 4 个已选型（HarmBench / SafetyBench / AgentDojo / ToolEmu），待拉取登记 |
 | 产品请求样例 | ✅ 32 个现成 `run_request.json`（4 产品 × 8 benchmark） |
 | Loop-A | 🟡 5 个 blocker 待消（协议冻结/主指标确认/被测与生成器固定/预算配置/调度隔离注册） |

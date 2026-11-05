@@ -11,6 +11,7 @@
 3. [项目入口](../README.zh-CN.md)：目标、当前实现、四条评测线、代码地图。
 4. [上手运行](getting_started.md)：安装、统一验收、独立示例、结果目录、排错。
 5. [配置](configuration.md)：模型 API、CLI、数据与专用环境。
+   [统一引擎接口](engine_registry.md)：Issue #3 的双模态任务、四个真实函数与 Docker 工程验收。
 6. [架构与原始思路图](integration/architecture.md)：模块职责、评分边界、反馈链。
 7. [协作指南](../CONTRIBUTING.md)：扩展代码、测试和提交要求。
 

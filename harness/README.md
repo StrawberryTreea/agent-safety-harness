@@ -4,6 +4,8 @@
 
 本模块把来源任务转换为内部 TaskSpec，记录执行轨迹并用私有确定性规则评分；离线 trace judge 单独运行。来源映射不等于官方 benchmark 复现，mock 不代表真实产品成绩。
 
+Issue #3 的双模态任务结构、四个真实注册函数与 Docker 工程验收见[统一引擎接口](../docs/engine_registry.md)。公开执行与私有评分分开，analyze/evolve 的注册接入仍由对应负责人完成。
+
 ## 最小运行
 
 从仓库根目录、已安装根 requirements 的环境运行：

@@ -3,8 +3,8 @@
 **这个文件解决两件事**：
 
 1. **人**：新来的人按哪条路径读，能知道自己在哪、该读什么、别读什么。
-2. **编码工具**（Codex / Cursor / Claude Code 等）：本仓库文档分散在 4 个目录、43 个文件，
-   没有索引时检索会命中已删除的旧副本、或把历史记录当成现行规范。本文件是**唯一索引**。
+2. **编码工具**（Codex / Cursor / Claude Code 等）：本仓库文档分散在 4 个目录、44 个文件，
+没有索引时检索会命中已删除的旧副本、或把历史记录当成现行规范。本文件是**唯一索引**。
 
 > **给编码工具的一句话**：动手前先读本文件第 2 节（阅读路径）和第 6 节（陷阱清单）。
 > 本文件与 `AGENTS.md` 配套：`AGENTS.md` 是工具自动加载的约定入口，本文件是它指向的完整索引。
@@ -98,7 +98,7 @@ L4  记录层    docs/integration/*（9 篇）· validation / cleanup / 草案
 |---|---|---|
 | 分类体系：md 与 YAML 不一致 | **以 `protocol/default_taxonomies.yaml` 为准**，改任一方须同步另一方 | `docs/default_taxonomies.md` 开头原文声明 |
 | 668,820 题聚合集是不是外部 benchmark | **不是**。它是自有聚合集，外部 benchmark 是 HarmBench / SafetyBench / AgentDojo / ToolEmu，各自独立 | [docs/rampup_samples.md](rampup_samples.md) §0 |
-| 六个统一函数实现到哪了 | **全是占位 stub**（`harness/src/agent_safety_harness/driver/registrations.py` 里 6 个 `TODO`），真实调用由各负责人接入 | 读该源码文件 |
+| 六个统一函数实现到哪了 | intake/build/capture/score 已接真实引擎；analyze/evolve 仍为占位 | 读 `harness/src/agent_safety_harness/driver/registrations.py` 与 [统一接口](engine_registry.md) |
 | Phase6–8 是否可用 | **未实现**，只保留路由名，不产出可运行命令 | [references/phase-contracts.md](../references/phase-contracts.md) |
 
 ---
@@ -147,6 +147,7 @@ L4  记录层    docs/integration/*（9 篇）· validation / cleanup / 草案
 | `docs/benchmark_acquisition.md` | 拿 benchmark 数据 | 两条获取路径、目录约定、登记与验收、官方参考入口 |
 | `docs/rampup_samples.md` | 定第一轮跑什么 | HarmBench / SafetyBench / AgentDojo / ToolEmu / Codex CLI / Claude Code 的参数 |
 | `docs/configuration.md` | 配模型与端点 | LLM QA、内部 Agent、完整产品三类配置 |
+| `docs/engine_registry.md` | 接入统一引擎、复跑 Issue #3 | 模态契约、四个真实函数、固定来源与 Docker 公开捕获/私有评分、交接限制 |
 | `docs/getting_started.md` | 从零安装 | 安装、整仓验收、单跑示例、排错 |
 | `CONTRIBUTING.md` | 扩展代码前 | 从哪一层扩展、测试与提交要求 |
 | `harness/README.md` | 改 Agent 执行轨 | 内部 TaskSpec、轨迹捕获、私有评分 |
@@ -217,7 +218,7 @@ git ls-files '*.md' '*.py' '*.json' '*.yaml'   # 受管文件全集
 
 | 事实 | 权威位置 |
 |---|---|
-| 六个统一函数实现状态 | `harness/src/agent_safety_harness/driver/registrations.py`（当前 6 个全是 stub） |
+| 六个统一函数实现状态 | `harness/src/agent_safety_harness/driver/registrations.py`（4 个真实引擎入口、2 个待接入） |
 | pipeline 实际子命令 | `python pipeline.py --help`（当前 11 个） |
 | `llm_eval` 执行器参数 | `llm_eval/multi_model_rule_eval_prompt_only.py`（**只有 `--config` 一个参数**） |
 | `run_product` 参数 | `federated_asr_benchmark/tools/run_product.py`（`--request` 与 `--case-id` 必填） |
