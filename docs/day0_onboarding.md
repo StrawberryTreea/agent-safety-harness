@@ -155,24 +155,22 @@ grep -n "IDENTITY_FIELDS" scripts/result_analysis.py
 
 ---
 
-## 6. 伦锋 · 第一天要敲的命令
+## 6. 伦锋 · Driver P0 使用与验证
 
-```bash
-# 6.1 看 driver 三件套（planner / executor / nl_bridge）
-cat harness/src/agent_safety_harness/driver/planner.py
-cat harness/src/agent_safety_harness/driver/executor.py
-cat harness/src/agent_safety_harness/driver/nl_bridge.py
+业务流程、计划参数和产物说明见 [Driver P0](driver_p0.md)。先验证结构，再显式执行；analyze 注册函数仍待分析组接入。
 
-# 6.2 看白名单在哪定义（你的 P0 是"验证拦截"，先找到规则）
-grep -rn "allow\|whitelist\|ALLOW" harness/src/agent_safety_harness/driver/nl_bridge.py
-
-# 6.3 看演进控制面现状
-ls evolution/
-grep -rn "GATES" scripts/result_analysis.py
+```powershell
+$env:PYTHONPATH = "harness/src"
+.venv/Scripts/python.exe -m agent_safety_harness.driver --help
+.venv/Scripts/python.exe -m agent_safety_harness.driver --plan assets/samples/driver_engine_plan.json
+.venv/Scripts/python.exe -m unittest discover -s harness/tests -p test_driver.py -v
+.venv/Scripts/python.exe -m unittest discover -s tests -p test_evolution_intake.py -v
+.venv/Scripts/python.exe -m unittest discover -s tests -p test_driver_p0.py -v
 ```
 
-**自证成功**：能说出"自然语言 → plan → 调 registry"这条链上，每个函数从哪个文件接进来、哪个是 stub。
-**卡住**：找不到 evolution 的 LLM 生成入口 → 那是 P2 的活，**不用现在做**；P0 只需把 `evolve` 接成"先返回 pending/存档"。
+**自证成功**：默认 dry-run 不调用引擎、不写输出；越权与参数错误在执行前拒绝；真实 score/evolve 本地 smoke 区分安全、违规和 unknown。2026-11-05 已额外通过 driver CLI 完成 Docker Desktop + Ubuntu WSL2 真实四步验证，四步均 ok，unsafe 两条均判违规，三处产物引用与执行记录通过交叉核验；输入准备、WSL 命令及边界见 [Driver P0](driver_p0.md)。契约测试与真实容器验证分别记录，不代表模型或正式 benchmark 资格。
+
+**后续交接**：evolve 当前仅接收并存档已有分析产物。生成器、正式回路资格及 analyze 注册接线各自仍有独立工作范围。
 
 ---
 

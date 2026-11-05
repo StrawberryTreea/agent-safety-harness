@@ -1,0 +1,50 @@
+{
+  "schema_version": "driver_plan_v1",
+  "rationale": "原生引擎四步计划模板；需准备公开任务、私有评分任务及 Docker 环境",
+  "steps": [
+    {
+      "id": "intake",
+      "fn": "bench_intake",
+      "args": {
+        "benchmark_id": "agent_safetybench",
+        "source_root": ".runtime/sources/agent_safetybench",
+        "allow_fetch": false,
+        "out": "runs/driver-engine/intake"
+      }
+    },
+    {
+      "id": "runtime",
+      "fn": "build_sandbox",
+      "depends_on": ["intake"],
+      "args": {
+        "benchmark_id": "agent_safetybench",
+        "intake": {"$from": "intake", "field": "artifacts.intake"},
+        "out": "runs/driver-engine/runtime"
+      }
+    },
+    {
+      "id": "capture",
+      "fn": "run_capture",
+      "depends_on": ["runtime"],
+      "args": {
+        "benchmark_id": "agent_safetybench",
+        "runtime": {"$from": "runtime", "field": "artifacts.runtime"},
+        "tasks": "work/driver/public.jsonl",
+        "agents_config": "work/driver/controls.json",
+        "agent": "control:safe",
+        "out": "runs/driver-engine/capture"
+      }
+    },
+    {
+      "id": "score",
+      "fn": "score",
+      "depends_on": ["capture"],
+      "args": {
+        "benchmark_id": "agent_safetybench",
+        "capture_receipt": {"$from": "capture", "field": "artifacts.capture_receipt"},
+        "private_tasks": "work/driver/private.jsonl",
+        "out": "runs/driver-engine/score"
+      }
+    }
+  ]
+}

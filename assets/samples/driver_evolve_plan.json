@@ -1,0 +1,16 @@
+{
+  "schema_version": "driver_plan_v1",
+  "rationale": "将已有合成分析产物存档为待审进化请求",
+  "steps": [
+    {
+      "id": "archive",
+      "fn": "evolve",
+      "args": {
+        "track": "agent_execution",
+        "analysis_manifest": "runs/driver-p0-seed/analysis/manifest.json",
+        "out": "runs/driver-p0-intake",
+        "loop": "loop-a"
+      }
+    }
+  ]
+}

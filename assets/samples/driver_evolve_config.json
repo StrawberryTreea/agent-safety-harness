@@ -1,0 +1,11 @@
+{
+  "allowed_functions": ["evolve"],
+  "run_root": "runs/driver-p0-intent",
+  "arguments": {
+    "evolve": {
+      "track": "agent_execution",
+      "analysis_manifest": "runs/driver-p0-seed/analysis/manifest.json",
+      "loop": "loop-a"
+    }
+  }
+}

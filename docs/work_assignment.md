@@ -123,9 +123,9 @@
 
 | 优先级 | 具体功能 | 产出 / 完成标准 | 衔接 |
 |---|---|---|---|
-| **P0** | driver 端到端跑通：planner(指令→plan) → executor(顺序/条件执行，dry_run 安全模式) → 调 registry 真实函数 | `python -m agent_safety_harness.driver` 能跑通一条真实 plan（非占位） | 依赖刘轲（registry 真实现） |
-| **P0** | `nl_bridge.py` 白名单验证：自然语言 → plan，强制只调已批准函数（不 shell CLI 字符串） | 白名单拦截测试通过 | 王浩（安全边界） |
-| **P0** | 把 `evolve` stub 接 `evolution/`（先返回 pending/存档，等种子） | `evolve` 非占位 | 消费一迪/辰浩的 `failures.jsonl` |
+| **P0** | driver 已接计划/指令入口、前置校验、产物引用与状态传播，默认 dry-run；见 [Driver P0](driver_p0.md) | 本地 score/evolve smoke；2026-11-05 经 driver 的真实 Docker 四步通过，unsafe 两条均判违规；引用、参数及执行记录已核验 | 复用刘轲接口；analyze 待一迪接入 |
+| **P0** | `nl_bridge.py` 与文件/关键词入口共用计划校验；模型只选意图，参数由本地配置绑定 | 越权函数、非法参数、模型错误不降级执行；离线客户端测试 | 王浩（安全边界） |
+| **P0** | evolve 已核对分析四件套并保存待审请求、来源哈希与行号 | pending_review/no_failures；不生成、不接纳、不晋升 | 消费一迪/辰浩已有分析 manifest 与四件套 |
 | **P1** | Loop-A 实做：**消解 `pipeline.py loop-a plan` 报出的 5 个 blocker**——① `protocol_not_frozen`（冻结 loop_a_experiment.json 协议）② `primary_metric_not_confirmed`（确认主指标）③ `target_or_generator_not_fixed`（固定被测对象与生成器）④ `paid_budget_not_configured`（配置预算与闸门）⑤ `real_dispatcher_and_isolation_qualification_not_registered`（注册真实调度与隔离）。**代码已在 main（提交 `5527f81`），不需要再做分支合并**；**八门控 + 人工审批闸门必留** | `formal_ready` 从 false 逐项变 true，**且每项都有可核查证据** | 依赖一迪/辰浩 `failures.jsonl` |
 | **P1** | Loop-B（方法进化）控制面接 LLM 生成式优化（受控、带人工在环），**禁止全自动** | 控制面 + 审批流 | 王浩（研究赌注标注） |
 | **P2** | CI：四轨 schema 校验 + registry 签名变更告警 + 进化 manifest 落库 | CI 绿 + 看板 | 刘轲 |
