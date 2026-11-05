@@ -81,11 +81,41 @@ def analyze(benchmark_id: str) -> dict:
 
 @REGISTRY.register_fn(
     "evolve",
-    "触发自进化：失败观察 → Loop-A 出新测试集 / Loop-B 优化方法。",
-    input_schema={"properties": {"benchmark_id": {"type": "string"}, "loop": {"type": "string"}}},
-    arg_doc={"benchmark_id": "针对哪个 benchmark", "loop": "loop-a 或 loop-b"},
+    "核对已有分析产物，存档待审进化请求；不生成、不接纳、不晋升。",
+    input_schema={
+        "type": "object",
+        "required": ["track", "analysis_manifest", "out"],
+        "additionalProperties": False,
+        "properties": {
+            "track": {
+                "enum": ["llm_qa", "agent_execution", "agent_product", "trace_judge"]
+            },
+            "analysis_manifest": {"type": "string", "minLength": 1},
+            "out": {"type": "string", "minLength": 1},
+            "loop": {"enum": ["loop-a", "loop-b"]},
+        },
+    },
+    arg_doc={
+        "track": "分析所属评测轨道",
+        "analysis_manifest": "已有 result_analysis manifest 文件",
+        "out": "新的或空的进化接收输出目录",
+        "loop": "loop-a 或 loop-b；P0 均只登记待审请求",
+    },
     tags=["evolution"],
 )
-def evolve(benchmark_id: str, loop: str = "loop-a") -> dict:
+def evolve(
+    *, track: str, analysis_manifest: str, out: str, loop: str = "loop-a"
+) -> dict:
     # TODO(member4): 接 evolution/（Loop-A 合入 + Loop-B 模型生成式优化）
-    return {"benchmark_id": benchmark_id, "loop": loop, "status": "evolve_pending"}
+    # 本次新增：接收已有分析证据并存档待审请求；原任务中的生成、优化和准入仍未实现。
+    # evolution 与原生来源接入代码一样，位于仓库根目录。
+    # 采用延迟导入，避免加载 driver 时就读取分析产物。
+    import sys
+
+    if str(engine.ROOT) not in sys.path:
+        sys.path.insert(0, str(engine.ROOT))
+    from evolution.intake import receive_analysis
+
+    return receive_analysis(
+        track=track, analysis_manifest=analysis_manifest, out=out, loop=loop
+    )
