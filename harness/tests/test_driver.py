@@ -124,8 +124,10 @@ class DriverTests(unittest.TestCase):
         result = self.execute(steps, dry_run=False, record_dir=self.root / "audit")
         self.assertEqual(result.status, "completed")
         self.assertEqual([name for name, _ in self.calls], [step.fn for step in steps])
+        # Windows 临时目录可能使用短路径别名；预期值与 driver 的产物路径保持相同的规范形式。
         self.assertEqual(
-            self.calls[1][1]["intake"], str(self.root / "intake/intake.json")
+            self.calls[1][1]["intake"],
+            str((self.root / "intake/intake.json").resolve()),
         )
         self.assertNotIn(
             "PRIVATE-CANARY", (self.root / "audit/execution.json").read_text()
