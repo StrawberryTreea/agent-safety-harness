@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
+from .modalities import validate_modality
+
 
 EventRole = Literal["user", "agent", "tool", "environment", "judge", "policy"]
 EventType = Literal[
@@ -26,7 +28,10 @@ SafetyOutcomeReason = Literal[
     "safe_no_attack_success",
 ]
 
+# Preserve the existing Agent export/auditor field list. Optional modality fields
+# must not turn into mandatory keys for old datasets or Agent-only audit tools.
 TASK_TOP_LEVEL_FIELDS = ("task_id", "benchmark", "profile", "user_goal", "attack_goal", "tools", "initial_state", "labels", "evaluation", "metadata")
+TASK_EXTENSION_FIELDS = ("modality", "taxonomy_ref", "test_text", "reference_answer", "type", "eval_method", "note", "label_mapping", "modality_data")
 TASK_LABEL_FIELDS = ("expected_behavior", "task_type", "safety_category", "risk_type", "safety_violation")
 
 
@@ -35,18 +40,34 @@ class TaskSpec:
     task_id: str
     benchmark: str
     profile: str
-    user_goal: str
+    user_goal: str = ""
     attack_goal: str | None = None
     tools: list[dict[str, Any]] = field(default_factory=list)
     initial_state: dict[str, Any] = field(default_factory=dict)
     labels: dict[str, Any] = field(default_factory=dict)
     evaluation: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
+    modality: str = "agent"
+    taxonomy_ref: str = ""
+    test_text: str | None = None
+    reference_answer: Any = None
+    type: str | None = None
+    eval_method: str | None = None
+    note: dict[str, Any] = field(default_factory=dict)
+    label_mapping: dict[str, Any] = field(default_factory=dict)
+    modality_data: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        # Direct constructors used by existing adapters retain the agent default.
+        # from_record performs the full configured shape validation.
+        if not self.taxonomy_ref:
+            from .modalities import modality_contract
+            self.taxonomy_ref = modality_contract(self.modality)[0]["default_taxonomy_ref"]
 
     @classmethod
-    def from_record(cls, record: dict[str, Any]) -> "TaskSpec":
-        normalized = normalize_task_record(record)
-        required = ["task_id", "benchmark", "profile", "user_goal"]
+    def from_record(cls, record: dict[str, Any], *, modalities_config: str | None = None) -> "TaskSpec":
+        normalized = normalize_task_record(record, modalities_config=modalities_config)
+        required = ["task_id", "benchmark", "profile"]
         missing = [key for key in required if not normalized.get(key)]
         if missing:
             raise ValueError(f"Task record missing required fields: {missing}")
@@ -54,13 +75,18 @@ class TaskSpec:
             task_id=str(normalized["task_id"]),
             benchmark=str(normalized["benchmark"]),
             profile=str(normalized["profile"]),
-            user_goal=str(normalized["user_goal"]),
+            user_goal=normalized["user_goal"],
             attack_goal=normalized.get("attack_goal"),
             tools=list(normalized.get("tools") or []),
             initial_state=dict(normalized.get("initial_state") or {}),
             labels=dict(normalized.get("labels") or {}),
             evaluation=dict(normalized.get("evaluation") or {}),
             metadata=dict(normalized.get("metadata") or {}),
+            modality=normalized["modality"], taxonomy_ref=normalized["taxonomy_ref"],
+            test_text=normalized.get("test_text"), reference_answer=normalized.get("reference_answer"),
+            type=normalized.get("type"), eval_method=normalized.get("eval_method"),
+            note=dict(normalized.get("note") or {}), label_mapping=dict(normalized.get("label_mapping") or {}),
+            modality_data=dict(normalized.get("modality_data") or {}),
         )
 
 
@@ -103,23 +129,33 @@ def to_record(obj: Any) -> dict[str, Any]:
     raise TypeError(f"Unsupported record type: {type(obj)!r}")
 
 
-def normalize_task_record(record: dict[str, Any]) -> dict[str, Any]:
+def normalize_task_record(record: dict[str, Any], *, modalities_config: str | None = None) -> dict[str, Any]:
     if not isinstance(record, dict):
         raise TypeError(f"Task record must be a mapping, got {type(record)!r}")
 
-    benchmark = str(record.get("benchmark", ""))
-    profile = str(record.get("profile", ""))
+    payload = {**(record.get("modality_data") or {}), **record}
+    taxonomy = validate_modality(payload, modalities_config)
+    from .modalities import modality_contract
+    declared_fields = modality_contract(record.get("modality", "agent"), modalities_config)[0]["schema"].get("properties", {})
+    modality = record.get("modality", "agent")
+    benchmark = str(record.get("benchmark") or "")
+    profile = str(record.get("profile") or "")
     normalized: dict[str, Any] = {
-        "task_id": str(record.get("task_id", "")),
+        "task_id": str(record.get("task_id") or ""),
         "benchmark": benchmark,
         "profile": profile,
-        "user_goal": str(record.get("user_goal", "")),
-        "attack_goal": _normalize_optional_text(record.get("attack_goal")),
-        "tools": _normalize_tools(record.get("tools")),
-        "initial_state": dict(record.get("initial_state") or {}),
-        "labels": _normalize_labels(record.get("labels"), benchmark=benchmark, profile=profile),
+        "user_goal": str(record.get("user_goal") or "") if modality != "llm" else "",
+        "attack_goal": _normalize_optional_text(record.get("attack_goal")) if modality != "llm" else None,
+        "tools": _normalize_tools(record.get("tools")) if modality != "llm" else [],
+        "initial_state": dict(record.get("initial_state") or {}) if modality != "llm" else {},
+        "labels": _normalize_labels(record.get("labels"), benchmark=benchmark, profile=profile) if modality == "agent" else dict(record.get("labels") or {}),
         "evaluation": dict(record.get("evaluation") or {}),
         "metadata": dict(record.get("metadata") or {}),
+        "modality": modality, "taxonomy_ref": taxonomy,
+        "test_text": record.get("test_text"), "reference_answer": record.get("reference_answer"),
+        "type": record.get("type"), "eval_method": record.get("eval_method"),
+        "note": record.get("note") or {}, "label_mapping": record.get("label_mapping") or {},
+        "modality_data": {**(record.get("modality_data") or {}), **{k: payload[k] for k in declared_fields if k not in (*TASK_TOP_LEVEL_FIELDS, *TASK_EXTENSION_FIELDS) and k in payload}},
     }
     return normalized
 
@@ -160,7 +196,7 @@ def _normalize_tool(value: Any) -> dict[str, Any]:
 
 def _normalize_labels(value: Any, *, benchmark: str = "", profile: str = "") -> dict[str, Any]:
     raw = dict(value or {}) if isinstance(value, dict) else {}
-    labels: dict[str, Any] = {}
+    labels: dict[str, Any] = dict(raw)
 
     expected_behavior = raw.get("expected_behavior")
     if expected_behavior in (None, ""):

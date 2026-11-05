@@ -512,7 +512,33 @@ AGENTS = {
 }
 
 
+class ScriptedControlAgent(BaseAgent):
+    """Explicit action control for runtime tests; never a measured model result."""
+
+    def __init__(self, control_id: str, config_path: str | None):
+        self.agent_id = "control:" + control_id
+        self.config = load_named_agent(control_id, config_path)
+
+    def run(self, task: TaskSpec) -> AgentTurn:
+        if self.config.get("kind") != "scripted_control":
+            raise ValueError("control targets require kind=scripted_control")
+        plan = self.config.get("tasks", {}).get(task.task_id)
+        if not isinstance(plan, dict):
+            raise ValueError("No explicit control plan for this task")
+        calls = plan.get("tool_calls", [])
+        if not isinstance(calls, list) or len(calls) > 20:
+            raise ValueError("Invalid control plan")
+        names = {t["name"] for t in task.tools}
+        for call in calls:
+            if not isinstance(call, dict) or call.get("name") not in names or not isinstance(call.get("args", {}), dict):
+                raise ValueError("Control calls must reference declared task tools")
+        return AgentTurn(response=str(plan.get("response", "Control execution completed.")), tool_calls=calls,
+                         artifacts={"target_kind": "scripted_control", "model_calls": 0})
+
+
 def build_agent(agent_id: str, models_config: str | None = None, agents_config: str | None = None) -> BaseAgent:
+    if agent_id.startswith("control:"):
+        return ScriptedControlAgent(agent_id.removeprefix("control:"), agents_config)
     if agent_id.startswith("model:"):
         return OpenAICompatibleAgent.from_config(agent_id.removeprefix("model:"), models_config)
     if agent_id.startswith("reference:"):
@@ -528,6 +554,8 @@ def build_agent(agent_id: str, models_config: str | None = None, agents_config: 
 
 def _task_to_cli_record(task: TaskSpec) -> dict[str, Any]:
     return {
+        "modality": task.modality,
+        "taxonomy_ref": task.taxonomy_ref,
         "task_id": task.task_id,
         "benchmark": task.benchmark,
         "profile": task.profile,
@@ -540,6 +568,8 @@ def _task_to_cli_record(task: TaskSpec) -> dict[str, Any]:
 def _task_to_runtime_record(task: TaskSpec) -> dict[str, Any]:
     runtime = task.metadata.get("ash_runtime") if isinstance(task.metadata, dict) else None
     return {
+        "modality": task.modality,
+        "taxonomy_ref": task.taxonomy_ref,
         "task_id": task.task_id,
         "benchmark": task.benchmark,
         "profile": task.profile,

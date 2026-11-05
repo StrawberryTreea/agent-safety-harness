@@ -24,7 +24,7 @@
 | 模块 | 状态 | 说明 |
 |---|---|---|
 | `harness/src/agent_safety_harness/` 包 | ✅ 已实大半 | `adapters/ sandbox/ evaluation/ importers/ cli/ config/ runners/ llm/ reporting/` 等大量真实模块已在 |
-| `driver/registrations.py` 6 个函数 | ⬜ 占位 stub | `bench_intake / build_sandbox / run_capture / score / analyze / evolve` 标了 TODO，是统一函数层接口模板 |
+| `driver/registrations.py` 6 个函数 | 🟡 4 个真实接口、2 个占位 | `bench_intake / build_sandbox / run_capture / score` 已接真实引擎；`analyze / evolve` 待对应负责人接入。参数与证据边界见 [engine_registry.md](engine_registry.md) |
 | `federated_asr_benchmark/` | ✅ 已实大半 | `product_eval/` 下 8+ adapter（agentdojo/agentdyn/agentharm/agentleak/agentpoison/injecagent/msb/saber…）+ `run_product.py`/`aggregate_results.py`/`build_case_index.py`(5,384 条)/`preflight.py`/`score_*.py` |
 | `llm_eval/multi_model_rule_eval_prompt_only.py` | ✅ 已实 | 规则判分执行器（可直接接外部 benchmark 格式） |
 | `scripts/result_analysis.py` | ✅ 已实 | 四轨归一 + **八门控（GATES 元组已内置）** + 四件套（observations/failures/invalids/candidate_plans） |

@@ -19,7 +19,7 @@
 ./.venv/Scripts/python.exe pipeline.py --help
 ```
 
-**必须用仓库自带的 `.venv`**，系统 python 缺 PyYAML，一跑就报 `ModuleNotFoundError: yaml`。
+建议先创建 `.venv` 并安装根目录 requirements；虚拟环境不随 Git 分发。已有 Python 环境依赖齐备时也可使用，不能仅凭是否叫“系统 Python”判断。
 
 ---
 
@@ -223,6 +223,7 @@ codebuddy_agentharm.json    qoder_agentdojo.json
 | 编排（预算 / 控制 / 执行闸 / 配对重放） | `orchestrator/` | 伦锋 |
 | 免费 API 端点表 | `harness/config/free_endpoints.json` | 共享 |
 | 外部 benchmark 登记（intake） | `scripts/source_intake.py` | 刘轲 |
+| 四个真实统一引擎接口 | `harness/src/agent_safety_harness/engine.py`，说明见 [engine_registry.md](engine_registry.md) | 刘轲 |
 | 统一入口的实现 | `scripts/pipeline_cli.py` | 王浩 |
 
 ---

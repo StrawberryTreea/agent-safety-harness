@@ -188,7 +188,7 @@
     <div class="side">
       <h4>自进化层（反向优化）</h4>
       <div class="loop amber">
-        <span class="tag" style="background:var(--amber-bg);color:var(--amber)">🔴 未合入 main</span>
+        <span class="tag" style="background:var(--amber-bg);color:var(--amber)">🟡 已合入 main，正式资格未就绪</span>
         <div class="t" style="font-weight:700">测试集自动进化（Loop-A）</div>
         <div class="s" style="font-size:11px;color:var(--muted)">反向优化"评测数据"</div>
         <div class="feed">仅存在于 <code>loop-a-local-harness</code> 分支：fixture 级原型，formal_qualified 恒 false，未调付费模型。</div>
@@ -685,7 +685,7 @@
     </tbody>
   </table>
 
-  <div class="note"><b>与代码现状的 gap（刘轲 实现须知）：</b>当前 <code>schema.py</code> 的 TaskSpec 是 <strong>agent-only</strong>（含 <code>user_goal</code>/<code>tools</code>/<code>initial_state</code>，缺 <code>modality</code> 与 LLM 字段）。按本契约，刘轲 须扩展 schema.py：① <code>modality</code> 改为<strong>可注册的可扩展枚举</strong>（默认集 {llm, agent}，存于配置而非关闭的 Literal）；新增 modality 在 modality 注册表登记 track adapter + 结构契约即可；② 新增 LLM 模态字段 <code>test_text</code>/<code>reference_answer</code>/<code>type</code>/<code>eval_method</code>/<code>note.rule</code>，<strong>不再在 schema 里硬编码 safety_l1/safety_l2 维度，维度改由 <code>taxonomy_ref</code> 引用 config/taxonomies 中的体系</strong>；③ <code>from_record</code> 按 modality 校验必填（LLM 忽略 tools，Agent 不要 test_text）；④ 接入新 benchmark 时，若它有原生体系，在 config/taxonomies 注册并让 TaskSpec 引用，<strong>不强套默认体系</strong>。所有旧 adapter/importer 的 TaskSpec 产出须补 <code>modality=agent</code>。这是 4 人开工前必须先落地的契约基础。</div>
+  <div class="note"><b>Issue #3 实现：</b>TaskSpec 已支持可配置 modality、taxonomy_ref 与 LLM 字段；配置在 <code>harness/config/modalities.json</code>，分类引用登记在 <code>protocol/taxonomy_registry.yaml</code> 的 task_taxonomies。from_record 按模态校验，旧 Agent 记录保持兼容，公开捕获拒绝私有评分字段。intake/build/capture/score 四个注册函数已接真实引擎，analyze/evolve 仍待对应负责人接入。固定来源的 Docker 工程验收使用脚本动作对照，不是模型或官方 benchmark 成绩。详见 <a href="engine_registry.md">统一引擎接口</a>。</div>
 
   <h3>5.2 四轨接口契约（写死，来自 evaluation_tracks.json）</h3>
   <table>

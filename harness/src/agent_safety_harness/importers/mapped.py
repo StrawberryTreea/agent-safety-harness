@@ -94,6 +94,7 @@ def convert_mapped_record(record: dict[str, Any], mapping: dict[str, Any], sourc
     return {
         "task_id": f"{benchmark}:{raw_id}",
         "benchmark": benchmark,
+        "modality": "agent",
         "profile": profile,
         "user_goal": str(user_goal),
         "attack_goal": str(attack_goal) if attack_goal else None,

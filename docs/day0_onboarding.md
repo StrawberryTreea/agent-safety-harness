@@ -16,9 +16,9 @@
 | 现象 | 是 bug 吗 | 你该做什么 |
 |---|---|---|
 | `source_intake` 跑完报 `ready: 0 / needs_review: N` | ✅ **正常，是设计好的机制** | 打开生成的 `manifests/pending/*.pending.yaml`，填 `field_mapping`，再用 `--intake-config` 重跑 |
-| `python -m agent_safety_harness.driver` 只打印 dry_run | ✅ 正常 | dry_run 是安全模式；真实调用要等 registry 的 stub 被替换（刘轲 P0） |
+| `python -m agent_safety_harness.driver` 只打印 dry_run | ✅ 正常 | 这是编排演示；四个真实引擎接口已具备，伦锋仍需按真实签名接参数与产物引用 |
 | 找不到 `data/canonical.jsonl` | ✅ 正常 | `data/` 默认不随仓，要自己从 benchmark 生成 |
-| `import yaml` 报错 | ✅ 环境问题 | 用仓库自带 `.venv`：`./.venv/Scripts/python.exe`，**不要用系统 python** |
+| `import yaml` 报错 | ✅ 环境问题 | 按第 1 节创建 `.venv` 并安装依赖；虚拟环境不随仓库分发 |
 
 > **本机已实测**（2026-11-04）：`source_intake` 对 SafetyBench 实跑成功，产出 catalog + pending manifest + sha256；`driver` dry_run 端到端可跑；`pipeline_cli analyze` 参数已核实为 `--track/--results/--out`。
 
@@ -30,7 +30,9 @@
 # 1.1 clone
 git clone https://github.com/StrawberryTreea/agent-safety-harness.git && cd agent-safety-harness
 
-# 1.2 用仓库自带解释器（系统 python 缺 PyYAML，会在验收时失败）
+# 1.2 创建本地环境并安装依赖（.venv 不随 Git 分发）
+python -m venv .venv
+./.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
 ./.venv/Scripts/python.exe -c "import yaml; print('deps OK')"
 
 # 1.3 确认 driver 骨架能跑（期望：打印 4 步 dry_run，exit 0）
@@ -52,7 +54,7 @@ git config user.email "你的 GitHub 邮箱"
 ## 2. 刘轲 · 第一天要敲的命令
 
 ```bash
-# 2.1 看现在 6 个 stub 长什么样（你 P0 就是填它们）
+# 2.1 四个真实引擎函数已接入；analyze/evolve 仍待对应负责人接入
 cat harness/src/agent_safety_harness/driver/registrations.py
 
 # 2.2 看 adapter 注册表（你要接真 benchmark 的入口）
@@ -196,7 +198,7 @@ grep -rn "GATES" scripts/result_analysis.py
 
 1. **免费端点 key：各自申请、各自测试。** `harness/config/free_endpoints.json` 里 11 个 profile 都需要对应 `api_key_env` 的真 key。**谁跑评测谁自己申请**，不要等统一发放。推荐先用**智谱 GLM-4-Flash**（`ZHIPUAI_API_KEY`）或**硅基流动 Qwen2.5-7B**（`SILICONFLOW_API_KEY`）——国内直连、永久免费档，够第 1 周全部冒烟用。**key 只写环境变量，不进仓库、不进配置文件、不发群里。**
 2. **`loop-a-local-harness` 已合入 main**（提交 `5527f81`）。所有人从 main 直接开分支，**不要再切 loop-a 分支**。Loop-A 的代码位置：`orchestrator/`（budget / controller / execution_guard / fixture_cycle / registry / replay / workers）、`evolution/`（admission / contracts / partitions / qualification / metrics 等）、`protocol/loop_a_contracts.schema.json`。
-3. **`schema.py` 的 modality 扩展确认归刘轲**（P0 首位）。契约第 5 章已标注：`schema.py` 目前仍是 agent-only，缺 `modality` 字段与 LLM 模态字段（`FRAMEWORK_CONTRACT.md:81`）。**这是刘轲 P0 的前置项**——不做，llm_qa 轨产出的 TaskSpec 会缺字段，一迪的活就白干。
+3. **`schema.py` 的 modality 扩展已由刘轲落地**：配置式模态、LLM 字段及 taxonomy_ref 可用，旧 Agent 记录保持兼容。四个真实注册函数的参数与 Docker 工程验收见[统一引擎接口](engine_registry.md)。一迪使用 LLM TaskSpec，伦锋按新签名接 driver，不复用旧的 instruction 占位参数。
 4. **被测产品的 CLI 辰浩自己装。** Codex CLI / Claude Code 等的安装、登录、版本确认由**辰浩本人**负责，不需要等任何人批准，也不需要报备；装好后确认版本号与 `product_registry.json` 里 pin 的版本一致即可。**注意**：这部分是辰浩自己的工作项，不构成"等待外部依赖"的阻塞理由。
 
 ---

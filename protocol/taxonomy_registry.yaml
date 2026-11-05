@@ -80,3 +80,12 @@ l2_dimensions:
     parent: L1-08
     name: "伤害类型19：欺骗、隐瞒与情境感知风险"
 compatibility_note: "Any structural change requires a new version and an explicit comparability statement."
+task_taxonomies:
+  default-llm:
+    modalities: [llm]
+    definition: protocol/default_taxonomies.yaml
+    definition_id: default-llm
+  default-agent:
+    modalities: [agent]
+    definition: protocol/default_taxonomies.yaml
+    definition_id: default-agent

@@ -48,7 +48,7 @@
         │
         ↓（失败观察 = 自进化燃料）
 自进化层
- ├─ Loop-A 测试集进化（反向优化评测数据）   ← 仅分支内，未合入 main
+ ├─ Loop-A 测试集进化（反向优化评测数据）   ← 已合入 main，正式资格仍关闭
  └─ Loop-B 方法进化（反向优化评测方法）     ← main 已实现受控控制平面
         │
         ↓
@@ -78,7 +78,7 @@
 - 结构契约按模态走：llm 自动忽略 tools/initial_state/user_goal；agent 必须有 user_goal 或 tools/initial_state。
 - 分类体系不写死：维度标签经 `taxonomy_ref` 引用，benchmark 原生体系直接注册引用即可，不必套默认体系。
 
-> **代码现状 gap（刘轲 必须落地 · 王浩已确认归属）**：当前 `schema.py` 的 TaskSpec 仍是 **agent-only**（含 `user_goal`/`tools`/`initial_state`，缺 `modality` 与 LLM 字段）。刘轲 须：① `modality` 改为可注册可扩展枚举（默认集存于配置而非关闭的 Literal）；② 新增 LLM 模态字段，**维度不再硬编码进 schema，改由 `taxonomy_ref` 引用 `config/taxonomies`**；③ `from_record` 按 modality 校验必填；④ 所有旧 adapter/importer 的 TaskSpec 产出须补 `modality=agent`。这是 4 人开工前必须先落地的契约基础，**归属已确认是刘轲 P0 首位**——不做则 llm_qa 轨产出的 TaskSpec 缺字段，一迪的工作会白做。
+> **Issue #3 实现**：TaskSpec 已加入 modality、taxonomy_ref 与 LLM 字段；默认模态及各自结构在 `harness/config/modalities.json`，分类引用登记在 `protocol/taxonomy_registry.yaml` 的 task_taxonomies。from_record 按配置校验；旧 Agent 输入保持兼容，importer 与运行记录显式携带 agent。LLM 任务不进入 Agent 执行器。公开捕获从原始记录检查 evaluation、reference_answer、note.rule 等私有字段。接口、运行步骤与能力边界见[统一引擎接口](engine_registry.md)。
 
 ### 2.2 TraceEvent（执行轨迹）
 **字段**：`event_id` `task_id` `step` `role`(user/agent/tool/environment/judge/policy) `event_type`(message/tool_call/tool_result/state_diff/refusal/policy_check/judge_verdict) `content` `timestamp`。
@@ -144,7 +144,7 @@
 - 候选生成器只见允许的失败摘要与脱敏公开轨迹；私有 oracle 留在验收进程做泄漏检查。
 - `automatic_admission=false`：自动生成 ≠ 自动接纳，须经门控 + review。
 
-**现状**：🔴 仅存在于 `loop-a-local-harness` 分支（fixture 级原型，`formal_qualified` 恒 false，未调付费模型），**未合入 main**。伦锋 负责合入并实现真生成器。
+**现状**：🟡 回路 A 已在提交 `5527f81` 合入 main，另有受控 DeepSeek LLM 工程试验记录；正式协议、指标与调度资格仍未就绪，formal_qualified 保持 false，不能把 fixture 或工程试验写成正式演化收益。
 
 ### 5.2 Loop-B · 方法进化（反向优化"评测方法"，`automatic_promotion=false`）
 **本期已实现并作为契约的 15 项**：受控 JSON/YAML 提示·策略构建、不可变候选登记、失败谱系、配对安全比较、良性回归门、配对 agent 执行作业、非执行式预检、凭据/可执行就绪检查、公私 oracle 分离检查、输入/策略漂移检查、显式外部目标授权、有效性与成本门、封存发布决策记录、回滚指针、合成受控端到端 smoke。
@@ -329,7 +329,7 @@
 
 | 文件 | 作用 | 状态 |
 |---|---|---|
-| `harness/src/agent_safety_harness/schema.py` | 5 个标准产物的数据结构定义 | ✅ 存在（TaskSpec 仍 agent-only，待刘轲 扩展） |
+| `harness/src/agent_safety_harness/schema.py` | TaskSpec / TraceEvent / ResultSpec 定义 | ✅ TaskSpec 已支持配置式模态与 LLM 字段；其他产物各有独立契约 |
 | `harness/src/agent_safety_harness/registry.py` | 统一函数层 ToolRegistry | 🔴 本次新增骨架 |
 | `harness/src/agent_safety_harness/driver/` | harness_driver 子包（planner/executor/nl_bridge/registrations） | 🔴 本次新增骨架 |
 | `harness/config/llm_roles.json` | LLM 三角色配置 | 🔴 本次新增（占位配置） |
