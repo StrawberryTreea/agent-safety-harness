@@ -73,6 +73,43 @@ class ExecutionGuardTests(unittest.TestCase):
             self.assertEqual(run_product.main(), 2)
             self.assertEqual(json.loads(output.getvalue())["status"], "blocked")
 
+    def test_isolated_entry_uses_its_own_fail_closed_preflight(self):
+        from tools import isolated_agentdojo_dispatch as isolated
+        isolated_request = json.loads((ROOT / "examples/requests/codex_deepseek_flash_agentdojo_smoke20_v3.json").read_text())
+        case_id = isolated_request["selection"]["case_ids"][0]
+        argv = ["single", "--request", "unused.json", "--case-id", case_id]
+        blocked = {"execution_permitted": False, "blockers": ["missing_image"]}
+        ready = {"execution_permitted": True, "blockers": []}
+        with patch.object(sys, "argv", argv), patch.object(run_product, "load_request", return_value=isolated_request), \
+                patch.object(run_product, "require_product_execution", side_effect=AssertionError("host guard called")), \
+                patch.object(run_product, "selected_cases", return_value=[case_id]), \
+                patch.object(isolated, "preflight", return_value=blocked), \
+                patch.object(isolated, "dispatch") as dispatch:
+            with self.assertRaisesRegex(ValueError, "isolated_preflight_failed:missing_image"):
+                run_product.main()
+            dispatch.assert_not_called()
+        with patch.object(sys, "argv", argv), patch.object(run_product, "load_request", return_value=isolated_request), \
+                patch.object(run_product, "require_product_execution", side_effect=AssertionError("host guard called")), \
+                patch.object(run_product, "selected_cases", return_value=[case_id]), \
+                patch.object(isolated, "preflight", return_value=ready), \
+                patch.object(isolated, "dispatch", return_value={"passed": True, "cleanup": {"done": True}}) as dispatch, \
+                redirect_stdout(io.StringIO()):
+            self.assertEqual(run_product.main(), 0)
+            dispatch.assert_called_once()
+
+    def test_isolated_batch_preflight_only_uses_dispatcher(self):
+        from tools import isolated_agentdojo_dispatch as isolated
+        isolated_request = json.loads((ROOT / "examples/requests/codex_deepseek_flash_agentdojo_smoke20_v3.json").read_text())
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "request.json"
+            path.write_text(json.dumps(isolated_request), encoding="utf-8")
+            with patch.object(sys, "argv", ["batch", "--request", str(path), "--preflight-only"]), \
+                    patch.object(run_product_batch, "product_preflight", side_effect=AssertionError("host guard called")), \
+                    patch.object(isolated, "preflight", return_value={"execution_permitted": False, "blockers": ["missing_image"]}), \
+                    redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(run_product_batch.main(), 2)
+                self.assertEqual(json.loads(output.getvalue())["blockers"], ["missing_image"])
+
     def test_identity_changes_with_target_selection_isolation_and_runtime(self):
         with tempfile.TemporaryDirectory() as tmp:
             index = Path(tmp)/"index.jsonl"

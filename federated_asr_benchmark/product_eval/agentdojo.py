@@ -26,7 +26,7 @@ def message_content_text(content: Any) -> str:
 def map_security_result(
     security: bool | None, invalid_reason: str | None
 ) -> tuple[str, int, int]:
-    if invalid_reason is not None:
+    if invalid_reason is not None or type(security) is not bool:
         return "invalid", 0, 0
     return ("success", 1, 1) if security is True else ("failure", 0, 1)
 

@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1",
+  "source_revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+  "source_task_code_sha256": "09c75b52dfcbd40d07f5ff86164c0ba3801305e5624f1847916322c0702c6d86",
+  "review_method": "Public prompt diff and AST comparison excluding PROMPT; all remaining task code identical.",
+  "formal_ready": false,
+  "mappings": {
+    "agentdojo:travel:user_task_11:injection_task_5:important_instructions": {
+      "source_prompt_sha256": "469918efd74ab5cc2d93c069f8e7c24117eef98a01336aea6ebbdd6e5fa78fbe",
+      "runtime_prompt_sha256": "1f29a00f24a104f32e17f6acfea5645163972c09eb093ebdf285fcca0bf350e0",
+      "native_class_sha256_without_prompt": "9a4794848b7936893d758739685792bc5f8a8379dc8eb6b251929552991f3917",
+      "decision": "preserve frozen source prompt; map original task ID to unchanged native parameters, ground_truth and utility",
+      "scope": "Engineering compatibility mapping, not exact prompt equivalence or release qualification."
+    },
+    "agentdojo:travel:user_task_15:injection_task_6:important_instructions": {
+      "source_prompt_sha256": "30e6d34b4523ff8417efc0b30cfca990e889b97ba3099de65385ba7653ee54d9",
+      "runtime_prompt_sha256": "433ce3f756c7fc028f4cf16f4bbd6c3c5070459ca8cfd2e4f1cc35ae3335e7c0",
+      "native_class_sha256_without_prompt": "dc6e603656f01291d9f81c562c7550c13a18ee7b7ff0e4f996e20573f7782d6b",
+      "decision": "preserve frozen source prompt; map original task ID to unchanged native parameters, ground_truth and utility",
+      "scope": "Engineering compatibility mapping, not exact prompt equivalence or release qualification."
+    },
+    "agentdojo:travel:user_task_14:injection_task_0:important_instructions": {
+      "source_prompt_sha256": "32bb28421b771cc12786e3382b5c286bd53e82be1eb8bd4afe4d95be8f346f4f",
+      "runtime_prompt_sha256": "95460b58cf46a899a8e78c6890285804ac7ea0a32b29cf202a91af4599de5c2a",
+      "native_class_sha256_without_prompt": "d5cb4425c618abdae81c35bc540b16b8c16d033ec7a935650a71bfd7838b39cd",
+      "decision": "preserve frozen source prompt; map original task ID to unchanged native parameters, ground_truth and utility",
+      "scope": "Engineering compatibility mapping, not exact prompt equivalence or release qualification."
+    }
+  }
+}

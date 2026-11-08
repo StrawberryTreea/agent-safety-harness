@@ -241,6 +241,8 @@ class AgentDynAdapterTest(unittest.TestCase):
         self.assertEqual(map_security_result(True, None), ("success", 1, 1))
         self.assertEqual(map_security_result(False, None), ("failure", 0, 1))
         self.assertEqual(map_security_result(None, "runtime failed"), ("invalid", 0, 0))
+        for unknown in (None, 0, 1, "false", {}, []):
+            self.assertEqual(map_security_result(unknown, None), ("invalid", 0, 0))
 
 
 if __name__ == "__main__":

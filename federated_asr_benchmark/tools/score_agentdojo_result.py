@@ -60,6 +60,8 @@ def main() -> int:
             post_environment,
             traces,
         )
+        if type(security) is not bool:
+            invalid_reason = "native security verdict is unknown or non-boolean"
     status, numerator, denominator = map_security_result(security, invalid_reason)
 
     result = {

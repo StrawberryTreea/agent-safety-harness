@@ -1,0 +1,529 @@
+{
+  "schema_version": "0.1",
+  "profiles": {
+    "codex_deepseek_flash_agentdojo_banking_v1": {
+      "status": "single_case_engineering",
+      "product_id": "codex",
+      "product_version": "0.122.0",
+      "requested_model": "deepseek-flash",
+      "immutable_model_version_verified": false,
+      "endpoint": "https://api.deepseek.com/v1/responses",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "scope": "agentdojo:banking:user_task_13:injection_task_1:important_instructions",
+      "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+      "source_revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+      "maximum_requests": 4,
+      "maximum_output_tokens_per_request": 2048,
+      "maximum_native_tool_calls": 30,
+      "automatic_retry": false,
+      "sse_buffered": true,
+      "tool_protocol_adaptation": false,
+      "execution_permitted": true,
+      "formal_ready": false,
+      "runtime_pins": {
+        "product_image_id": "sha256:30a027b38ab94870790af9c8aaab0c065d9c7b917d42be415e91ca746ae3392b",
+        "environment_image_id": "sha256:cfa5e2b39027d8eae5b8041dd6e1a55527591a7bc541078ac1f6445b887ff0e7",
+        "files": {
+          "runtime/deepseek_smoke/runtime.py": "30d13e1416996c6be0ab3d43608740b6126aab47393d17039b65090240a2690f",
+          "runtime/deepseek_smoke/attack_replay.py": "c7244abe13b06dbf7ae91068d1bbbfc075a14092ccfa2eca6d78d7191bd5f2be",
+          "runtime/deepseek_smoke/scorer_package_init.py": "057b9cb04dc57126433782ce3272ec952bfeb8ceac9a48e3dc5770c0311063f0",
+          "runtime/deepseek_smoke/Dockerfile": "6516f5b9f1bbd6172ce4ea46a220e6a3fcc2576063ba2b53bd2f1769c1c9bab5",
+          "runtime/deepseek_smoke/AttackReplay.Dockerfile": "2c88e77f94b7ac128a8c58d057ca5e38d68622434e0508851355b3defddd7c58",
+          "tools/score_agentdojo_result.py": "a2c80b6e612ea5de35f4df475cb0c762ba45a6d6015cb74dc84d3928bc57a408",
+          "tools/agentdojo_mcp_server.py": "e13b0d7cd0a90fade1dc4ddc7d41b0dbff1cbae849e49810f7ff12ca3f87fa8d",
+          "tools/isolated_agentdojo_dispatch.py": "9beabffd19b7977df46c9e93390d7c44b00595b4fbeefe39b17bedc4b578f800",
+          "tools/run_product.py": "0a6457f2968baf1152f6d7502fe1de77afd4432c765afef725eea024e56233b1",
+          "product_eval/agentdojo.py": "5fa7f88234b4ad7b70d15747128074cfec829007e0936b19e68fe6d15fdf862c",
+          "product_eval/runner.py": "3255b2ab5bb6cbdd9fcc31b8dee10d89504cc82499a4addb22a704e373b2458c",
+          "product_eval/product_model_policy.py": "a73a3398534cc4ae823926a039df17d0fc76779c7a4ddcdb877eb95d689d8d4f",
+          "product_eval/route_audit_proxy.py": "61e9219072628e8524ae1c60c9ea98ffe92c85e32ec033ab71be4867952c9019",
+          "manifests/agentdojo_v1/banking.json": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        }
+      },
+      "qualification_scope": "Single fixed case engineering run only; no smoke20/pilot or release qualification.",
+      "historical_non_executable": true,
+      "historical_note": "Audit-only registration. Original local qualification artifacts and historical runtime pins are retained as provenance, not execution configuration. Use the independently qualified v3 profile for current engineering execution."
+    },
+    "codex_deepseek_flash_agentdojo_smoke20_v1": {
+      "status": "smoke20_engineering",
+      "product_id": "codex",
+      "product_version": "0.122.0",
+      "requested_model": "deepseek-flash",
+      "immutable_model_version_verified": false,
+      "endpoint": "https://api.deepseek.com/v1/responses",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "scope": "agentdojo_smoke20",
+      "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+      "source_revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+      "maximum_requests": 4,
+      "maximum_output_tokens_per_request": 2048,
+      "maximum_native_tool_calls": 30,
+      "automatic_retry": false,
+      "sse_buffered": true,
+      "tool_protocol_adaptation": false,
+      "execution_permitted": true,
+      "formal_ready": false,
+      "runtime_pins": {
+        "product_image_id": "sha256:30a027b38ab94870790af9c8aaab0c065d9c7b917d42be415e91ca746ae3392b",
+        "environment_image_id": "sha256:cfa5e2b39027d8eae5b8041dd6e1a55527591a7bc541078ac1f6445b887ff0e7",
+        "files": {
+          "runtime/deepseek_smoke/runtime.py": "30d13e1416996c6be0ab3d43608740b6126aab47393d17039b65090240a2690f",
+          "runtime/deepseek_smoke/attack_replay.py": "c7244abe13b06dbf7ae91068d1bbbfc075a14092ccfa2eca6d78d7191bd5f2be",
+          "runtime/deepseek_smoke/scorer_package_init.py": "057b9cb04dc57126433782ce3272ec952bfeb8ceac9a48e3dc5770c0311063f0",
+          "runtime/deepseek_smoke/Dockerfile": "6516f5b9f1bbd6172ce4ea46a220e6a3fcc2576063ba2b53bd2f1769c1c9bab5",
+          "runtime/deepseek_smoke/AttackReplay.Dockerfile": "2c88e77f94b7ac128a8c58d057ca5e38d68622434e0508851355b3defddd7c58",
+          "tools/score_agentdojo_result.py": "a2c80b6e612ea5de35f4df475cb0c762ba45a6d6015cb74dc84d3928bc57a408",
+          "tools/agentdojo_mcp_server.py": "e13b0d7cd0a90fade1dc4ddc7d41b0dbff1cbae849e49810f7ff12ca3f87fa8d",
+          "tools/isolated_agentdojo_dispatch.py": "9beabffd19b7977df46c9e93390d7c44b00595b4fbeefe39b17bedc4b578f800",
+          "tools/run_product.py": "0a6457f2968baf1152f6d7502fe1de77afd4432c765afef725eea024e56233b1",
+          "product_eval/agentdojo.py": "5fa7f88234b4ad7b70d15747128074cfec829007e0936b19e68fe6d15fdf862c",
+          "product_eval/runner.py": "3255b2ab5bb6cbdd9fcc31b8dee10d89504cc82499a4addb22a704e373b2458c",
+          "product_eval/product_model_policy.py": "a73a3398534cc4ae823926a039df17d0fc76779c7a4ddcdb877eb95d689d8d4f",
+          "product_eval/route_audit_proxy.py": "61e9219072628e8524ae1c60c9ea98ffe92c85e32ec033ab71be4867952c9019",
+          "manifests/agentdojo_v1/banking.json": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438",
+          "tools/isolated_agentdojo_batch.py": "ad1a0efc411b5faad3122f551c1ad959f3d7168265bf003a1c3c1340e3e73e3a",
+          "tools/run_product_batch.py": "14e619a35e7992667d98fffe4d13d35341ee709f7cb6f2b24690709577fc571e",
+          "release/agentdojo_prompt_mappings.json": "d483c7762e036a8ac116b6f88a4bfade85d426ceaa4a983c748a794a525b47a7",
+          "runtime/deepseek_smoke/smoke20_preflight.py": "68a1ea14fe848ef7c6d3458a30114a8379ccc78cc40e0a0970fae56092782b44",
+          "manifests/agentdojo_v1/slack.json": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683",
+          "manifests/agentdojo_v1/travel.json": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a",
+          "manifests/agentdojo_v1/workspace.json": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        }
+      },
+      "qualification_scope": "Frozen AgentDojo smoke20 engineering execution; no pilot or release qualification.",
+      "selection_sha256": "a44aee9928e36fa6f6281e0a5a41a0c9436b6fa8de0fd070c50896a85d931ac5",
+      "qualification": {
+        "artifact": "work/chenhao/deepseek-smoke20-readiness-20261108-v1/summary.json",
+        "sha256": "21850be661f6b6d01c52710f0727ec439d08166c2ab2165289afd7267d07895b"
+      },
+      "cases": {
+        "agentdojo:slack:user_task_5:injection_task_1:important_instructions": {
+          "source_sha256": "fc65063e942ab9c1c760237819b8ac5978de68ca0bb273e81c75f3895f9f81f0",
+          "native_case_id": "slack:user_task_5:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_4:injection_task_4:important_instructions": {
+          "source_sha256": "4c001b528a441fe13633e3ca934d4512c3570b769d3183f6d0616cb5e306a66a",
+          "native_case_id": "workspace:user_task_4:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_4:injection_task_2:important_instructions": {
+          "source_sha256": "f79d13aed9100a8853ae84eb901e256f18598739e1c258023fdd34a00ceebce6",
+          "native_case_id": "banking:user_task_4:injection_task_2:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_11:injection_task_5:important_instructions": {
+          "source_sha256": "f511ee03fae2f9933d35ac0b3a7e013d762838f34cabfc2df85bcdb28bbaf99e",
+          "native_case_id": "travel:user_task_11:injection_task_5:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_15:injection_task_1:important_instructions": {
+          "source_sha256": "6362d5e45916d2c5f2e5f35030ab28190eba158b2a96e7718e9bb51fde2075d8",
+          "native_case_id": "workspace:user_task_15:injection_task_1:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_13:injection_task_1:important_instructions": {
+          "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+          "native_case_id": "banking:user_task_13:injection_task_1:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_15:injection_task_6:important_instructions": {
+          "source_sha256": "e7c058b590e244196656cf093c8223f31d5fd1e1dc20dc99567b1a7ab47f5468",
+          "native_case_id": "travel:user_task_15:injection_task_6:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_20:injection_task_4:important_instructions": {
+          "source_sha256": "6d1045a9e56eb0d77d2cf453a122f3a0cf5fbc2ee16e0b48773e04d1eb2ebe51",
+          "native_case_id": "workspace:user_task_20:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:slack:user_task_15:injection_task_1:important_instructions": {
+          "source_sha256": "9e4e8dcd6deb5a381300cac1f1fd70ae6a4367dfd4993c6b4d8b9573f41d266e",
+          "native_case_id": "slack:user_task_15:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_2:injection_task_2:important_instructions": {
+          "source_sha256": "bd0b8e2e4acb32cda7bff100275df81ae06643f124fdbc47802d0fbe3e4c97bc",
+          "native_case_id": "workspace:user_task_2:injection_task_2:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_1:injection_task_4:important_instructions": {
+          "source_sha256": "0bbbe45f46cae7e3774af40e3e04a1c32708cef8b8685b17efe77c7201924384",
+          "native_case_id": "banking:user_task_1:injection_task_4:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_14:injection_task_0:important_instructions": {
+          "source_sha256": "0145f4a626fd599769c69afdc9dbfaf23f8fc5fccbd3f15d92e107aa806b8175",
+          "native_case_id": "travel:user_task_14:injection_task_0:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_32:injection_task_0:important_instructions": {
+          "source_sha256": "0b926b75057260afb89fedf49fbd2993cc97461484f3a676e4bbc9eb5a3a0b4a",
+          "native_case_id": "workspace:user_task_32:injection_task_0:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:slack:user_task_19:injection_task_1:important_instructions": {
+          "source_sha256": "e396462247fc02eb02844fa7a6f5f0f735dc2ee31c6b9203f26162c67f8cd602",
+          "native_case_id": "slack:user_task_19:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_34:injection_task_4:important_instructions": {
+          "source_sha256": "72ed4cb02342905fc1587db7acc1aa4cde5736435d5c32ad67f736334cbf10a5",
+          "native_case_id": "workspace:user_task_34:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_3:injection_task_2:important_instructions": {
+          "source_sha256": "5e244434db686ad09b99ffeae663756b55deebe778c189255661ae188b87d8f2",
+          "native_case_id": "banking:user_task_3:injection_task_2:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_4:injection_task_4:important_instructions": {
+          "source_sha256": "67e1781901a26f2acd7362ee8f6700d3eb7078bbf5ba14d51e26cadf21479b31",
+          "native_case_id": "travel:user_task_4:injection_task_4:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_31:injection_task_5:important_instructions": {
+          "source_sha256": "4428c62ada5d698615596a0da2aebe1b09ceb4cd0b316e1bc424c88249e54e13",
+          "native_case_id": "workspace:user_task_31:injection_task_5:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_2:injection_task_1:important_instructions": {
+          "source_sha256": "4ea3e359f4719b065f8b47ee48b7c5e85a323a1c436ae17c145b8417f642786d",
+          "native_case_id": "banking:user_task_2:injection_task_1:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:slack:user_task_12:injection_task_3:important_instructions": {
+          "source_sha256": "a8b4f81970acc75ca1a6188facd7512036d32208695e2e426a354e27879eb0f1",
+          "native_case_id": "slack:user_task_12:injection_task_3:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        }
+      },
+      "historical_non_executable": true,
+      "historical_note": "Audit-only registration. Original local qualification artifacts and historical runtime pins are retained as provenance, not execution configuration. Use the independently qualified v3 profile for current engineering execution."
+    },
+    "codex_deepseek_flash_agentdojo_smoke20_v2": {
+      "status": "smoke20_engineering",
+      "product_id": "codex",
+      "product_version": "0.122.0",
+      "requested_model": "deepseek-flash",
+      "immutable_model_version_verified": false,
+      "endpoint": "https://api.deepseek.com/v1/responses",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "scope": "agentdojo_smoke20",
+      "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+      "source_revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+      "maximum_requests": 12,
+      "maximum_output_tokens_per_request": 8192,
+      "maximum_native_tool_calls": 30,
+      "automatic_retry": false,
+      "sse_buffered": true,
+      "tool_protocol_adaptation": false,
+      "execution_permitted": true,
+      "formal_ready": false,
+      "runtime_pins": {
+        "product_image_id": "sha256:cad8ae04f70e7255dbae5abc2b995fa4d71af89306197c8f7374c0ee8f59e51e",
+        "environment_image_id": "sha256:08fdacf36ae491ff3013aad3a2757635dbb0f82bba063051e66dace90188170d",
+        "files": {
+          "runtime/deepseek_smoke/runtime.py": "9165f8eaf7d6211b2caeb36879bd5e0ef9a488d63c4bf852a87f85744e4ff582",
+          "runtime/deepseek_smoke/attack_replay.py": "c7244abe13b06dbf7ae91068d1bbbfc075a14092ccfa2eca6d78d7191bd5f2be",
+          "runtime/deepseek_smoke/scorer_package_init.py": "057b9cb04dc57126433782ce3272ec952bfeb8ceac9a48e3dc5770c0311063f0",
+          "runtime/deepseek_smoke/Dockerfile": "6516f5b9f1bbd6172ce4ea46a220e6a3fcc2576063ba2b53bd2f1769c1c9bab5",
+          "runtime/deepseek_smoke/AttackReplay.Dockerfile": "1846eb5c6badc652b6514c1bb169c69faf66e9f3198df71abcf584b79716325d",
+          "tools/score_agentdojo_result.py": "a2c80b6e612ea5de35f4df475cb0c762ba45a6d6015cb74dc84d3928bc57a408",
+          "tools/agentdojo_mcp_server.py": "61ca0295939c26dfee6a9c4f7ec41c8fd09702a4c8cc79a401ece8ace141a610",
+          "tools/isolated_agentdojo_dispatch.py": "f47476d8334efa3eb8c96ed2dfce1f5d2d80e240786e44073442e9a7767302c4",
+          "tools/run_product.py": "0a6457f2968baf1152f6d7502fe1de77afd4432c765afef725eea024e56233b1",
+          "product_eval/agentdojo.py": "5fa7f88234b4ad7b70d15747128074cfec829007e0936b19e68fe6d15fdf862c",
+          "product_eval/runner.py": "3255b2ab5bb6cbdd9fcc31b8dee10d89504cc82499a4addb22a704e373b2458c",
+          "product_eval/product_model_policy.py": "a73a3398534cc4ae823926a039df17d0fc76779c7a4ddcdb877eb95d689d8d4f",
+          "product_eval/route_audit_proxy.py": "61e9219072628e8524ae1c60c9ea98ffe92c85e32ec033ab71be4867952c9019",
+          "manifests/agentdojo_v1/banking.json": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438",
+          "tools/isolated_agentdojo_batch.py": "b0cc91af1a7dfe601ef9140aab5793444a983c1beb6584e01432e3e05b619127",
+          "tools/run_product_batch.py": "14e619a35e7992667d98fffe4d13d35341ee709f7cb6f2b24690709577fc571e",
+          "release/agentdojo_prompt_mappings.json": "d483c7762e036a8ac116b6f88a4bfade85d426ceaa4a983c748a794a525b47a7",
+          "runtime/deepseek_smoke/smoke20_preflight.py": "68a1ea14fe848ef7c6d3458a30114a8379ccc78cc40e0a0970fae56092782b44",
+          "manifests/agentdojo_v1/slack.json": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683",
+          "manifests/agentdojo_v1/travel.json": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a",
+          "manifests/agentdojo_v1/workspace.json": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        }
+      },
+      "qualification_scope": "Frozen AgentDojo smoke20 engineering execution; no pilot or release qualification.",
+      "selection_sha256": "a44aee9928e36fa6f6281e0a5a41a0c9436b6fa8de0fd070c50896a85d931ac5",
+      "qualification": {
+        "artifact": "work/chenhao/deepseek-v2-native-readiness-20261108-v2/summary.json",
+        "sha256": "22d7dddf977b44838a771fbaf4d81972d10183ff4ed7b7ce31293379e0e5377b"
+      },
+      "cases": {
+        "agentdojo:slack:user_task_5:injection_task_1:important_instructions": {
+          "source_sha256": "fc65063e942ab9c1c760237819b8ac5978de68ca0bb273e81c75f3895f9f81f0",
+          "native_case_id": "slack:user_task_5:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_4:injection_task_4:important_instructions": {
+          "source_sha256": "4c001b528a441fe13633e3ca934d4512c3570b769d3183f6d0616cb5e306a66a",
+          "native_case_id": "workspace:user_task_4:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_4:injection_task_2:important_instructions": {
+          "source_sha256": "f79d13aed9100a8853ae84eb901e256f18598739e1c258023fdd34a00ceebce6",
+          "native_case_id": "banking:user_task_4:injection_task_2:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_11:injection_task_5:important_instructions": {
+          "source_sha256": "f511ee03fae2f9933d35ac0b3a7e013d762838f34cabfc2df85bcdb28bbaf99e",
+          "native_case_id": "travel:user_task_11:injection_task_5:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_15:injection_task_1:important_instructions": {
+          "source_sha256": "6362d5e45916d2c5f2e5f35030ab28190eba158b2a96e7718e9bb51fde2075d8",
+          "native_case_id": "workspace:user_task_15:injection_task_1:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_13:injection_task_1:important_instructions": {
+          "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+          "native_case_id": "banking:user_task_13:injection_task_1:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_15:injection_task_6:important_instructions": {
+          "source_sha256": "e7c058b590e244196656cf093c8223f31d5fd1e1dc20dc99567b1a7ab47f5468",
+          "native_case_id": "travel:user_task_15:injection_task_6:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_20:injection_task_4:important_instructions": {
+          "source_sha256": "6d1045a9e56eb0d77d2cf453a122f3a0cf5fbc2ee16e0b48773e04d1eb2ebe51",
+          "native_case_id": "workspace:user_task_20:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:slack:user_task_15:injection_task_1:important_instructions": {
+          "source_sha256": "9e4e8dcd6deb5a381300cac1f1fd70ae6a4367dfd4993c6b4d8b9573f41d266e",
+          "native_case_id": "slack:user_task_15:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_2:injection_task_2:important_instructions": {
+          "source_sha256": "bd0b8e2e4acb32cda7bff100275df81ae06643f124fdbc47802d0fbe3e4c97bc",
+          "native_case_id": "workspace:user_task_2:injection_task_2:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_1:injection_task_4:important_instructions": {
+          "source_sha256": "0bbbe45f46cae7e3774af40e3e04a1c32708cef8b8685b17efe77c7201924384",
+          "native_case_id": "banking:user_task_1:injection_task_4:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_14:injection_task_0:important_instructions": {
+          "source_sha256": "0145f4a626fd599769c69afdc9dbfaf23f8fc5fccbd3f15d92e107aa806b8175",
+          "native_case_id": "travel:user_task_14:injection_task_0:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_32:injection_task_0:important_instructions": {
+          "source_sha256": "0b926b75057260afb89fedf49fbd2993cc97461484f3a676e4bbc9eb5a3a0b4a",
+          "native_case_id": "workspace:user_task_32:injection_task_0:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:slack:user_task_19:injection_task_1:important_instructions": {
+          "source_sha256": "e396462247fc02eb02844fa7a6f5f0f735dc2ee31c6b9203f26162c67f8cd602",
+          "native_case_id": "slack:user_task_19:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_34:injection_task_4:important_instructions": {
+          "source_sha256": "72ed4cb02342905fc1587db7acc1aa4cde5736435d5c32ad67f736334cbf10a5",
+          "native_case_id": "workspace:user_task_34:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_3:injection_task_2:important_instructions": {
+          "source_sha256": "5e244434db686ad09b99ffeae663756b55deebe778c189255661ae188b87d8f2",
+          "native_case_id": "banking:user_task_3:injection_task_2:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_4:injection_task_4:important_instructions": {
+          "source_sha256": "67e1781901a26f2acd7362ee8f6700d3eb7078bbf5ba14d51e26cadf21479b31",
+          "native_case_id": "travel:user_task_4:injection_task_4:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_31:injection_task_5:important_instructions": {
+          "source_sha256": "4428c62ada5d698615596a0da2aebe1b09ceb4cd0b316e1bc424c88249e54e13",
+          "native_case_id": "workspace:user_task_31:injection_task_5:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_2:injection_task_1:important_instructions": {
+          "source_sha256": "4ea3e359f4719b065f8b47ee48b7c5e85a323a1c436ae17c145b8417f642786d",
+          "native_case_id": "banking:user_task_2:injection_task_1:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:slack:user_task_12:injection_task_3:important_instructions": {
+          "source_sha256": "a8b4f81970acc75ca1a6188facd7512036d32208695e2e426a354e27879eb0f1",
+          "native_case_id": "slack:user_task_12:injection_task_3:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        }
+      },
+      "profile_id": "codex_deepseek_flash_agentdojo_smoke20_v2",
+      "budget": {
+        "id": "smoke20_v2",
+        "maximum_requests": 12,
+        "max_output_tokens": 8192
+      },
+      "historical_non_executable": true,
+      "historical_note": "Audit-only registration. Original local qualification artifacts and historical runtime pins are retained as provenance, not execution configuration. Use the independently qualified v3 profile for current engineering execution."
+    },
+    "codex_deepseek_flash_agentdojo_smoke20_v3": {
+      "status": "smoke20_engineering",
+      "product_id": "codex",
+      "product_version": "0.122.0",
+      "requested_model": "deepseek-flash",
+      "immutable_model_version_verified": false,
+      "endpoint": "https://api.deepseek.com/v1/responses",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "scope": "agentdojo_smoke20",
+      "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+      "source_revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+      "maximum_requests": 12,
+      "maximum_output_tokens_per_request": 8192,
+      "maximum_native_tool_calls": 30,
+      "automatic_retry": false,
+      "sse_buffered": true,
+      "tool_protocol_adaptation": false,
+      "execution_permitted": true,
+      "formal_ready": false,
+      "runtime_pins": {
+        "product_image_id": "sha256:0ab5d826c93c214d62f06928d37badf29867720cf0ded34127c258390a2467b8",
+        "environment_image_id": "sha256:3fbec716e18c0f4b20708d0f87519a8e921f44d317dcb8bca3c562075b2aab3f",
+        "files": {
+          "runtime/deepseek_smoke/runtime.py": "8542938896ffee5a3e12ad8eb4da8798cccbe8e961df30facee0c8da19d313f2",
+          "runtime/deepseek_smoke/attack_replay.py": "5de4b63ab737efa243716d35cc620b09c26c70a26522f4e5a21f85a274a8100d",
+          "runtime/deepseek_smoke/scorer_package_init.py": "057b9cb04dc57126433782ce3272ec952bfeb8ceac9a48e3dc5770c0311063f0",
+          "runtime/deepseek_smoke/Dockerfile": "6516f5b9f1bbd6172ce4ea46a220e6a3fcc2576063ba2b53bd2f1769c1c9bab5",
+          "runtime/deepseek_smoke/AttackReplay.Dockerfile": "1846eb5c6badc652b6514c1bb169c69faf66e9f3198df71abcf584b79716325d",
+          "tools/score_agentdojo_result.py": "a2c80b6e612ea5de35f4df475cb0c762ba45a6d6015cb74dc84d3928bc57a408",
+          "tools/agentdojo_mcp_server.py": "e6d7d2101e6c8f049a81b8926fb8e92ace4ab5d8dd3b6315acab12f34eccc636",
+          "tools/isolated_agentdojo_dispatch.py": "f10037d2d4d1283b01df9dbe90123252d0dc8ac7645e85444ce85216b29bc0e2",
+          "tools/run_product.py": "b6d7eccb5a59b48ab01b502e30ab7b6b48d6694a6fc280d2049961f7c781536c",
+          "product_eval/agentdojo.py": "5fa7f88234b4ad7b70d15747128074cfec829007e0936b19e68fe6d15fdf862c",
+          "product_eval/runner.py": "3255b2ab5bb6cbdd9fcc31b8dee10d89504cc82499a4addb22a704e373b2458c",
+          "product_eval/product_model_policy.py": "a73a3398534cc4ae823926a039df17d0fc76779c7a4ddcdb877eb95d689d8d4f",
+          "product_eval/route_audit_proxy.py": "61e9219072628e8524ae1c60c9ea98ffe92c85e32ec033ab71be4867952c9019",
+          "manifests/agentdojo_v1/banking.json": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438",
+          "tools/isolated_agentdojo_batch.py": "ea1fab04d75c247f7bb84d9a3196d27713cc7851baaedc76698c22326afde104",
+          "tools/run_product_batch.py": "1dcd0c1b12ef21c45f5e3a98581d6e083cdb6a7222b3b76154c33016953826f4",
+          "release/agentdojo_prompt_mappings.json": "d483c7762e036a8ac116b6f88a4bfade85d426ceaa4a983c748a794a525b47a7",
+          "runtime/deepseek_smoke/smoke20_preflight.py": "68a1ea14fe848ef7c6d3458a30114a8379ccc78cc40e0a0970fae56092782b44",
+          "manifests/agentdojo_v1/slack.json": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683",
+          "manifests/agentdojo_v1/travel.json": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a",
+          "manifests/agentdojo_v1/workspace.json": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        }
+      },
+      "qualification_scope": "Frozen AgentDojo smoke20 engineering execution; no pilot or release qualification.",
+      "selection_sha256": "a44aee9928e36fa6f6281e0a5a41a0c9436b6fa8de0fd070c50896a85d931ac5",
+      "qualification": {
+        "artifact": "federated_asr_benchmark/release/agentdojo_smoke20_v3_readiness_20261108.json",
+        "sha256": "344ffbe9e6e48e0a9a9a7583768d8722df0a29573de9583dceef902147780d51"
+      },
+      "cases": {
+        "agentdojo:slack:user_task_5:injection_task_1:important_instructions": {
+          "source_sha256": "fc65063e942ab9c1c760237819b8ac5978de68ca0bb273e81c75f3895f9f81f0",
+          "native_case_id": "slack:user_task_5:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_4:injection_task_4:important_instructions": {
+          "source_sha256": "4c001b528a441fe13633e3ca934d4512c3570b769d3183f6d0616cb5e306a66a",
+          "native_case_id": "workspace:user_task_4:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_4:injection_task_2:important_instructions": {
+          "source_sha256": "f79d13aed9100a8853ae84eb901e256f18598739e1c258023fdd34a00ceebce6",
+          "native_case_id": "banking:user_task_4:injection_task_2:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_11:injection_task_5:important_instructions": {
+          "source_sha256": "f511ee03fae2f9933d35ac0b3a7e013d762838f34cabfc2df85bcdb28bbaf99e",
+          "native_case_id": "travel:user_task_11:injection_task_5:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_15:injection_task_1:important_instructions": {
+          "source_sha256": "6362d5e45916d2c5f2e5f35030ab28190eba158b2a96e7718e9bb51fde2075d8",
+          "native_case_id": "workspace:user_task_15:injection_task_1:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_13:injection_task_1:important_instructions": {
+          "source_sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+          "native_case_id": "banking:user_task_13:injection_task_1:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_15:injection_task_6:important_instructions": {
+          "source_sha256": "e7c058b590e244196656cf093c8223f31d5fd1e1dc20dc99567b1a7ab47f5468",
+          "native_case_id": "travel:user_task_15:injection_task_6:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_20:injection_task_4:important_instructions": {
+          "source_sha256": "6d1045a9e56eb0d77d2cf453a122f3a0cf5fbc2ee16e0b48773e04d1eb2ebe51",
+          "native_case_id": "workspace:user_task_20:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:slack:user_task_15:injection_task_1:important_instructions": {
+          "source_sha256": "9e4e8dcd6deb5a381300cac1f1fd70ae6a4367dfd4993c6b4d8b9573f41d266e",
+          "native_case_id": "slack:user_task_15:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_2:injection_task_2:important_instructions": {
+          "source_sha256": "bd0b8e2e4acb32cda7bff100275df81ae06643f124fdbc47802d0fbe3e4c97bc",
+          "native_case_id": "workspace:user_task_2:injection_task_2:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_1:injection_task_4:important_instructions": {
+          "source_sha256": "0bbbe45f46cae7e3774af40e3e04a1c32708cef8b8685b17efe77c7201924384",
+          "native_case_id": "banking:user_task_1:injection_task_4:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_14:injection_task_0:important_instructions": {
+          "source_sha256": "0145f4a626fd599769c69afdc9dbfaf23f8fc5fccbd3f15d92e107aa806b8175",
+          "native_case_id": "travel:user_task_14:injection_task_0:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_32:injection_task_0:important_instructions": {
+          "source_sha256": "0b926b75057260afb89fedf49fbd2993cc97461484f3a676e4bbc9eb5a3a0b4a",
+          "native_case_id": "workspace:user_task_32:injection_task_0:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:slack:user_task_19:injection_task_1:important_instructions": {
+          "source_sha256": "e396462247fc02eb02844fa7a6f5f0f735dc2ee31c6b9203f26162c67f8cd602",
+          "native_case_id": "slack:user_task_19:injection_task_1:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        },
+        "agentdojo:workspace:user_task_34:injection_task_4:important_instructions": {
+          "source_sha256": "72ed4cb02342905fc1587db7acc1aa4cde5736435d5c32ad67f736334cbf10a5",
+          "native_case_id": "workspace:user_task_34:injection_task_4:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_3:injection_task_2:important_instructions": {
+          "source_sha256": "5e244434db686ad09b99ffeae663756b55deebe778c189255661ae188b87d8f2",
+          "native_case_id": "banking:user_task_3:injection_task_2:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:travel:user_task_4:injection_task_4:important_instructions": {
+          "source_sha256": "67e1781901a26f2acd7362ee8f6700d3eb7078bbf5ba14d51e26cadf21479b31",
+          "native_case_id": "travel:user_task_4:injection_task_4:important_instructions",
+          "manifest_sha256": "05150619dcacda5acee90aa898428607a2e0e9826ef72d89af874815842fb00a"
+        },
+        "agentdojo:workspace:user_task_31:injection_task_5:important_instructions": {
+          "source_sha256": "4428c62ada5d698615596a0da2aebe1b09ceb4cd0b316e1bc424c88249e54e13",
+          "native_case_id": "workspace:user_task_31:injection_task_5:important_instructions",
+          "manifest_sha256": "b22f2e15c3c38e8569172d9ffbfab274845037d0bbfd710490f7f0355e6528ef"
+        },
+        "agentdojo:banking:user_task_2:injection_task_1:important_instructions": {
+          "source_sha256": "4ea3e359f4719b065f8b47ee48b7c5e85a323a1c436ae17c145b8417f642786d",
+          "native_case_id": "banking:user_task_2:injection_task_1:important_instructions",
+          "manifest_sha256": "6eb703b93a60563daa348f383cc6c1a9d9b2e99aad06c84a93f622ff1a2c4438"
+        },
+        "agentdojo:slack:user_task_12:injection_task_3:important_instructions": {
+          "source_sha256": "a8b4f81970acc75ca1a6188facd7512036d32208695e2e426a354e27879eb0f1",
+          "native_case_id": "slack:user_task_12:injection_task_3:important_instructions",
+          "manifest_sha256": "d044fc60b6dc2256332a7cfc21625006691a3025dec980ad546bff3afa2e0683"
+        }
+      },
+      "profile_id": "codex_deepseek_flash_agentdojo_smoke20_v3",
+      "budget": {
+        "id": "smoke20_v2",
+        "maximum_requests": 12,
+        "max_output_tokens": 8192
+      }
+    }
+  }
+}

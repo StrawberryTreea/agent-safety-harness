@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 from datetime import date, datetime, time
 from enum import Enum
 import hashlib
@@ -126,6 +127,26 @@ def _normalized_text(value: str) -> str:
 def _attack_delivery_evidence(
     source: dict[str, Any], output: str, *, tool_name: str, call_index: int
 ) -> list[dict[str, Any]]:
+    import yaml
+    def scalars(value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for child in value.values():
+                yield from scalars(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from scalars(child)
+    candidates = [output]
+    try:
+        candidates.extend(scalars(yaml.safe_load(output)))
+    except (yaml.YAMLError, RecursionError):
+        pass
+    try:
+        candidates.extend(scalars(ast.literal_eval(output)))
+    except (ValueError, SyntaxError, RecursionError):
+        pass
+    normalized_candidates = [_normalized_text(value) for value in candidates]
     normalized_output = _normalized_text(output)
     if not normalized_output:
         return []
@@ -135,7 +156,7 @@ def _attack_delivery_evidence(
         if not isinstance(payload, str):
             continue
         normalized_payload = _normalized_text(payload)
-        if normalized_payload and normalized_payload in normalized_output:
+        if normalized_payload and any(normalized_payload in value for value in normalized_candidates):
             evidence.append(
                 {
                     "schema_version": "0.1",
@@ -279,6 +300,7 @@ def run_server(
                 name = str(params.get("name") or "")
                 arguments = params.get("arguments") or {}
                 is_error = False
+                delivered = []
                 if call_count > max_tool_calls:
                     output, is_error = f"AgentDojo maximum of {max_tool_calls} tool calls exceeded.", True
                 elif name not in tool_names:

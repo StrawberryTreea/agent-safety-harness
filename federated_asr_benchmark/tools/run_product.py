@@ -141,21 +141,45 @@ def main() -> int:
     parser.add_argument("--output-root", type=Path, help="Override request.output_dir.")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--preflight-only", action="store_true", help="Inspect isolation without product, benchmark or judge execution")
+    parser.add_argument("--isolated-offline", action="store_true", help="Verify the registered single-case container route with upstream disabled")
     parser.add_argument("--publish-native-result", action="store_true")
     args = parser.parse_args()
     apply_data_root(args)
 
     request_path = args.request.resolve()
     request = load_request(request_path)
+    from tools.isolated_agentdojo_dispatch import requested as isolated_requested, preflight as isolated_preflight, dispatch
+    isolated = isolated_requested(request)
     if args.preflight_only:
-        report = product_preflight(request, dry_run=args.dry_run)
+        report = isolated_preflight(request, dry_run=args.dry_run) if isolated else product_preflight(request, dry_run=args.dry_run)
         print(json.dumps(report, ensure_ascii=False, indent=2))
-        return 0 if args.dry_run else 2
-    preflight = require_product_execution(request, dry_run=args.dry_run)
+        return 0 if args.dry_run or report.get('execution_permitted') else 2
+    if isolated:
+        preflight = isolated_preflight(request, dry_run=args.dry_run)
+        if not args.dry_run and preflight.get('execution_permitted') is not True:
+            raise ValueError('isolated_preflight_failed:' + ','.join(preflight['blockers']))
+    else:
+        preflight = require_product_execution(request, dry_run=args.dry_run)
     selection_path = case_index_path(request_path, request, args.case_index)
     allowed_ids = selected_cases(selection_path, request["benchmark_id"], request["selection"].get("case_ids"))
     if args.case_id not in allowed_ids:
         raise ValueError("Case is outside the request's selected index")
+    if isolated:
+        if args.state_source or args.publish_native_result:
+            raise ValueError('Isolated profile forbids state-source and publish overrides')
+        if args.run_id:
+            request['run_id'] = args.run_id
+        if args.dry_run:
+            print(json.dumps({'kind': 'isolated_single_case_plan', 'preflight': preflight,
+                'case_id': args.case_id, 'product_executed': False}, indent=2))
+            return 0
+        output = args.output_root or resolve_relative(request['output_dir'], request_path)
+        report = dispatch(request, data_root=args.data_root or DEFAULT_DATA_ROOT,
+            selection_path=selection_path, output=output.resolve(), offline=args.isolated_offline, case_id=args.case_id)
+        print(json.dumps(report, indent=2))
+        return 0 if report['passed'] and all(report['cleanup'].values()) else 2
+    if args.isolated_offline:
+        raise ValueError('--isolated-offline requires the registered isolated profile')
     indexed = selected_case(args.case_id, selection_path)
     if request["benchmark_id"] != indexed["benchmark_id"]:
         raise ValueError("Run request benchmark_id does not match selected case")

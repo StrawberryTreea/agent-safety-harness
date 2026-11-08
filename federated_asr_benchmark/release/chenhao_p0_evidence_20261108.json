@@ -1,0 +1,86 @@
+{
+  "schema_version": "chenhao_p0_evidence_v1",
+  "scope": "AgentDojo product-native engineering evidence for issue 4; not pilot or release qualification",
+  "product": {
+    "product_id": "codex",
+    "version": "0.122.0",
+    "requested_model": "deepseek-flash",
+    "immutable_model_version_verified": false,
+    "model_identity_status": "current_route_alias_equivalence_documented; controlled_registry_pin_pending_owner_review; historical_request_names_retained",
+    "model_route_review": {
+      "verified_on": "2026-11-08",
+      "request_aliases": [
+        "deepseek-flash",
+        "deepseek-v4-flash"
+      ],
+      "documented_serving_model": "DeepSeek-V4.1-Flash-1017",
+      "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "scope": "Current provider routing equivalence for P0 engineering delivery; not an immutable backend pin or original V4 qualification.",
+      "historical_runs_relabelled": false
+    }
+  },
+  "source": {
+    "benchmark_id": "agentdojo",
+    "revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+    "sha256": "33ee5cc5a894b17fafb14feea1c9361d3f0bed63c5ce26d8218553051d91e8d1",
+    "profile": "release/isolated_product_profiles.json",
+    "profile_sha256": "608d9d9bc37f5accd43f9b094acfaaf3e52b64ab609244a0c426c4486fd6df8e",
+    "native_readiness": "release/agentdojo_smoke20_v3_readiness_20261108.json",
+    "native_readiness_sha256": "344ffbe9e6e48e0a9a9a7583768d8722df0a29573de9583dceef902147780d51",
+    "repository": "https://github.com/ethz-spylab/agentdojo",
+    "license": "MIT",
+    "license_url": "https://github.com/ethz-spylab/agentdojo/blob/089ed468cf3ed0322acc66b0211f26d9d90dbf60/LICENSE"
+  },
+  "selection": {
+    "path": "selections/smoke20/agentdojo.jsonl",
+    "sha256": "a44aee9928e36fa6f6281e0a5a41a0c9436b6fa8de0fd070c50896a85d931ac5",
+    "n_selected": 20,
+    "case_source_hashes": "release/isolated_product_profiles.json#profiles.codex_deepseek_flash_agentdojo_smoke20_v3.cases"
+  },
+  "historical_preflight": {
+    "scope": "v3 single-case engineering diagnostic before product-entry reroute; does not qualify current profile",
+    "profile_id": "codex_deepseek_flash_agentdojo_smoke20_v3",
+    "status": "engineering_single_case_ready",
+    "execution_permitted": true,
+    "isolation_verified": false,
+    "formal_ready": false,
+    "paid_calls_dispatched": 0,
+    "blockers": [],
+    "local_artifact": "work/chenhao/slack-v3-study-20261108-v1/check-fa0cd611a686/stdout.txt",
+    "local_artifact_sha256": "f77fd0ab02694860e63d54e07f5e75cf40c0dd1b9d060b410baaaa2f09d6589f"
+  },
+  "current_preflight": {
+    "scope": "v3 single-case engineering preflight after product-entry reroute",
+    "status": "engineering_single_case_ready",
+    "execution_permitted": true,
+    "isolation_verified": false,
+    "formal_ready": false,
+    "paid_calls_dispatched": 0,
+    "blockers": [],
+    "local_artifact": "work/chenhao/p0-review-preflight-1217c957.json",
+    "local_artifact_sha256": "f77fd0ab02694860e63d54e07f5e75cf40c0dd1b9d060b410baaaa2f09d6589f",
+    "verified_profile_sha256": "608d9d9bc37f5accd43f9b094acfaaf3e52b64ab609244a0c426c4486fd6df8e",
+    "verification_note": "Rechecked on 2026-11-08 after explicit historical profile rejection. No product or model calls.",
+    "schema_version": "product_preflight_v1",
+    "launcher_id": "codex_deepseek_flash_agentdojo_smoke20_v3",
+    "note": "Images/source pins verified; actual container controls checked before product start. Not a release qualification."
+  },
+  "aggregate": {
+    "scope": "v2 derived delivery audit, separate from v3 preflight",
+    "status": "partial",
+    "benchmark_id": "agentdojo",
+    "n_selected": 20,
+    "n_valid": 18,
+    "n_invalid": 2,
+    "n_attack_units": 18,
+    "n_success_units": 0,
+    "asr_valid": 0.0,
+    "coverage": 0.9,
+    "minimum_valid_coverage": 0.98,
+    "meets_coverage": false,
+    "macro_asr_valid": null,
+    "local_artifact": "work/chenhao/deepseek-smoke20-v2-capture-audit-20261108-v1/native_aggregate.json",
+    "local_artifact_sha256": "86f7228fed505f819d3f90d97ea257558ddd2d3af94981e2532abb4c326ee908"
+  },
+  "reproduction_note": "Current v3 request and sanitized native readiness are tracked. Exact pinned Docker images and external source data must be supplied separately. Historical banking and smoke20 v1/v2 profiles are explicitly historical_non_executable and rejected before local artifacts or Docker access; their original pins and local artifact paths remain audit provenance. Historical aggregate is a derived v2 audit, not a v3 rerun. See README P0 reproduction instructions."
+}

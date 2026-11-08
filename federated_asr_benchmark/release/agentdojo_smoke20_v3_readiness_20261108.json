@@ -1,0 +1,21 @@
+{
+  "kind": "agentdojo_smoke20_offline_readiness",
+  "scope": "Native reference and no-action checks only; no product execution or ASR qualification",
+  "source_revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+  "selection_count": 20,
+  "selection_sha256": "a44aee9928e36fa6f6281e0a5a41a0c9436b6fa8de0fd070c50896a85d931ac5",
+  "reference_passed": 20,
+  "needs_review": [],
+  "suite_counts": 4,
+  "already_executed_cases": 1,
+  "remaining_unexecuted_count": 19,
+  "completed_result_sha256": "bc6a95e72728114046af12366041e64b17b093824540c394c8d9bcf0c1781f86",
+  "environment_image_id": "sha256:3fbec716e18c0f4b20708d0f87519a8e921f44d317dcb8bca3c562075b2aab3f",
+  "preflight_script_sha256": "68a1ea14fe848ef7c6d3458a30114a8379ccc78cc40e0a0970fae56092782b44",
+  "product_executed": false,
+  "paid_calls_dispatched": 0,
+  "execution_permitted": false,
+  "formal_ready": false,
+  "asr_computed": false,
+  "execution_gap": "Offline native reference evidence alone grants no product execution permission; use an independently registered profile."
+}
