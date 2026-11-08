@@ -1,0 +1,33 @@
+{
+  "run_id": "codex-deepseek-flash-banking-single",
+  "benchmark_id": "agentdojo",
+  "product": {
+    "product_id": "codex",
+    "executable": "codex",
+    "version": "0.122.0",
+    "product_model": "deepseek-flash",
+    "state_source": null
+  },
+  "adapter": {
+    "adapter_id": "agentdojo-product-adapter",
+    "adapter_version": "0.2.0",
+    "mcp_config": null
+  },
+  "isolation": {
+    "mode": "container",
+    "fresh_product_state": true,
+    "network_policy": "deny_except_benchmark",
+    "tool_permission_mode": "autonomous_preapproved_in_sandbox"
+  },
+  "selection": {
+    "case_index": "../../selections/smoke20/agentdojo.jsonl",
+    "case_ids": [
+      "agentdojo:banking:user_task_13:injection_task_1:important_instructions"
+    ]
+  },
+  "output_dir": "../../../runs/product/codex-deepseek-flash-banking-single",
+  "timeout_seconds": 600,
+  "benchmark_options": {
+    "isolated_profile_id": "codex_deepseek_flash_agentdojo_banking_v1"
+  }
+}

@@ -101,6 +101,20 @@ def write_case_results(root: Path, case_ids: list[str]) -> int:
     return len(current_rows)
 
 
+def isolated_batch_exit_code(summary: dict, *, dry_run: bool) -> int:
+    """A partial batch remains useful evidence, but is not a successful batch run."""
+    if dry_run:
+        return 0
+    selected = summary.get("selected_count", 0)
+    if selected <= 0 or summary.get("observed_count") != selected:
+        return 2
+    if summary.get("offline"):
+        return 0 if summary.get("offline_checks_passed") is True else 2
+    return 0 if (summary.get("valid_count") == selected
+                 and summary.get("invalid_count") == 0
+                 and summary.get("request_audit_complete") is True) else 2
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run a resumable product-native benchmark batch.")
     parser.add_argument("--request", required=True, type=Path)
@@ -127,6 +141,8 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--isolated-offline", action="store_true")
+    parser.add_argument("--import-case-run", type=Path, help="Reuse an existing valid compatible single-case run without new API calls")
     parser.add_argument("--publish-native-result", action="store_true")
     parser.add_argument("--keep-going", action="store_true")
     parser.add_argument(
@@ -139,10 +155,25 @@ def main() -> int:
 
     request_path = args.request.resolve()
     request = json.loads(request_path.read_text(encoding="utf-8"))
+    from tools.isolated_agentdojo_dispatch import requested as isolated_requested, preflight as isolated_preflight
+    if isolated_requested(request) and not args.preflight_only:
+        from tools.isolated_agentdojo_batch import execute_batch
+        from product_eval.data_paths import default_data_root
+        if args.offset or args.limit or args.state_source or args.publish_native_result:
+            raise ValueError('Isolated smoke20 forbids population/state/publish overrides')
+        summary = execute_batch(request, data_root=args.data_root or default_data_root(),
+            selection_path=case_index_path(request_path, request, args.case_index),
+            output=(args.output_root or output_root(request_path, request)).resolve(),
+            run_id=args.run_id or request['run_id'], resume=args.resume, imported_run=args.import_case_run,
+            offline=args.isolated_offline, keep_going=args.keep_going, dry_run=args.dry_run)
+        print(json.dumps(summary, indent=2))
+        return isolated_batch_exit_code(summary, dry_run=args.dry_run)
+    if not isolated_requested(request) and (args.isolated_offline or args.import_case_run):
+        raise ValueError('Isolated options require the registered smoke20 profile')
     if args.preflight_only:
-        report = product_preflight(request, dry_run=args.dry_run)
+        report = isolated_preflight(request, dry_run=args.dry_run) if isolated_requested(request) else product_preflight(request, dry_run=args.dry_run)
         print(json.dumps(report, ensure_ascii=False, indent=2))
-        return 0 if args.dry_run else 2
+        return 0 if args.dry_run or report.get('execution_permitted') else 2
     preflight = require_product_execution(request, dry_run=args.dry_run)
     benchmark_id = request["benchmark_id"]
     product = request["product"]

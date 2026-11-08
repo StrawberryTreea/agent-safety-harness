@@ -2,3 +2,30 @@
 # These files are bound by raw-byte SHA-256 in the evaluation protocol.
 *.jsonl text eol=lf
 llm_eval/multi_model_rule_eval_prompt_only.py text eol=lf
+
+# Isolated product profiles bind raw bytes embedded in existing Docker images.
+# Preserve each pinned file's qualified line endings on every platform.
+federated_asr_benchmark/runtime/deepseek_smoke/runtime.py text eol=crlf
+federated_asr_benchmark/runtime/deepseek_smoke/attack_replay.py text eol=lf
+federated_asr_benchmark/runtime/deepseek_smoke/scorer_package_init.py text eol=lf
+federated_asr_benchmark/runtime/deepseek_smoke/Dockerfile text eol=lf
+federated_asr_benchmark/runtime/deepseek_smoke/AttackReplay.Dockerfile text eol=lf
+federated_asr_benchmark/tools/score_agentdojo_result.py text eol=crlf
+federated_asr_benchmark/tools/agentdojo_mcp_server.py text eol=crlf
+federated_asr_benchmark/tools/isolated_agentdojo_dispatch.py text eol=crlf
+federated_asr_benchmark/tools/run_product.py text eol=crlf
+federated_asr_benchmark/product_eval/agentdojo.py text eol=crlf
+federated_asr_benchmark/product_eval/runner.py text eol=crlf
+federated_asr_benchmark/product_eval/product_model_policy.py text eol=crlf
+federated_asr_benchmark/product_eval/route_audit_proxy.py text eol=crlf
+federated_asr_benchmark/manifests/agentdojo_v1/banking.json text eol=crlf
+federated_asr_benchmark/tools/isolated_agentdojo_batch.py text eol=crlf
+federated_asr_benchmark/tools/run_product_batch.py text eol=crlf
+federated_asr_benchmark/release/agentdojo_prompt_mappings.json text eol=crlf
+federated_asr_benchmark/runtime/deepseek_smoke/smoke20_preflight.py text eol=lf
+federated_asr_benchmark/manifests/agentdojo_v1/slack.json text eol=crlf
+federated_asr_benchmark/manifests/agentdojo_v1/travel.json text eol=crlf
+federated_asr_benchmark/manifests/agentdojo_v1/workspace.json text eol=crlf
+federated_asr_benchmark/release/isolated_product_profiles.json text eol=crlf
+federated_asr_benchmark/release/agentdojo_smoke20_v3_readiness_20261108.json text eol=lf
+federated_asr_benchmark/release/chenhao_p0_evidence_20261108.json text eol=crlf
